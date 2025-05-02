@@ -1,0 +1,30 @@
+<div class="home-layout">
+  <header class="navbar">
+    <div class="logo">🎰 Casino Deluxe</div>
+    <div class="user-dropdown" (click)="toggleMenu()" [class.open]="menuAbierto">
+      <div class="user-summary">
+        👤 {{ user?.displayName || user?.email }}
+      </div>
+    
+      <div class="dropdown-menu" *ngIf="menuAbierto">
+        <div class="dropdown-item" (click)="cambiarNombre()">✏ Cambiar nombre</div>
+        <div class="dropdown-item" (click)="cambiarFoto()">🖼 Cambiar foto</div>
+        <div class="dropdown-item" (click)="cambiarPassword()">🔑 Cambiar contraseña</div>
+        <div class="dropdown-item" (click)="anadirSaldo()">💰 Añadir saldo</div>
+        <div class="dropdown-item logout" (click)="logout()">🚪 Cerrar sesión</div>
+      </div>
+    </div>
+  </header>
+  
+
+  <main class="main-content">
+    <h2>Selecciona tu juego</h2>
+    <div class="game-grid">
+      <div class="game-card" *ngFor="let juego of juegos">
+        <h3>{{ juego.nombre }}</h3>
+        <p>{{ juego.descripcion }}</p>
+        <button (click)="jugar(juego.ruta)">Jugar</button>
+      </div>
+    </div>
+  </main>
+</div>

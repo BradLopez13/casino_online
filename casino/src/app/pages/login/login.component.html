@@ -1,0 +1,34 @@
+<div class="form-container">
+  <h2>Iniciar sesión</h2>
+
+  <form [formGroup]="form" (ngSubmit)="login()" novalidate>
+    <label>Email</label>
+    <input formControlName="email" type="email" class="inputText" />
+
+    <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+      <small *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
+      <small *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+    </div>
+
+    <label>Contraseña</label>
+    <input formControlName="password" type="password" class="inputText"/>
+
+    <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+      <small *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
+      <small *ngIf="form.get('password')?.errors?.['minlength']">
+        Mínimo 6 caracteres
+      </small>
+    </div>
+
+    <label class="checkbox-label">
+      <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" />
+      Mantener sesión iniciada
+    </label>
+
+    <button type="submit" [disabled]="form.invalid">Entrar</button>
+    <button type="button" (click)="loginWithGoogle()">Iniciar sesión con Google</button>
+    <button type="button" class="alt-button" (click)="goToRegister()">¿No tienes cuenta? Regístrate</button>
+
+    <p *ngIf="error">{{ error }}</p>
+  </form>
+</div>

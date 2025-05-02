@@ -1,0 +1,31 @@
+<div class="form-container">
+  <h2>Crear cuenta</h2>
+
+  <form [formGroup]="form" (ngSubmit)="register()" novalidate>
+    <label>Email</label>
+    <input formControlName="email" type="email" />
+
+    <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+      <small *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
+      <small *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+    </div>
+
+    <label>Contraseña</label>
+    <input formControlName="password" type="password" />
+
+    <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+      <small *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
+      <small *ngIf="form.get('password')?.errors?.['minlength']">
+        Mínimo 6 caracteres
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Registrarse</button>
+    <button type="button" (click)="loginWithGoogle()">Registrate con Google</button>
+    <button type="button" class="alt-button" (click)="goToLogin()">
+      ¿Ya tienes cuenta? Inicia sesión
+    </button>
+
+    <p *ngIf="error">{{ error }}</p>
+  </form>
+</div>
