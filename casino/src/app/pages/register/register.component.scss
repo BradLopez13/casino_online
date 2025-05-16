@@ -13,33 +13,38 @@
   left: 0;
   right: 0;
   bottom: 0;
+  box-sizing: border-box;
 }
 
 .form-container {
   background: #1c1c1c;
   padding: 3rem 2.5rem;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.15);
+  max-width: 26.25rem; // 420px
+  box-shadow: 0 0 1.5rem rgba(255, 215, 0, 0.15);
   border: 1px solid #ffd70020;
   animation: fadeIn 0.4s ease-in-out;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
-p{
-  color: #f44336;
-  font-size: 0.85rem;
-}
+
 h2 {
   text-align: center;
   margin-bottom: 2rem;
   font-size: 1.8rem;
   color: #ffd700;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  text-shadow: 0 0 0.5rem rgba(255, 215, 0, 0.4);
 }
 
 label {
@@ -47,35 +52,29 @@ label {
   margin-bottom: 0.5rem;
   font-weight: bold;
   color: #ccc;
+  font-size: 0.95rem;
 }
 
 input {
   width: 100%;
   padding: 0.75rem;
-  margin-bottom: 1rem;
-  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border-radius: 0.375rem;
   border: 1px solid #333;
   background: #262626;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+input.inputText {
+  width: 100%;
 }
 
 input:focus {
   outline: none;
   border-color: #ffd700;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  font-size: 0.85rem;
-  color: #aaa;
-  margin-bottom: 1.2rem;
-}
-
-.checkbox-label input {
-  margin-right: 0.5rem;
 }
 
 button {
@@ -84,7 +83,7 @@ button {
   margin-bottom: 1rem;
   background: linear-gradient(to right, #ffd700, #ff8c00);
   border: none;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   color: #111;
   font-weight: bold;
   font-size: 1rem;
@@ -105,7 +104,28 @@ button:hover {
   cursor: pointer;
 }
 
-small {
+small,
+p {
   color: #f44336;
   font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 37.5rem) { // 600px
+  .form-container {
+    padding: 2rem 1.5rem;
+    max-width: 90vw;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+  input.inputText{
+    width: 100%;
+  }
+  input,
+  button {
+    font-size: 0.95rem;
+    padding: 0.7rem;
+  }
 }

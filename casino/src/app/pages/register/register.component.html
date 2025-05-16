@@ -3,7 +3,7 @@
 
   <form [formGroup]="form" (ngSubmit)="register()" novalidate>
     <label>Email</label>
-    <input formControlName="email" type="email" />
+    <input formControlName="email" type="email" class="inputText" />
 
     <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
       <small *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
@@ -11,7 +11,7 @@
     </div>
 
     <label>Contraseña</label>
-    <input formControlName="password" type="password" />
+    <input formControlName="password" type="password" class="inputText"/>
 
     <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
       <small *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>

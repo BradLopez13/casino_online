@@ -13,7 +13,9 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #fff;
   padding: 1rem;
+  box-sizing: border-box;
 }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -21,15 +23,17 @@ html, body {
   width: 100vw;
   height: 100vh;
 }
+
 .form-container {
   background: #1c1c1c;
   padding: 3rem 2.5rem;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 0 25px rgba(255, 215, 0, 0.15);
+  max-width: 26.25rem; // 420px
+  box-shadow: 0 0 1.5rem rgba(255, 215, 0, 0.15);
   border: 1px solid #ffd70020;
   animation: fadeIn 0.4s ease-in-out;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -42,7 +46,7 @@ h2 {
   margin-bottom: 2rem;
   font-size: 1.8rem;
   color: #ffd700;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+  text-shadow: 0 0 0.5rem rgba(255, 215, 0, 0.4);
 }
 
 label {
@@ -50,24 +54,24 @@ label {
   margin-bottom: 0.5rem;
   font-weight: bold;
   color: #ccc;
+  font-size: 0.95rem;
 }
-p{
-  color: #f44336;
-  font-size: 0.85rem;
-}
+
 input {
   padding: 0.75rem;
   margin-bottom: 1rem;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   border: 1px solid #333;
   background: #262626;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   transition: border-color 0.2s;
+ 
 }
-input.inputText{
-  width: 95%;
+input.inputText {
+  width: 92%;
 }
+
 input:focus {
   outline: none;
   border-color: #ffd700;
@@ -92,7 +96,7 @@ button {
   margin-bottom: 1rem;
   background: linear-gradient(to right, #ffd700, #ff8c00);
   border: none;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   color: #111;
   font-weight: bold;
   font-size: 1rem;
@@ -113,10 +117,29 @@ button:hover {
   cursor: pointer;
 }
 
-small {
+small,
+p {
   color: #f44336;
   font-size: 0.85rem;
   display: block;
-  margin-top: -0.5rem;
   margin-bottom: 0.5rem;
+  margin-top: -0.5rem;
+}
+
+/* Responsive en pantallas pequeñas */
+@media (max-width: 37.5rem) { // 600px
+  .form-container {
+    padding: 2rem 1.5rem;
+    max-width: 90vw;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  input,
+  button {
+    font-size: 0.95rem;
+    padding: 0.7rem;
+  }
 }

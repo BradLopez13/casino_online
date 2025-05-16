@@ -21,7 +21,12 @@
     </div>
 
     <label class="checkbox-label">
-      <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" />
+      <input
+        type="checkbox"
+        [(ngModel)]="rememberMe"
+        name="rememberMe"
+        [ngModelOptions]="{ standalone: true }"
+      />
       Mantener sesión iniciada
     </label>
 

@@ -1,20 +1,25 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { onAuthStateChanged, User } from '@angular/fire/auth';
-import { CommonModule } from '@angular/common'; 
+import { doc, getDoc, updateDoc, Firestore } from '@angular/fire/firestore';
+import { authState, User } from '@angular/fire/auth';
+import { CommonModule } from '@angular/common';
+import { AgeVerificationComponent } from '../age-verification/age-verification.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule]
+  imports: [CommonModule, AgeVerificationComponent]
 })
 export class HomeComponent {
   user: User | null = null;
-  saldo = 1500; 
-  fichas = 250;
+  saldo = 0;
+  fichas = 0;
+  menuAbierto = false;
+  mayorDeEdad = false;
+
   juegos = [
     { nombre: 'Tragaperras', descripcion: 'Prueba suerte en las slots', ruta: '/slots' },
     { nombre: 'Ruleta', descripcion: 'Apuesta al rojo o negro', ruta: '/ruleta' },
@@ -22,14 +27,35 @@ export class HomeComponent {
   ];
 
   private auth = inject(AuthService);
+  private firestore = inject(Firestore);
   private router = inject(Router);
 
   constructor() {
-    onAuthStateChanged(this.auth['auth'], user => {
-      this.user = user;
+    authState(this.auth.getAuthInstance()).subscribe(async (user) => {
+      if (user) {
+        this.user = user;
+        const docRef = doc(this.firestore, `usuarios/${user.uid}`);
+        const snapshot = await getDoc(docRef);
+
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          this.saldo = data['saldo'] ?? 0;
+          this.fichas = data['fichas'] ?? 0;
+          this.mayorDeEdad = data['mayorDeEdad'] === true;
+        } else {
+          console.warn('Documento de usuario no encontrado en Firestore.');
+        }
+      }
     });
   }
-  menuAbierto = false;
+
+  confirmarMayorDeEdad() {
+    this.mayorDeEdad = true;
+    if (this.user) {
+      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
+      updateDoc(ref, { mayorDeEdad: true });
+    }
+  }
 
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
