@@ -1,0 +1,26 @@
+<div class="modal-backdrop">
+  <div class="modal-content">
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+
+    <div *ngIf="isPrompt">
+      <input
+        type="text"
+        [(ngModel)]="inputValue"
+        [placeholder]="inputPlaceholder"
+      />
+    </div>
+
+    <div *ngIf="isImageUpload">
+      <input type="file" (change)="onFileChange($event)" />
+
+    </div>
+
+    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <div class="modal-buttons">
+      <button (click)="aceptar()">{{ acceptText }}</button>
+      <button class="cancel" (click)="cancelar()">{{ cancelText }}</button>
+    </div>
+  </div>
+</div>

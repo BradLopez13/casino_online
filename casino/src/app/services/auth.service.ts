@@ -10,15 +10,15 @@ import {
   browserSessionPersistence,
   setPersistence
 } from '@angular/fire/auth';
-
+import { updatePassword } from '@angular/fire/auth';
 import {
   Firestore,
   getDoc,
   doc,
-  setDoc
+  setDoc,
 } from '@angular/fire/firestore';
-import { from, switchMap,of  } from 'rxjs';
 
+import { from, switchMap, of, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -32,13 +32,12 @@ export class AuthService {
     return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
       switchMap(cred => {
         const userDoc = doc(this.firestore, `usuarios/${cred.user.uid}`);
-        return setDoc(userDoc, {
+        return from(setDoc(userDoc, {
           email: cred.user.email,
           saldo: 1000,
-          fichas: 100,
-          mayordeEdad:false,
+          mayorDeEdad: false,
           createdAt: new Date()
-        });
+        }));
       })
     );
   }
@@ -54,11 +53,11 @@ export class AuthService {
               return from(setDoc(userRef, {
                 email: cred.user.email,
                 saldo: 1000,
-                fichas: 100,
+                mayorDeEdad: false,
                 createdAt: new Date()
               }));
             } else {
-              return from(Promise.resolve()); // no hace nada si ya existe
+              return of(null); // Ya existe
             }
           })
         );
@@ -78,8 +77,21 @@ export class AuthService {
   getAuthInstance() {
     return this.auth;
   }
-  
+
   get currentUser() {
     return this.auth.currentUser;
+  }
+
+  setMayorDeEdad(uid: string) {
+    const userRef = doc(this.firestore, `usuarios/${uid}`);
+    return from(setDoc(userRef, { mayorDeEdad: true }, { merge: true }));
+  }
+  changePassword(newPassword: string) {
+    const user = this.auth.currentUser;
+    if (user) {
+      return from(updatePassword(user, newPassword));
+    } else {
+      return throwError(() => new Error('Usuario no autenticado'));
+    }
   }
 }

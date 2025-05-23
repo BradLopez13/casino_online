@@ -1,22 +1,26 @@
-<app-age-verification *ngIf="!mayorDeEdad" (accepted)="mayorDeEdad = true" />
+<app-age-verification
+  *ngIf="!mayorDeEdad"
+  (accepted)="confirmarMayorDeEdad()" />
+
 <div class="home-layout">
   <header class="navbar">
     <div class="logo">🎰 Casino Deluxe</div>
     <div class="user-dropdown" (click)="toggleMenu()" [class.open]="menuAbierto">
       <div class="user-summary">
-        👤 {{ user?.displayName || user?.email }}
+        Saldo: {{ saldo | currency:'EUR' }}      
       </div>
     
+      <div class="user-summary">
+       👤 {{ nombreVisual }} 
+      </div>
       <div class="dropdown-menu" *ngIf="menuAbierto">
         <div class="dropdown-item" (click)="cambiarNombre()">✏ Cambiar nombre</div>
-        <div class="dropdown-item" (click)="cambiarFoto()">🖼 Cambiar foto</div>
         <div class="dropdown-item" (click)="cambiarPassword()">🔑 Cambiar contraseña</div>
         <div class="dropdown-item" (click)="anadirSaldo()">💰 Añadir saldo</div>
         <div class="dropdown-item logout" (click)="logout()">🚪 Cerrar sesión</div>
       </div>
     </div>
   </header>
-  
 
   <main class="main-content">
     <h2>Selecciona tu juego</h2>
@@ -29,3 +33,36 @@
     </div>
   </main>
 </div>
+
+<app-modal
+  *ngIf="mostrarModalNombre"
+  title="Cambiar nombre"
+  message="Introduce tu nuevo nombre:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  inputPlaceholder="Ej: JugadorX"
+  [errorMessage]="errorNombre"
+  (accepted)="onNombreModal($event)" />
+
+<app-modal
+  *ngIf="mostrarModalSaldo"
+  title="Añadir saldo"
+  message="¿Cuánto saldo deseas añadir en €?"
+  acceptText="Añadir"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  inputPlaceholder="Ej: 10"
+  [errorMessage]="errorSaldo"
+  (accepted)="onSaldoModal($event)" />
+
+<app-modal
+  *ngIf="mostrarModalPassword"
+  title="Cambiar contraseña"
+  message="Introduce tu nueva contraseña:"
+  acceptText="Cambiar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  inputPlaceholder="Mínimo 6 caracteres"
+  [errorMessage]="errorPassword"
+  (accepted)="onPasswordModal($event)" />
