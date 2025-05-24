@@ -1,43 +1,52 @@
-<div class="blackjack-layout">
-  <header class="navbar">
-    <div class="logo">🎰 Casino Deluxe</div>
-    <div class="user-dropdown" (click)="toggleMenu()" [class.open]="menuAbierto">
-      <div class="user-summary">👤 {{ nombre }} | €{{ saldo }}</div>
-      <div class="dropdown-menu" *ngIf="menuAbierto">
-        <!-- Aquí irían opciones de perfil -->
-        <div class="dropdown-item" (click)="volverHome()">🏠 Volver al inicio</div>
-      </div>
-    </div>
-  </header>
+<app-header
+  [nombre]="nombre"
+  [saldo]="saldo"
+  (changeName)="onChangeName()"
+  (changePassword)="onChangePassword()"
+  (addSaldo)="onAddSaldo()"
+  (logout)="onLogout()"
+  (goHome)="onGoHome()"
+/>
 
-  <main class="blackjack-content">
-    <button class="back" (click)="volverHome()">🏠 Home</button>
-    <h2>🃏 Blackjack</h2>
+<div class="blackjack-container">
+  <h2>Blackjack</h2>
 
-    <div class="table">
-      <div class="hand dealer">
-        <h3>Croupier ({{ dealerTotal }})</h3>
-        <div class="cards">
-          <div class="card" *ngFor="let c of dealerCards" [@flipCard]>{{ c }}</div>
+  <div *ngIf="mostrarApuesta" class="apuesta-form">
+    <p>¿Cuánto deseas apostar?</p>
+    <input type="number" min="1" [max]="saldo" placeholder="Ej: 50" #apuestaInput />
+    <button (click)="apostar(apuestaInput.value)">🎲 Apostar</button>
+    <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+  </div>
+
+  <div class="mesa">
+    <div class="mano">
+      <h3>Crupier</h3>
+      <div class="cartas">
+        <div class="carta" *ngFor="let carta of dealerHand">
+          {{ carta }}
         </div>
       </div>
+      <p>Puntos: {{ calcularPuntos(dealerHand) }}</p>
+    </div>
 
-      <div class="hand player">
-        <h3>Tú ({{ playerTotal }})</h3>
-        <div class="cards">
-          <div class="card" *ngFor="let c of playerCards" [@flipCard]>{{ c }}</div>
+    <div class="mano">
+      <h3>Tú</h3>
+      <div class="cartas">
+        <div class="carta" *ngFor="let carta of playerHand">
+          {{ carta }}
         </div>
       </div>
-
-      <div class="controls" *ngIf="!gameOver">
-        <button (click)="hit()">Pedir carta</button>
-        <button (click)="stand()">Plantarse</button>
-      </div>
-
-      <div class="result" *ngIf="gameOver">
-        <p>{{ message }}</p>
-        <button (click)="startGame()">Jugar otra vez</button>
-      </div>
+      <p>Puntos: {{ calcularPuntos(playerHand) }}</p>
     </div>
-  </main>
+  </div>
+
+  <div class="controles" *ngIf="!juegoTerminado && turnoJugador">
+    <button (click)="pedirCarta()">🃏 Pedir carta</button>
+    <button (click)="plantarse()">✋ Plantarse</button>
+  </div>
+
+  <div class="resultado" *ngIf="juegoTerminado">
+    <p>{{ resultado }}</p>
+    <button (click)="iniciarJuego()">🔁 Nuevo juego</button>
+  </div>
 </div>
