@@ -15,19 +15,17 @@ export class ModalComponent {
   @Input() acceptText = 'Aceptar';
   @Input() cancelText = 'Cancelar';
   @Input() isPrompt = false;
-  @Input() isImageUpload = false;
-  @Input() inputPlaceholder: string = ''; // <- AÑADIDO AQUÍ
+  @Input() isPasswordField = false;
+  @Input() inputPlaceholder: string = '';
   @Input() errorMessage: string | null = null;
 
   @Output() accepted = new EventEmitter<string | boolean | File>();
 
   inputValue = '';
-  selectedFile: File | null = null;
+  inputType: 'text' | 'password' = 'password';
 
   aceptar() {
-    if (this.isImageUpload && this.selectedFile) {
-      this.accepted.emit(this.selectedFile);
-    } else if (this.isPrompt) {
+    if (this.isPrompt) {
       this.accepted.emit(this.inputValue);
     } else {
       this.accepted.emit(true);
@@ -37,13 +35,8 @@ export class ModalComponent {
   cancelar() {
     this.accepted.emit(false);
   }
-  onFileChange(event: Event) {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    this.selectedFile = input.files[0];
-  } else {
-    this.selectedFile = null;
-  }
+  togglePasswordVisibility() {
+  this.inputType = this.inputType === 'password' ? 'text' : 'password';
 }
 
 }

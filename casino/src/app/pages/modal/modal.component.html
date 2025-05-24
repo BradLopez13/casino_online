@@ -1,24 +1,27 @@
-<div class="modal-backdrop">
-  <div class="modal-content">
+<div class="modal-overlay">
+  <div class="modal">
     <h2>{{ title }}</h2>
     <p>{{ message }}</p>
 
-    <div *ngIf="isPrompt">
+    <div *ngIf="isPrompt" class="input-wrapper">
       <input
-        type="text"
+        [type]="isPasswordField ? inputType : 'text'"
         [(ngModel)]="inputValue"
         [placeholder]="inputPlaceholder"
       />
+      <button
+        *ngIf="isPasswordField"
+        type="button"
+        class="toggle-visibility"
+        (click)="togglePasswordVisibility()"
+      >
+        {{ inputType === 'password' ? '🔒' : '👁️' }}
+      </button>
     </div>
 
-    <div *ngIf="isImageUpload">
-      <input type="file" (change)="onFileChange($event)" />
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
 
-    </div>
-
-    <p class="error-message" *ngIf="errorMessage">{{ errorMessage }}</p>
-
-    <div class="modal-buttons">
+    <div class="modal-actions">
       <button (click)="aceptar()">{{ acceptText }}</button>
       <button class="cancel" (click)="cancelar()">{{ cancelText }}</button>
     </div>

@@ -1,0 +1,72 @@
+.blackjack-layout {
+  background: #006400 ;
+  min-height: 100vh;
+  color: white;
+
+  .navbar {
+    background: #1c1c1c;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+  }
+
+  .back {
+    margin: 1rem;
+    background: #ff8c00;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .blackjack-content {
+    text-align: center;
+    padding: 1rem;
+
+    .table {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+
+      .hand {
+        .cards {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+        }
+        .card {
+          width: 60px;
+          height: 90px;
+          background: white;
+          color: black;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+          font-size: 1.2rem;
+          perspective: 600px;
+          animation: flip 0.5s ease;
+        }
+      }
+
+      .controls button,
+      .result button {
+        margin: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        background: #ffd700;
+        color: #1c1c1c;
+      }
+
+      @keyframes flip {
+        from { transform: rotateY(90deg); }
+        to { transform: rotateY(0); }
+      }
+    }
+  }
+}

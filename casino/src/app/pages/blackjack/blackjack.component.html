@@ -1,0 +1,43 @@
+<div class="blackjack-layout">
+  <header class="navbar">
+    <div class="logo">🎰 Casino Deluxe</div>
+    <div class="user-dropdown" (click)="toggleMenu()" [class.open]="menuAbierto">
+      <div class="user-summary">👤 {{ nombre }} | €{{ saldo }}</div>
+      <div class="dropdown-menu" *ngIf="menuAbierto">
+        <!-- Aquí irían opciones de perfil -->
+        <div class="dropdown-item" (click)="volverHome()">🏠 Volver al inicio</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="blackjack-content">
+    <button class="back" (click)="volverHome()">🏠 Home</button>
+    <h2>🃏 Blackjack</h2>
+
+    <div class="table">
+      <div class="hand dealer">
+        <h3>Croupier ({{ dealerTotal }})</h3>
+        <div class="cards">
+          <div class="card" *ngFor="let c of dealerCards" [@flipCard]>{{ c }}</div>
+        </div>
+      </div>
+
+      <div class="hand player">
+        <h3>Tú ({{ playerTotal }})</h3>
+        <div class="cards">
+          <div class="card" *ngFor="let c of playerCards" [@flipCard]>{{ c }}</div>
+        </div>
+      </div>
+
+      <div class="controls" *ngIf="!gameOver">
+        <button (click)="hit()">Pedir carta</button>
+        <button (click)="stand()">Plantarse</button>
+      </div>
+
+      <div class="result" *ngIf="gameOver">
+        <p>{{ message }}</p>
+        <button (click)="startGame()">Jugar otra vez</button>
+      </div>
+    </div>
+  </main>
+</div>

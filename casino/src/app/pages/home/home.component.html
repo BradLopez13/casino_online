@@ -1,39 +1,30 @@
 <app-age-verification
   *ngIf="!mayorDeEdad"
-  (accepted)="confirmarMayorDeEdad()" />
+  (accepted)="confirmarMayorDeEdad()">
+</app-age-verification>
 
-<div class="home-layout">
-  <header class="navbar">
-    <div class="logo">🎰 Casino Deluxe</div>
-    <div class="user-dropdown" (click)="toggleMenu()" [class.open]="menuAbierto">
-      <div class="user-summary">
-        Saldo: {{ saldo | currency:'EUR' }}      
-      </div>
-    
-      <div class="user-summary">
-       👤 {{ nombreVisual }} 
-      </div>
-      <div class="dropdown-menu" *ngIf="menuAbierto">
-        <div class="dropdown-item" (click)="cambiarNombre()">✏ Cambiar nombre</div>
-        <div class="dropdown-item" (click)="cambiarPassword()">🔑 Cambiar contraseña</div>
-        <div class="dropdown-item" (click)="anadirSaldo()">💰 Añadir saldo</div>
-        <div class="dropdown-item logout" (click)="logout()">🚪 Cerrar sesión</div>
-      </div>
+<app-header
+  [nombre]="nombreVisual"
+  [saldo]="saldo"
+  (changeName)="onChangeName()"
+  (changePassword)="onChangePassword()"
+  (addSaldo)="onAddSaldo()"
+  (logout)="onLogout()"
+  (goHome)="jugar('/')">
+</app-header>
+
+<main class="main-content">
+  <h2>Selecciona tu juego</h2>
+  <div class="game-grid">
+    <div class="game-card" *ngFor="let j of juegos">
+      <h3>{{ j.nombre }}</h3>
+      <p>{{ j.descripcion }}</p>
+      <button (click)="jugar(j.ruta)">Jugar</button>
     </div>
-  </header>
+  </div>
+</main>
 
-  <main class="main-content">
-    <h2>Selecciona tu juego</h2>
-    <div class="game-grid">
-      <div class="game-card" *ngFor="let juego of juegos">
-        <h3>{{ juego.nombre }}</h3>
-        <p>{{ juego.descripcion }}</p>
-        <button (click)="jugar(juego.ruta)">Jugar</button>
-      </div>
-    </div>
-  </main>
-</div>
-
+<!-- Tus modales -->
 <app-modal
   *ngIf="mostrarModalNombre"
   title="Cambiar nombre"
@@ -41,9 +32,10 @@
   acceptText="Guardar"
   cancelText="Cancelar"
   [isPrompt]="true"
-  inputPlaceholder="Ej: JugadorX"
   [errorMessage]="errorNombre"
-  (accepted)="onNombreModal($event)" />
+  inputPlaceholder="Ej: JugadorX"
+  (accepted)="onNombreModal($event)">
+</app-modal>
 
 <app-modal
   *ngIf="mostrarModalSaldo"
@@ -52,17 +44,28 @@
   acceptText="Añadir"
   cancelText="Cancelar"
   [isPrompt]="true"
-  inputPlaceholder="Ej: 10"
   [errorMessage]="errorSaldo"
-  (accepted)="onSaldoModal($event)" />
+  inputPlaceholder="Ej: 10"
+  (accepted)="onSaldoModal($event)">
+</app-modal>
 
 <app-modal
-  *ngIf="mostrarModalPassword"
+  *ngIf="mostrarModalPassword && !esCuentaGoogle"
   title="Cambiar contraseña"
   message="Introduce tu nueva contraseña:"
-  acceptText="Cambiar"
+  acceptText="Guardar"
   cancelText="Cancelar"
   [isPrompt]="true"
-  inputPlaceholder="Mínimo 6 caracteres"
+  [isPasswordField]="true"
+  inputPlaceholder="********"
   [errorMessage]="errorPassword"
-  (accepted)="onPasswordModal($event)" />
+  (accepted)="onPasswordModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="esCuentaGoogle && mostrarModalPassword"
+  title="Cambio de contraseña"
+  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
+  acceptText="Aceptar"
+  (accepted)="mostrarModalPassword = false">
+</app-modal>

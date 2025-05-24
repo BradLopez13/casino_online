@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { authState, User, updatePassword } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from '../header/header.component';
 import { ModalComponent } from '../modal/modal.component';
 import { AgeVerificationComponent } from '../age-verification/age-verification.component';
 
@@ -12,15 +13,20 @@ import { AgeVerificationComponent } from '../age-verification/age-verification.c
   standalone: true,
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, AgeVerificationComponent, ModalComponent]
+  imports: [
+    CommonModule,
+    HeaderComponent,
+    AgeVerificationComponent,
+    ModalComponent
+  ]
 })
 export class HomeComponent {
   user: User | null = null;
   saldo = 0;
   nombre = '';
   mayorDeEdad = false;
-  menuAbierto = false;
 
+  // Modals
   mostrarModalNombre = false;
   mostrarModalSaldo = false;
   mostrarModalPassword = false;
@@ -28,6 +34,7 @@ export class HomeComponent {
   errorNombre: string | null = null;
   errorSaldo: string | null = null;
   errorPassword: string | null = null;
+  esCuentaGoogle = false;
 
   juegos = [
     { nombre: 'Tragaperras', descripcion: 'Prueba suerte en las slots', ruta: '/slots' },
@@ -40,13 +47,14 @@ export class HomeComponent {
   private router = inject(Router);
 
   constructor() {
-    authState(this.auth.getAuthInstance()).subscribe(async (user) => {
+    authState(this.auth.getAuthInstance()).subscribe(async user => {
       if (user) {
         this.user = user;
+        this.esCuentaGoogle = user.providerData.some(p => p.providerId === 'google.com');
         const refDoc = doc(this.firestore, `usuarios/${user.uid}`);
-        const snapshot = await getDoc(refDoc);
-        if (snapshot.exists()) {
-          const data = snapshot.data();
+        const snap = await getDoc(refDoc);
+        if (snap.exists()) {
+          const data = snap.data();
           this.nombre = data['nombre'] || '';
           this.saldo = data['saldo'] ?? 0;
           this.mayorDeEdad = data['mayorDeEdad'] === true;
@@ -56,103 +64,55 @@ export class HomeComponent {
   }
 
   get nombreVisual(): string {
-    if (this.nombre.trim()) {
-      return this.nombre;
-    } else if (this.user) {
-      return `usuario.${this.user.uid.substring(0, 6)}`;
-    }
-    return 'usuario';
+    return this.nombre.trim() ? this.nombre : this.user ? `usuario.${this.user.uid.substring(0,6)}` : 'usuario';
   }
 
-  toggleMenu() {
-    this.menuAbierto = !this.menuAbierto;
-  }
+  // Event handlers from header
+  onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
+  onChangePassword() { this.errorPassword = null; this.mostrarModalPassword = true; }
+  onAddSaldo() { this.errorSaldo = null; this.mostrarModalSaldo = true; }
+  onLogout() { this.auth.logout().subscribe(() => this.router.navigate(['/login'])); }
 
-  cambiarNombre() {
-    this.errorNombre = null;
-    this.mostrarModalNombre = true;
-  }
-
-  anadirSaldo() {
-    this.errorSaldo = null;
-    this.mostrarModalSaldo = true;
-  }
-
-  cambiarPassword() {
-    this.errorPassword = null;
-    this.mostrarModalPassword = true;
-  }
-
+  // Modals callbacks
   onNombreModal(res: boolean | string | File) {
     this.mostrarModalNombre = false;
     this.errorNombre = null;
-
     if (typeof res === 'string' && res.trim() && this.user) {
-      const nuevoNombre = res.trim();
-      const refDoc = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(refDoc, { nombre: nuevoNombre }).then(() => {
-        this.nombre = nuevoNombre;
-      }).catch(() => {
-        this.errorNombre = 'Error al guardar el nombre.';
-        this.mostrarModalNombre = true;
-      });
-    } else if (typeof res === 'string') {
-      this.errorNombre = 'Nombre no válido.';
-      this.mostrarModalNombre = true;
+      const nuevo = res.trim();
+      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { nombre: nuevo })
+        .then(()=> this.nombre = nuevo)
+        .catch(()=>{ this.errorNombre='Error al guardar nombre'; this.mostrarModalNombre=true; });
+    } else if (typeof res==='string') {
+      this.errorNombre='Nombre no válido'; this.mostrarModalNombre=true;
     }
   }
 
   onSaldoModal(res: boolean | string | File) {
     this.mostrarModalSaldo = false;
     this.errorSaldo = null;
-
-    if (typeof res === 'string' && this.user) {
-      const cantidad = parseFloat(res);
-      if (isNaN(cantidad) || cantidad <= 0) {
-        this.errorSaldo = 'Cantidad inválida.';
-        this.mostrarModalSaldo = true;
-        return;
-      }
-      const nuevoSaldo = this.saldo + cantidad;
-      const refDoc = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(refDoc, { saldo: nuevoSaldo }).then(() => {
-        this.saldo = nuevoSaldo;
-      }).catch(() => {
-        this.errorSaldo = 'Error al actualizar saldo.';
-        this.mostrarModalSaldo = true;
-      });
+    if (typeof res==='string' && this.user) {
+      const val = parseFloat(res);
+      if (isNaN(val)||val<=0) { this.errorSaldo='Cantidad inválida'; this.mostrarModalSaldo=true; return; }
+      const nuevo = this.saldo+val;
+      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevo })
+        .then(()=> this.saldo=nuevo)
+        .catch(()=>{ this.errorSaldo='Error al actualizar saldo'; this.mostrarModalSaldo=true; });
     }
   }
 
   onPasswordModal(res: boolean | string | File) {
     this.mostrarModalPassword = false;
     this.errorPassword = null;
-
-    if (typeof res === 'string' && res.length >= 6 && this.user) {
-      updatePassword(this.user, res).then(() => {
-        // contraseña actualizada
-      }).catch(() => {
-        this.errorPassword = 'Error al cambiar la contraseña.';
-        this.mostrarModalPassword = true;
-      });
-    } else if (typeof res === 'string') {
-      this.errorPassword = 'La contraseña debe tener al menos 6 caracteres.';
-      this.mostrarModalPassword = true;
+    if (this.esCuentaGoogle) return;
+    if (typeof res==='string' && res.length>=6 && this.user) {
+      updatePassword(this.user, res)
+        .catch(()=>{ this.errorPassword='Error al cambiar contraseña'; this.mostrarModalPassword=true; });
+    } else if (typeof res==='string') {
+      this.errorPassword='Mínimo 6 caracteres'; this.mostrarModalPassword=true;
     }
   }
 
-  confirmarMayorDeEdad() {
-    this.mayorDeEdad = true;
-    if (this.user) {
-      this.auth.setMayorDeEdad(this.user.uid).subscribe();
-    }
-  }
+  confirmarMayorDeEdad() { this.mayorDeEdad=true; if (this.user) this.auth.setMayorDeEdad(this.user.uid).subscribe(); }
 
-  logout() {
-    this.auth.logout().subscribe(() => this.router.navigate(['/login']));
-  }
-
-  jugar(ruta: string) {
-    this.router.navigate([ruta]);
-  }
+  jugar(ruta: string) { this.router.navigate([ruta]); }
 }

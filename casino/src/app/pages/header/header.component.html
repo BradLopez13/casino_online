@@ -1,0 +1,16 @@
+<header class="navbar">
+  <div class="logo" (click)="onGoHome()">🎰 Casino Deluxe</div>
+
+  <div class="user-dropdown" #dropdownRef (click)="toggleMenu()" [class.open]="menuAbierto">
+    <div class="user-summary">👤 {{ nombre }}</div>
+    <div class="user-summary">Saldo: {{ saldo | currency:'EUR' }}</div>
+
+    <div class="dropdown-menu" *ngIf="menuAbierto">
+      <button class="dropdown-item" (click)="onGoHome()">🏠 Home</button>
+      <button class="dropdown-item" (click)="onChangeName()">✏ Cambiar nombre</button>
+      <button class="dropdown-item" (click)="onChangePassword()">🔑 Cambiar contraseña</button>
+      <button class="dropdown-item" (click)="onAddSaldo()">💰 Añadir saldo</button>
+      <button class="dropdown-item logout" (click)="onLogout()">🚪 Cerrar sesión</button>
+    </div>
+  </div>
+</header>
