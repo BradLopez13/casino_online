@@ -4,18 +4,31 @@ import { HeaderComponent } from '../header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { ModalComponent } from '../modal/modal.component';
+import { authState, updatePassword, User } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-blackjack',
   standalone: true,
   templateUrl: './blackjack.component.html',
   styleUrls: ['./blackjack.component.scss'],
-  imports: [CommonModule, HeaderComponent]
+  imports: [CommonModule, HeaderComponent, ModalComponent]
 })
 export class BlackjackComponent {
   private auth = inject(AuthService);
   private firestore = inject(Firestore);
   private router = inject(Router);
+
+  user: User | null = null;
+
+  mostrarModalNombre = false;
+  mostrarModalSaldo = false;
+  mostrarModalPassword = false;
+
+  errorNombre: string | null = null;
+  errorSaldo: string | null = null;
+  errorPassword: string | null = null;
+  esCuentaGoogle = false;
 
   nombre = '';
   saldo = 1000;
@@ -27,47 +40,131 @@ export class BlackjackComponent {
   dealerHand: string[] = [];
 
   apuesta = 0;
-  mostrarApuesta = true;
   mensajeApuesta = '';
 
   juegoTerminado = false;
   resultado = '';
-  turnoJugador = true;
+  turnoJugador = false;
+
+  fichas = [10, 20, 50, 100, 500];
 
   constructor() {
-    const user = this.auth.getAuthInstance().currentUser;
-    if (user) {
-      const ref = doc(this.firestore, `usuarios/${user.uid}`);
-      getDoc(ref).then(snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          this.nombre = data['nombre'] || `usuario.${user.uid.slice(0, 6)}`;
-          this.saldo = data['saldo'] ?? 0;
-        }
-      });
-    }
+    authState(this.auth.getAuthInstance()).subscribe(user => {
+      if (user) {
+        this.user = user;
+        this.esCuentaGoogle = user.providerData.some(p => p.providerId === 'google.com');
 
-    this.iniciarJuego(); // Empezar partida automáticamente
+        const ref = doc(this.firestore, `usuarios/${user.uid}`);
+        getDoc(ref).then(snapshot => {
+          if (snapshot.exists()) {
+            const data = snapshot.data();
+            this.nombre = data['nombre'] || `usuario.${user.uid.slice(0, 6)}`;
+            this.saldo = data['saldo'] ?? 0;
+          }
+        });
+      }
+    });
+
+    this.resetearJuego();
   }
 
-  // Header events
-  onChangeName() {}
-  onChangePassword() {}
-  onAddSaldo() {}
+  // Header
+  onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
+  onChangePassword() { this.errorPassword = null; this.mostrarModalPassword = true; }
+  onAddSaldo() { this.errorSaldo = null; this.mostrarModalSaldo = true; }
   onLogout() {
     this.auth.logout().subscribe(() => this.router.navigate(['/login']));
   }
   onGoHome() {
     this.router.navigate(['/']);
   }
+  onNombreModal(res: string | boolean) {
+    if (res === false) {
+      this.mostrarModalNombre = false;
+      return;
+    }
 
-  iniciarJuego() {
-    this.crearBaraja();
-    this.playerHand = [this.deck.pop()!, this.deck.pop()!];
-    this.dealerHand = [this.deck.pop()!];
+    this.mostrarModalNombre = false;
+    this.errorNombre = null;
+
+    if (typeof res === 'string' && res.trim() && this.user) {
+      const nuevoNombre = res.trim();
+      const refDoc = doc(this.firestore, `usuarios/${this.user.uid}`);
+      updateDoc(refDoc, { nombre: nuevoNombre }).then(() => {
+        this.nombre = nuevoNombre;
+      }).catch(() => {
+        this.errorNombre = 'Error al guardar el nombre.';
+        this.mostrarModalNombre = true;
+      });
+    } else {
+      this.errorNombre = 'Nombre no válido.';
+      this.mostrarModalNombre = true;
+    }
+  }
+
+
+  onPasswordModal(res: string | boolean) {
+    if (res === false) {
+      this.mostrarModalPassword = false;
+      return;
+    }
+
+    this.mostrarModalPassword = false;
+    this.errorPassword = null;
+
+    if (this.esCuentaGoogle) return;
+
+    if (typeof res === 'string' && res.length >= 6 && this.user) {
+      updatePassword(this.user, res).catch(() => {
+        this.errorPassword = 'Error al cambiar la contraseña.';
+        this.mostrarModalPassword = true;
+      });
+    } else {
+      this.errorPassword = 'La contraseña debe tener al menos 6 caracteres.';
+      this.mostrarModalPassword = true;
+    }
+  }
+
+
+  onSaldoModal(res: string | boolean) {
+    if (res === false) {
+      this.mostrarModalSaldo = false;
+      return;
+    }
+
+    this.mostrarModalSaldo = false;
+    this.errorSaldo = null;
+
+    if (typeof res === 'string' && this.user) {
+      const cantidad = parseFloat(res);
+
+      if (isNaN(cantidad) || cantidad <= 0) {
+        this.errorSaldo = 'Cantidad inválida.';
+        this.mostrarModalSaldo = true;
+        return;
+      }
+
+      this.saldo += cantidad;
+      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
+      updateDoc(ref, { saldo: this.saldo }).catch(() => {
+        this.errorSaldo = 'Error al actualizar saldo.';
+        this.mostrarModalSaldo = true;
+      });
+    } else {
+      this.errorSaldo = 'Entrada inválida.';
+      this.mostrarModalSaldo = true;
+    }
+  }
+
+
+
+  resetearJuego() {
     this.juegoTerminado = false;
     this.resultado = '';
-    this.turnoJugador = true;
+    this.apuesta = 0;
+    this.playerHand = [];
+    this.dealerHand = [];
+    this.turnoJugador = false;
   }
 
   crearBaraja() {
@@ -84,13 +181,35 @@ export class BlackjackComponent {
     this.deck = nuevaBaraja;
   }
 
+  apostar(cantidad: number) {
+    if (isNaN(cantidad) || cantidad <= 0) {
+      this.mensajeApuesta = 'Cantidad inválida';
+      return;
+    }
+
+    if (this.saldo < cantidad) {
+      this.mensajeApuesta = 'No tienes suficiente saldo';
+      return;
+    }
+
+    this.apuesta = cantidad;
+    this.saldo -= cantidad;
+    this.mensajeApuesta = '';
+    this.actualizarSaldo();
+
+    this.crearBaraja();
+    this.playerHand = [this.deck.pop()!, this.deck.pop()!];
+    this.dealerHand = [this.deck.pop()!];
+    this.turnoJugador = true;
+  }
+
   pedirCarta() {
-    if (this.turnoJugador && !this.juegoTerminado) {
-      this.playerHand.push(this.deck.pop()!);
-      if (this.calcularPuntos(this.playerHand) > 21) {
-        this.resultado = 'Te has pasado. Pierdes.';
-        this.juegoTerminado = true;
-      }
+    if (!this.turnoJugador || this.juegoTerminado) return;
+
+    this.playerHand.push(this.deck.pop()!);
+    if (this.calcularPuntos(this.playerHand) > 21) {
+      this.resultado = 'Te has pasado. Pierdes.';
+      this.juegoTerminado = true;
     }
   }
 
@@ -111,7 +230,7 @@ export class BlackjackComponent {
         total += 10;
       } else if (valor === 'A') {
         total += 11;
-        ases += 1;
+        ases++;
       } else {
         total += +valor;
       }
@@ -126,55 +245,25 @@ export class BlackjackComponent {
   evaluarGanador() {
     const puntosJugador = this.calcularPuntos(this.playerHand);
     const puntosDealer = this.calcularPuntos(this.dealerHand);
-    const user = this.auth.getAuthInstance().currentUser;
-
-    let ganancias = 0;
 
     if (puntosDealer > 21 || puntosJugador > puntosDealer) {
       this.resultado = '¡Ganaste!';
-      ganancias = this.apuesta * 2;
-      this.saldo += ganancias;
+      this.saldo += this.apuesta * 2;
     } else if (puntosJugador < puntosDealer) {
       this.resultado = 'Perdiste.';
-      // saldo ya se restó
     } else {
       this.resultado = 'Empate.';
-      this.saldo += this.apuesta; // se devuelve la apuesta
+      this.saldo += this.apuesta;
     }
 
-    if (user) {
-      const ref = doc(this.firestore, `usuarios/${user.uid}`);
-      updateDoc(ref, { saldo: this.saldo });
-    }
-
+    this.actualizarSaldo();
     this.juegoTerminado = true;
   }
 
-  apostar(cantidad: string) {
-    const apuestaNum = parseFloat(cantidad);
-
-    if (isNaN(apuestaNum) || apuestaNum <= 0) {
-      this.mensajeApuesta = 'Introduce una cantidad válida.';
-      return;
-    }
-
-    if (apuestaNum > this.saldo) {
-      this.mensajeApuesta = 'No tienes saldo suficiente.';
-      return;
-    }
-
-    this.apuesta = apuestaNum;
-    this.saldo -= apuestaNum;
-    this.mostrarApuesta = false;
-    this.mensajeApuesta = '';
-
-    const user = this.auth.getAuthInstance().currentUser;
-    if (user) {
-      const ref = doc(this.firestore, `usuarios/${user.uid}`);
+  actualizarSaldo() {
+    if (this.user) {
+      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
       updateDoc(ref, { saldo: this.saldo });
     }
-
-    this.iniciarJuego();
   }
-
 }

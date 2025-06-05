@@ -11,20 +11,17 @@
 <div class="blackjack-container">
   <h2>Blackjack</h2>
 
-  <div *ngIf="mostrarApuesta" class="apuesta-form">
-    <p>¿Cuánto deseas apostar?</p>
-    <input type="number" min="1" [max]="saldo" placeholder="Ej: 50" #apuestaInput />
-    <button (click)="apostar(apuestaInput.value)">🎲 Apostar</button>
-    <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+  <!-- Apuesta activa -->
+  <div *ngIf="apuesta" class="apuesta-actual">
+    💶 Apostado: {{ apuesta | currency:'EUR' }}
   </div>
 
+  <!-- Mesa y cartas -->
   <div class="mesa">
     <div class="mano">
       <h3>Crupier</h3>
       <div class="cartas">
-        <div class="carta" *ngFor="let carta of dealerHand">
-          {{ carta }}
-        </div>
+        <div class="carta" *ngFor="let carta of dealerHand">{{ carta }}</div>
       </div>
       <p>Puntos: {{ calcularPuntos(dealerHand) }}</p>
     </div>
@@ -32,21 +29,87 @@
     <div class="mano">
       <h3>Tú</h3>
       <div class="cartas">
-        <div class="carta" *ngFor="let carta of playerHand">
-          {{ carta }}
-        </div>
+        <div class="carta" *ngFor="let carta of playerHand">{{ carta }}</div>
       </div>
       <p>Puntos: {{ calcularPuntos(playerHand) }}</p>
     </div>
   </div>
 
+  <!-- Fichas de apuesta (DESPUÉS de la mesa) -->
+  <div *ngIf="!apuesta" class="apuesta-seleccion">
+    <p>Selecciona tu apuesta:</p>
+    <div class="fichas">
+      <button
+        *ngFor="let cantidad of fichas"
+        [class.activa]="cantidad === apuesta"
+        (click)="apostar(cantidad)"
+      >
+         {{ cantidad | currency:'EUR':'symbol':'1.0-0' }}
+      </button>
+    </div>
+
+    <div class="apuesta-input">
+      <input type="number" min="1" [max]="saldo" placeholder="Otra cantidad" #apuestaInput />
+      <button (click)="apostar(+apuestaInput.value)">🎲 Apostar</button>
+    </div>
+
+    <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+  </div>
+
+  <!-- Controles del jugador -->
   <div class="controles" *ngIf="!juegoTerminado && turnoJugador">
     <button (click)="pedirCarta()">🃏 Pedir carta</button>
     <button (click)="plantarse()">✋ Plantarse</button>
   </div>
 
+  <!-- Resultado final -->
   <div class="resultado" *ngIf="juegoTerminado">
     <p>{{ resultado }}</p>
-    <button (click)="iniciarJuego()">🔁 Nuevo juego</button>
+    <button (click)="resetearJuego()">🔁 Nuevo juego</button>
   </div>
 </div>
+<!-- Tus modales -->
+<app-modal
+  *ngIf="mostrarModalNombre"
+  title="Cambiar nombre"
+  message="Introduce tu nuevo nombre:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [errorMessage]="errorNombre"
+  inputPlaceholder="Ej: JugadorX"
+  (accepted)="onNombreModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="mostrarModalSaldo"
+  title="Añadir saldo"
+  message="¿Cuánto saldo deseas añadir en €?"
+  acceptText="Añadir"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [errorMessage]="errorSaldo"
+  inputPlaceholder="Ej: 10"
+  (accepted)="onSaldoModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="mostrarModalPassword && !esCuentaGoogle"
+  title="Cambiar contraseña"
+  message="Introduce tu nueva contraseña:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [isPasswordField]="true"
+  inputPlaceholder="********"
+  [errorMessage]="errorPassword"
+  (accepted)="onPasswordModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="esCuentaGoogle && mostrarModalPassword"
+  title="Cambio de contraseña"
+  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
+  acceptText="Aceptar"
+  (accepted)="mostrarModalPassword = false">
+</app-modal>

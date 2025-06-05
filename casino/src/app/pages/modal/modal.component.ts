@@ -19,7 +19,7 @@ export class ModalComponent {
   @Input() inputPlaceholder: string = '';
   @Input() errorMessage: string | null = null;
 
-  @Output() accepted = new EventEmitter<string | boolean | File>();
+  @Output() accepted = new EventEmitter<string | boolean>();
 
   inputValue = '';
   inputType: 'text' | 'password' = 'password';
@@ -35,8 +35,8 @@ export class ModalComponent {
   cancelar() {
     this.accepted.emit(false);
   }
-  togglePasswordVisibility() {
-  this.inputType = this.inputType === 'password' ? 'text' : 'password';
-}
 
+  togglePasswordVisibility() {
+    this.inputType = this.inputType === 'password' ? 'text' : 'password';
+  }
 }
