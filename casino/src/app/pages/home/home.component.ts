@@ -37,7 +37,7 @@ export class HomeComponent {
   esCuentaGoogle = false;
 
   juegos = [
-    { nombre: 'Tragaperras', descripcion: 'Prueba suerte en las slots', ruta: '/slots' },
+    { nombre: 'Tragaperras', descripcion: 'Prueba suerte en las slots', ruta: '/slot' },
     { nombre: 'Ruleta', descripcion: 'Apuesta al rojo o negro', ruta: '/ruleta' },
     { nombre: 'Blackjack', descripcion: 'Llega a 21 sin pasarte', ruta: '/blackjack' }
   ];

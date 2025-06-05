@@ -1,0 +1,78 @@
+<app-header
+  [nombre]="nombre"
+  [saldo]="saldo"
+  (changeName)="onChangeName()"
+  (changePassword)="onChangePassword()"
+  (addSaldo)="onAddSaldo()"
+  (logout)="onLogout()"
+  (goHome)="onGoHome()"
+/>
+
+<div class="slot-container">
+  <h2>Tragamonedas</h2>
+
+  <div class="slot-machine">
+    <div class="reel" *ngFor="let reel of reels">
+      <div class="symbol">{{ reel }}</div>
+    </div>
+  </div>
+
+  <div class="controles">
+    <button (click)="spin()" [disabled]="isSpinning || apuesta <= 0">🎰 Girar</button>
+    <div class="apuesta-controles">
+      <label for="apuesta">Apuesta:</label>
+      <input id="apuesta" type="number" [(ngModel)]="apuesta" [max]="saldo" min="1" />
+    </div>
+    <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+  </div>
+
+  <div class="resultado" *ngIf="mensajeResultado">
+    <p>{{ mensajeResultado }}</p>
+  </div>
+</div>
+
+<!-- Tus modales -->
+<app-modal
+  *ngIf="mostrarModalNombre"
+  title="Cambiar nombre"
+  message="Introduce tu nuevo nombre:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [errorMessage]="errorNombre"
+  inputPlaceholder="Ej: JugadorX"
+  (accepted)="onNombreModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="mostrarModalSaldo"
+  title="Añadir saldo"
+  message="¿Cuánto saldo deseas añadir en €?"
+  acceptText="Añadir"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [errorMessage]="errorSaldo"
+  inputPlaceholder="Ej: 10"
+  (accepted)="onSaldoModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="mostrarModalPassword && !esCuentaGoogle"
+  title="Cambiar contraseña"
+  message="Introduce tu nueva contraseña:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [isPasswordField]="true"
+  inputPlaceholder="********"
+  [errorMessage]="errorPassword"
+  (accepted)="onPasswordModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="esCuentaGoogle && mostrarModalPassword"
+  title="Cambio de contraseña"
+  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
+  acceptText="Aceptar"
+  (accepted)="mostrarModalPassword = false">
+</app-modal>

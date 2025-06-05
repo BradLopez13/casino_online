@@ -4,6 +4,8 @@ import { RegisterComponent } from './pages/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
 import { BlackjackComponent } from './pages/blackjack/blackjack.component';
 import { authGuard } from './guards/auth.guard';
+import { SlotComponent } from './pages/slot/slot.component';
+import { from } from 'rxjs';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -13,6 +15,7 @@ export const routes: Routes = [
   // Ruta protegida
   { path: 'home', component: HomeComponent, canActivate: [authGuard] },
   {path: 'blackjack',component: BlackjackComponent, canActivate: [authGuard]},
+  {path: 'slot',component: SlotComponent, canActivate: [authGuard]},
 
   // Redirección por defecto
   { path: '', redirectTo: 'home', pathMatch: 'full' },
