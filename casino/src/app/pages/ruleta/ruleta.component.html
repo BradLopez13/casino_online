@@ -1,1 +1,146 @@
-<p>ruleta works!</p>
+<app-header
+  [nombre]="nombre"
+  [saldo]="saldo"
+  (changeName)="onChangeName()"
+  (changePassword)="onChangePassword()"
+  (addSaldo)="onAddSaldo()"
+  (logout)="onLogout()"
+  (goHome)="onGoHome()"
+/>
+
+<div class="ruleta-container">
+  <h2>🎡 Ruleta</h2>
+
+  <div class="ruleta-visual">
+    <div class="rueda" [class.girando]="enJuego" [ngClass]="getColorClaseResultado()">
+      <div class="numero">{{ resultado !== null ? resultado : '?' }}</div>
+    </div>
+  </div>
+
+  <div class="fichas-container">
+    <p>Selecciona ficha:</p>
+    <div class="fichas">
+      <button
+        *ngFor="let f of fichas"
+        [class.activa]="fichaSeleccionada === f"
+        [ngClass]="'ficha-' + f"
+        (click)="seleccionarFicha(f)"
+      >
+        {{ f }}€
+      </button>
+    </div>
+  </div>
+
+  <div class="mesa">
+    <div class="numeros">
+      <button
+        *ngFor="let n of numeros"
+        [ngClass]="['casilla', getColor(n)]"
+        (click)="apostar(n.toString())"
+      >
+        {{ n }}
+        <span
+          class="ficha-mini"
+          *ngIf="getApuesta(n.toString()) !== null"
+        >
+          {{ getApuesta(n.toString()) }}
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="apuestas-especiales">
+    <button (click)="apostar('par')">
+      Par
+      <span class="ficha-mini" *ngIf="getApuesta('par') !== null">
+        {{ getApuesta('par') }}
+      </span>
+    </button>
+    <button (click)="apostar('impar')">
+      Impar
+      <span class="ficha-mini" *ngIf="getApuesta('impar') !== null">
+        {{ getApuesta('impar') }}
+      </span>
+    </button>
+    <button (click)="apostar('rojo')">
+      Rojo
+      <span class="ficha-mini" *ngIf="getApuesta('rojo') !== null">
+        {{ getApuesta('rojo') }}
+      </span>
+    </button>
+    <button (click)="apostar('negro')">
+      Negro
+      <span class="ficha-mini" *ngIf="getApuesta('negro') !== null">
+        {{ getApuesta('negro') }}
+      </span>
+    </button>
+    <button (click)="apostar('1-18')">
+      1 - 18
+      <span class="ficha-mini" *ngIf="getApuesta('1-18') !== null">
+        {{ getApuesta('1-18') }}
+      </span>
+    </button>
+    <button (click)="apostar('19-36')">
+      19 - 36
+      <span class="ficha-mini" *ngIf="getApuesta('19-36') !== null">
+        {{ getApuesta('19-36') }}
+      </span>
+    </button>
+  </div>
+
+  <div class="controles">
+    <button class="cancelar" (click)="cancelarApuestas()" [disabled]="apuestas.length === 0">❌ Cancelar</button>
+    <button class="jugar" (click)="girarRuleta()" [disabled]="apuestas.length === 0">🎰 Girar</button>
+  </div>
+
+  <p *ngIf="resultadoMensaje as msg">
+    {{ msg.ganancia > 0 ? ('¡Ganaste ' + msg.ganancia + '€!') : 'No ganaste esta vez.' }}
+  </p>
+
+</div>
+
+<!-- Modales -->
+<app-modal
+  *ngIf="mostrarModalNombre"
+  title="Cambiar nombre"
+  message="Introduce tu nuevo nombre:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [errorMessage]="errorNombre"
+  inputPlaceholder="Ej: JugadorX"
+  (accepted)="onNombreModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="mostrarModalSaldo"
+  title="Añadir saldo"
+  message="¿Cuánto saldo deseas añadir en €?"
+  acceptText="Añadir"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [errorMessage]="errorSaldo"
+  inputPlaceholder="Ej: 100"
+  (accepted)="onSaldoModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="mostrarModalPassword && !esCuentaGoogle"
+  title="Cambiar contraseña"
+  message="Introduce tu nueva contraseña:"
+  acceptText="Guardar"
+  cancelText="Cancelar"
+  [isPrompt]="true"
+  [isPasswordField]="true"
+  [errorMessage]="errorPassword"
+  inputPlaceholder="********"
+  (accepted)="onPasswordModal($event)">
+</app-modal>
+
+<app-modal
+  *ngIf="esCuentaGoogle && mostrarModalPassword"
+  title="Cambio de contraseña"
+  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
+  acceptText="Aceptar"
+  (accepted)="mostrarModalPassword = false">
+</app-modal>

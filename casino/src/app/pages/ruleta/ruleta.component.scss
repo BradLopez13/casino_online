@@ -1,0 +1,209 @@
+:host{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.ruleta-container {
+  padding: 1.5rem;
+  text-align: center;
+  background-color: #111;
+  color: #ffd700;
+  min-height: 100vh;
+}
+
+.ruleta-visual {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.rueda {
+  width: 150px;
+  height: 150px;
+  border: 6px solid #ffd700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.4s ease;
+}
+
+.rueda.rojo {
+  background-color: #c62828;
+}
+
+.rueda.negro {
+  background-color: #222;
+}
+
+.rueda.verde {
+  background-color: #2e7d32;
+}
+
+.rueda.girando {
+  animation: girar 1s ease;
+}
+
+@keyframes girar {
+  from { transform: rotate(0); }
+  to { transform: rotate(720deg); }
+}
+
+
+.fichas-container {
+  margin-bottom: 1.5rem;
+}
+
+.fichas button {
+  margin: 0.3rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50%;
+  border: none;
+  background-color: #333;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 5px #ffd700;
+  cursor: pointer;
+  width: 60px;
+  height: 60px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+.fichas button.activa {
+  background-color: #ffd700;
+  color: #000;
+}
+.fichas button.ficha-1   { background-color: #ccc; color: black; }
+.fichas button.ficha-5   { background-color: #00aaff; color: white; }
+.fichas button.ficha-10  { background-color: #28a745; color: white; }
+.fichas button.ficha-25  { background-color: #ff851b; color: white; }
+.fichas button.ficha-50  { background-color: #dc3545; color: white; }
+.fichas button.ficha-100 { background-color: #6f42c1; color: white; }
+
+.mesa {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(12, 50px);
+  gap: 5px;
+}
+.casilla {
+  width: 50px;
+  height: 50px;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s;
+}
+.rojo {
+  background-color: #c62828;
+  color: white;
+}
+.negro {
+  background-color: #212121;
+  color: white;
+}
+.verde {
+  background-color: #2e7d32;
+  color: white;
+}
+
+.ficha-mini {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  padding: 3px 6px;
+  color: #000;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.apuestas-especiales {
+  margin: 1rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+
+}
+.apuestas-especiales button {
+  position: relative;
+  padding: 0.5rem 1rem;
+  background-color: #444;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.apuestas-especiales button:hover {
+  background-color: #555;
+}
+
+.controles {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.controles button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+.jugar {
+  background-color: #ffd700;
+  color: #000;
+}
+.cancelar {
+  background-color: #555;
+  color: #fff;
+}
+
+.resultado p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+.resultado.gano p {
+  color: #00e676;
+}
+.resultado.perdio p {
+  color: #ff5252;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .numeros {
+    grid-template-columns: repeat(6, 40px);
+  }
+  .casilla {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  .fichas button {
+    width: 50px;
+    height: 50px;
+    font-size: 0.9rem;
+  }
+}
