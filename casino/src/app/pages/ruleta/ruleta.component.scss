@@ -1,14 +1,14 @@
-:host{
+:host {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  background: radial-gradient(circle, #005c2d 0%, #003d1f 100%);
+  overflow-y: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
 .ruleta-container {
   padding: 1.5rem;
   text-align: center;
-  background-color: #111;
   color: #ffd700;
   min-height: 100vh;
 }
@@ -30,17 +30,16 @@
   font-size: 2.5rem;
   font-weight: bold;
   color: white;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
   transition: all 0.4s ease;
 }
 
 .rueda.rojo {
   background-color: #c62828;
 }
-
 .rueda.negro {
-  background-color: #222;
+  background-color: #212121;
 }
-
 .rueda.verde {
   background-color: #2e7d32;
 }
@@ -54,11 +53,36 @@
   to { transform: rotate(720deg); }
 }
 
+/* Animación ficha que aparece */
+@keyframes fichaEntrada {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
+.ficha-mini {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  padding: 3px 6px;
+  color: #000;
+  font-weight: bold;
+  z-index: 1;
+  animation: fichaEntrada 0.4s ease;
+}
+
+/* Fichas selector */
 .fichas-container {
   margin-bottom: 1.5rem;
 }
-
 .fichas button {
   margin: 0.3rem;
   padding: 0.5rem 1rem;
@@ -72,11 +96,11 @@
   width: 60px;
   height: 60px;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .fichas button.activa {
-  background-color: #ffd700;
-  color: #000;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #ffd700;
 }
 .fichas button.ficha-1   { background-color: #ccc; color: black; }
 .fichas button.ficha-5   { background-color: #00aaff; color: white; }
@@ -106,55 +130,35 @@
   position: relative;
   transition: background-color 0.2s;
 }
-.rojo {
-  background-color: #c62828;
-  color: white;
-}
-.negro {
-  background-color: #212121;
-  color: white;
-}
-.verde {
-  background-color: #2e7d32;
-  color: white;
-}
+.rojo { background-color: #b71c1c; color: white; }
+.negro { background-color: #1b1b1b; color: white; }
+.verde { background-color: #1b5e20; color: white; }
 
-.ficha-mini {
-  position: absolute;
-  top: -10px;
-  right: -8px;
-  background-color: #ffd700;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  padding: 3px 6px;
-  color: #000;
-  font-weight: bold;
-  z-index: 1;
-}
-
+/* Apuestas especiales */
 .apuestas-especiales {
   margin: 1rem auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
-
 }
 .apuestas-especiales button {
   position: relative;
   padding: 0.5rem 1rem;
-  background-color: #444;
+  background-color: #2e2e2e;
   border: none;
   border-radius: 6px;
   color: #fff;
   cursor: pointer;
   font-weight: bold;
   font-size: 1.1rem;
+  transition: background-color 0.3s;
 }
 .apuestas-especiales button:hover {
-  background-color: #555;
+  background-color: #444;
 }
 
+/* Controles */
 .controles {
   margin-bottom: 1.5rem;
   display: flex;
@@ -168,7 +172,7 @@
   cursor: pointer;
   border-radius: 8px;
   font-weight: bold;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .jugar {
   background-color: #ffd700;
@@ -179,13 +183,24 @@
   color: #fff;
 }
 
+/* Resultado final */
 .resultado p {
   font-size: 1.5rem;
   font-weight: bold;
   color: #fff;
+  animation: glowText 0.6s ease;
+}
+@keyframes glowText {
+  0% { text-shadow: 0 0 0px transparent; }
+  100% { text-shadow: 0 0 12px #ffd700; }
 }
 .resultado.gano p {
   color: #00e676;
+  animation: glowGanancia 1.5s ease;
+}
+@keyframes glowGanancia {
+  0%, 100% { text-shadow: 0 0 10px #00e676; }
+  50%      { text-shadow: 0 0 20px #00ff88; }
 }
 .resultado.perdio p {
   color: #ff5252;
@@ -193,6 +208,9 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  :host {
+    overflow-y: auto;
+  }
   .numeros {
     grid-template-columns: repeat(6, 40px);
   }

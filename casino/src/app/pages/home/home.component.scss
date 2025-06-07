@@ -1,30 +1,60 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  background: linear-gradient(to bottom, #141414, #000000);
+  background: radial-gradient(circle at center, #080808 0%, #000000 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #fff;
-  overflow: hidden;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  overflow: hidden;
+}
+
+:host::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 2px, transparent 2.6px);
+  background-size: 28px 28px;
+  animation: particlesMove 80s linear infinite, glow 4s ease-in-out infinite alternate;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+
+
+@keyframes particlesMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 800px 800px; }
 }
 
 .main-content {
-  padding: 2rem;
   flex: 1;
   overflow-y: auto;
-  box-sizing: border-box;
+  padding: 2rem 1.5rem 4rem;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 h2 {
   text-align: center;
   margin-bottom: 2rem;
   color: #ffd700;
-  font-size: 2rem;
-  text-shadow: 0 0 0.3rem #ff8c00;
+  font-size: 2.4rem;
+  text-shadow: 0 0 1rem #ff8c00;
+  animation: pulsar 2s infinite alternate;
+}
+
+@keyframes pulsar {
+  0% { text-shadow: 0 0 0.4rem #ff8c00; }
+  100% { text-shadow: 0 0 1.2rem #ffd700; }
 }
 
 .game-grid {
@@ -32,81 +62,95 @@ h2 {
   flex-wrap: wrap;
   gap: 2rem;
   justify-content: center;
+  padding-bottom: 2rem;
 }
 
 .game-card {
-  background: #1f1f1f;
-  border: 1px solid #ffd70030;
-  border-radius: 0.625rem;
-  padding: 1.5rem;
-  width: 17.5rem; // 280px
+  background: linear-gradient(to bottom, #1b1b1b, #111);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 0.75rem;
+  padding: 2rem 1.5rem 1.5rem;
+  width: 18rem;
   text-align: center;
-  box-shadow: 0 0 0.9375rem rgba(255, 215, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: inset 0 0 0.5rem #000, 0 0 1rem rgba(255, 215, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 
   h3 {
-    margin-bottom: 0.5rem;
     color: #ffea00;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
   }
 
   p {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    font-size: 0.95rem;
     color: #ccc;
+    margin-bottom: 1rem;
+  }
+
+  .icono-juego {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: iconoEntrada 0.6s ease-out;
   }
 
   button {
     background: linear-gradient(to right, #ffd700, #ff8c00);
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.375rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 0.5rem;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.2s ease;
     color: #111;
     font-size: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 0.625rem #ffd700;
+    transform: scale(1.1);
+    box-shadow: 0 0 0.5rem #ffd700;
   }
 
   &:hover {
-    transform: translateY(-0.3125rem); // -5px
-    box-shadow: 0 0 1.25rem rgba(255, 215, 0, 0.2);
+    transform: translateY(-0.4rem);
+    box-shadow: 0 0 1.5rem rgba(255, 215, 0, 0.3);
   }
 }
 
-/* Responsive */
-@media (max-width: 40rem) {
-  .navbar {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
+@keyframes iconoEntrada {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
 
-  .user-panel {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+footer {
+  text-align: center;
+  padding: 1rem;
+  color: #888;
+  font-size: 0.85rem;
+  background: transparent;
+  border-top: 1px solid rgba(255, 215, 0, 0.1);
+  z-index: 2;
+  position: relative;
+}
 
+@media (max-width: 768px) {
   .game-grid {
+    flex-direction: column;
+    align-items: center;
     gap: 1.2rem;
   }
 
   .game-card {
-    width: 100%;
+    width: 90%;
     max-width: 20rem;
   }
-}
-.user-avatar {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-}
 
+  h2 {
+    font-size: 2rem;
+  }
+
+  .main-content {
+    padding: 1.2rem;
+  }
+}

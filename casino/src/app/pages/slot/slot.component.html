@@ -9,19 +9,21 @@
 />
 
 <div class="slot-container">
-  <h2>Tragamonedas</h2>
+  <h2>🎰 Tragaperras Deluxe</h2>
 
   <div class="slot-machine">
-    <div class="reel" *ngFor="let reel of reels">
-      <div class="symbol">{{ reel }}</div>
+    <div class="columna" *ngFor="let columna of reels">
+      <div class="reel" *ngFor="let simbolo of columna">
+        {{ simbolo }}
+      </div>
     </div>
   </div>
 
   <div class="controles">
-    <button (click)="spin()" [disabled]="isSpinning || apuesta <= 0">🎰 Girar</button>
+    <button (click)="spin()" [disabled]="isSpinning || apuesta <= 0">🎯 Girar</button>
     <div class="apuesta-controles">
-      <label for="apuesta">Apuesta:</label>
-      <input id="apuesta" type="number" [(ngModel)]="apuesta" [max]="saldo" min="1" />
+      <label>Apuesta:</label>
+      <input type="number" [(ngModel)]="apuesta" [max]="saldo" min="1" />
     </div>
     <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
   </div>

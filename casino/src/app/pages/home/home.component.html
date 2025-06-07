@@ -13,16 +13,28 @@
   (goHome)="jugar('/')">
 </app-header>
 
+
 <main class="main-content">
   <h2>Selecciona tu juego</h2>
   <div class="game-grid">
     <div class="game-card" *ngFor="let j of juegos">
+      <div class="icono-juego">
+        <span [ngSwitch]="j.nombre">
+          <span *ngSwitchCase="'Tragaperras'">🎰</span>
+          <span *ngSwitchCase="'Ruleta'">🎡</span>
+          <span *ngSwitchCase="'Blackjack'">🃏</span>
+          <span *ngSwitchDefault>🎮</span>
+        </span>
+      </div>
       <h3>{{ j.nombre }}</h3>
       <p>{{ j.descripcion }}</p>
       <button (click)="jugar(j.ruta)">Jugar</button>
     </div>
   </div>
 </main>
+<footer class="footer">
+  © 2025 Casino Online - Todos los derechos reservados
+</footer>
 
 <!-- Tus modales -->
 <app-modal
@@ -35,18 +47,6 @@
   [errorMessage]="errorNombre"
   inputPlaceholder="Ej: JugadorX"
   (accepted)="onNombreModal($event)">
-</app-modal>
-
-<app-modal
-  *ngIf="mostrarModalSaldo"
-  title="Añadir saldo"
-  message="¿Cuánto saldo deseas añadir en €?"
-  acceptText="Añadir"
-  cancelText="Cancelar"
-  [isPrompt]="true"
-  [errorMessage]="errorSaldo"
-  inputPlaceholder="Ej: 10"
-  (accepted)="onSaldoModal($event)">
 </app-modal>
 
 <app-modal
@@ -69,3 +69,10 @@
   acceptText="Aceptar"
   (accepted)="mostrarModalPassword = false">
 </app-modal>
+
+<app-scratch-modal
+  *ngIf="mostrarScratch"
+  [cantidadGanada]="cantidadGanada"
+  [rascado]="rascado"
+  (cerrar)="onCerrarScratch()"
+/>

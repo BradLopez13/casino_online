@@ -23,11 +23,10 @@ export class SlotComponent {
   nombre = '';
   saldo = 1000;
   user: User | null = null;
-
-  reels = ['🍒', '🍋', '🔔'];
-  allSymbols = ['🍒', '🍋', '🍇', '🔔', '💎', '7️⃣'];
-  apuesta = 10;
+  reels = [['', '', ''], ['', '', ''], ['', '', '']];
+  symbols = ['🍒', '🍋', '🍇', '🔔', '💎', '7️⃣'];
   isSpinning = false;
+  apuesta = 10;
   mensajeApuesta = '';
   mensajeResultado = '';
 
@@ -70,32 +69,56 @@ export class SlotComponent {
     this.isSpinning = true;
 
     setTimeout(() => {
-      this.reels = [
-        this.randomSymbol(),
-        this.randomSymbol(),
-        this.randomSymbol()
-      ];
-
+      this.reels = this.reels.map(col => col.map(() => this.randomSymbol()));
       this.isSpinning = false;
-
-      const [a, b, c] = this.reels;
-      if (a === b && b === c) {
-        this.mensajeResultado = '¡Jackpot! Has ganado x10 tu apuesta 🎉';
-        this.saldo += this.apuesta * 10;
-      } else if (a === b || b === c || a === c) {
-        this.mensajeResultado = '¡Bien! Has ganado x2 tu apuesta 🎉';
-        this.saldo += this.apuesta * 2;
+      const ganancia = this.calcularGanancia();
+      if (ganancia > 0) {
+        this.mensajeResultado = `¡Ganaste ${ganancia}€! 🎉`;
+        this.saldo += ganancia;
       } else {
         this.mensajeResultado = 'Sigue intentándolo...';
       }
-
       this.actualizarSaldo();
     }, 1000);
   }
 
   randomSymbol(): string {
-    const index = Math.floor(Math.random() * this.allSymbols.length);
-    return this.allSymbols[index];
+    const i = Math.floor(Math.random() * this.symbols.length);
+    return this.symbols[i];
+  }
+
+  calcularGanancia(): number {
+    const lineas = [
+      [this.reels[0][0], this.reels[1][0], this.reels[2][0]],
+      [this.reels[0][1], this.reels[1][1], this.reels[2][1]],
+      [this.reels[0][2], this.reels[1][2], this.reels[2][2]],
+      [this.reels[0][0], this.reels[1][1], this.reels[2][2]],
+      [this.reels[0][2], this.reels[1][1], this.reels[2][0]]
+    ];
+
+    let ganancia = 0;
+
+    for (const linea of lineas) {
+      if (linea.every(s => s === linea[0])) {
+        const simbolo = linea[0];
+        const multiplicador = this.obtenerMultiplicador(simbolo);
+        ganancia += this.apuesta * multiplicador;
+      }
+    }
+
+    return ganancia;
+  }
+
+  obtenerMultiplicador(simbolo: string): number {
+    switch (simbolo) {
+      case '🍒': return 2;
+      case '🍋': return 3;
+      case '🍇': return 4;
+      case '🔔': return 5;
+      case '💎': return 10;
+      case '7️⃣': return 15;
+      default: return 0;
+    }
   }
 
   actualizarSaldo() {
@@ -105,12 +128,12 @@ export class SlotComponent {
     }
   }
 
-  // Header
   onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
   onChangePassword() { this.errorPassword = null; this.mostrarModalPassword = true; }
   onAddSaldo() { this.errorSaldo = null; this.mostrarModalSaldo = true; }
-  onLogout() {this.auth.logout().subscribe(() => this.router.navigate(['/login']));}
-  onGoHome() {this.router.navigate(['/']);}
+  onLogout() { this.auth.logout().subscribe(() => this.router.navigate(['/login'])); }
+  onGoHome() { this.router.navigate(['/']); }
+
   onNombreModal(res: string | boolean) {
     if (res === false) {
       this.mostrarModalNombre = false;
@@ -134,6 +157,7 @@ export class SlotComponent {
       this.mostrarModalNombre = true;
     }
   }
+
   onPasswordModal(res: string | boolean) {
     if (res === false) {
       this.mostrarModalPassword = false;
@@ -155,6 +179,7 @@ export class SlotComponent {
       this.mostrarModalPassword = true;
     }
   }
+
   onSaldoModal(res: string | boolean) {
     if (res === false) {
       this.mostrarModalSaldo = false;

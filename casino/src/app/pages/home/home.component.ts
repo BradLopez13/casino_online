@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { ModalComponent } from '../modal/modal.component';
 import { AgeVerificationComponent } from '../age-verification/age-verification.component';
+import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -17,7 +18,8 @@ import { AgeVerificationComponent } from '../age-verification/age-verification.c
     CommonModule,
     HeaderComponent,
     AgeVerificationComponent,
-    ModalComponent
+    ModalComponent,
+    ScratchModalComponent
   ]
 })
 export class HomeComponent {
@@ -35,6 +37,11 @@ export class HomeComponent {
   errorSaldo: string | null = null;
   errorPassword: string | null = null;
   esCuentaGoogle = false;
+
+  mostrarScratch = false;
+  cantidadGanada = 0;
+  rascado = false;
+
 
   juegos = [
     { nombre: 'Tragaperras', descripcion: 'Prueba suerte en las slots', ruta: '/slot' },
@@ -70,7 +77,12 @@ export class HomeComponent {
   // Event handlers from header
   onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
   onChangePassword() { this.errorPassword = null; this.mostrarModalPassword = true; }
-  onAddSaldo() { this.errorSaldo = null; this.mostrarModalSaldo = true; }
+  onAddSaldo() {
+    this.errorSaldo = null;
+    this.mostrarScratch = true;
+    this.cantidadGanada = this.generarPremio();
+    this.rascado = true;
+  }
   onLogout() { this.auth.logout().subscribe(() => this.router.navigate(['/login'])); }
 
   // Modals callbacks
@@ -86,19 +98,12 @@ export class HomeComponent {
       this.errorNombre='Nombre no válido'; this.mostrarModalNombre=true;
     }
   }
-
-  onSaldoModal(res: boolean | string | File) {
-    this.mostrarModalSaldo = false;
-    this.errorSaldo = null;
-    if (typeof res==='string' && this.user) {
-      const val = parseFloat(res);
-      if (isNaN(val)||val<=0) { this.errorSaldo='Cantidad inválida'; this.mostrarModalSaldo=true; return; }
-      const nuevo = this.saldo+val;
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevo })
-        .then(()=> this.saldo=nuevo)
-        .catch(()=>{ this.errorSaldo='Error al actualizar saldo'; this.mostrarModalSaldo=true; });
-    }
+  generarPremio(): number {
+    const premios = [0, 0, 0, 2, 5, 10, 20]; // Puedes ajustar probabilidades
+    const index = Math.floor(Math.random() * premios.length);
+    return premios[index];
   }
+
 
   onPasswordModal(res: boolean | string | File) {
     this.mostrarModalPassword = false;
@@ -111,6 +116,16 @@ export class HomeComponent {
       this.errorPassword='Mínimo 6 caracteres'; this.mostrarModalPassword=true;
     }
   }
+  onCerrarScratch() {
+    this.mostrarScratch = false;
+    if (this.cantidadGanada > 0 && this.user) {
+      const nuevoSaldo = this.saldo + this.cantidadGanada;
+      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+        .then(() => this.saldo = nuevoSaldo)
+        .catch(() => this.errorSaldo = 'Error al actualizar saldo');
+    }
+  }
+
 
   confirmarMayorDeEdad() { this.mayorDeEdad=true; if (this.user) this.auth.setMayorDeEdad(this.user.uid).subscribe(); }
 
