@@ -4,7 +4,7 @@
   background: radial-gradient(circle at center, #0b3d0b 0%, #064d06 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #fff;
-  overflow: hidden;
+  overflow-y: auto;
   position: fixed;
   inset: 0;
 }
@@ -170,6 +170,20 @@ h2 {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .cartas {
+    flex-wrap: wrap;
+  }
+
+  .fichas {
+    flex-wrap: wrap;
+  }
+
+  .mesa {
+    padding: 1rem;
+  }
+}
+/* Responsive */
+@media (max-height: 600px) {
   .cartas {
     flex-wrap: wrap;
   }
