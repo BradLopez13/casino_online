@@ -6,13 +6,15 @@ import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { ModalComponent } from '../modal/modal.component';
 import { authState, updatePassword, User } from '@angular/fire/auth';
+import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
+
 
 @Component({
   selector: 'app-blackjack',
   standalone: true,
   templateUrl: './blackjack.component.html',
   styleUrls: ['./blackjack.component.scss'],
-  imports: [CommonModule, HeaderComponent, ModalComponent]
+  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent]
 })
 export class BlackjackComponent {
   private auth = inject(AuthService);
@@ -29,6 +31,10 @@ export class BlackjackComponent {
   errorSaldo: string | null = null;
   errorPassword: string | null = null;
   esCuentaGoogle = false;
+
+  mostrarScratch = false;
+  cantidadGanada = 0;
+  rascado = false;
 
   nombre = '';
   saldo = 1000;
@@ -71,7 +77,12 @@ export class BlackjackComponent {
   // Header
   onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
   onChangePassword() { this.errorPassword = null; this.mostrarModalPassword = true; }
-  onAddSaldo() { this.errorSaldo = null; this.mostrarModalSaldo = true; }
+  onAddSaldo() {
+      this.errorSaldo = null;
+      this.mostrarScratch = true;
+      this.cantidadGanada = this.generarPremio();
+      this.rascado = true;
+  }  
   onLogout() {
     this.auth.logout().subscribe(() => this.router.navigate(['/login']));
   }
@@ -125,34 +136,18 @@ export class BlackjackComponent {
     }
   }
 
-
-  onSaldoModal(res: string | boolean) {
-    if (res === false) {
-      this.mostrarModalSaldo = false;
-      return;
-    }
-
-    this.mostrarModalSaldo = false;
-    this.errorSaldo = null;
-
-    if (typeof res === 'string' && this.user) {
-      const cantidad = parseFloat(res);
-
-      if (isNaN(cantidad) || cantidad <= 0) {
-        this.errorSaldo = 'Cantidad inválida.';
-        this.mostrarModalSaldo = true;
-        return;
-      }
-
-      this.saldo += cantidad;
-      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(ref, { saldo: this.saldo }).catch(() => {
-        this.errorSaldo = 'Error al actualizar saldo.';
-        this.mostrarModalSaldo = true;
-      });
-    } else {
-      this.errorSaldo = 'Entrada inválida.';
-      this.mostrarModalSaldo = true;
+  generarPremio(): number {
+      const premios = [0, 0, 0, 2, 5, 10, 20];
+      const index = Math.floor(Math.random() * premios.length);
+      return premios[index];
+  }
+  onCerrarScratch() {
+    this.mostrarScratch = false;
+    if (this.cantidadGanada > 0 && this.user) {
+      const nuevoSaldo = this.saldo + this.cantidadGanada;
+      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+        .then(() => this.saldo = nuevoSaldo)
+        .catch(() => this.errorSaldo = 'Error al actualizar saldo');
     }
   }
 

@@ -6,11 +6,13 @@ import { AuthService } from '../../services/auth.service';
 import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { authState, User, updatePassword } from '@angular/fire/auth';
+import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
+
 
 @Component({
   selector: 'app-ruleta',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, ModalComponent],
+  imports: [CommonModule, HeaderComponent, ModalComponent,ScratchModalComponent],
   templateUrl: './ruleta.component.html',
   styleUrls: ['./ruleta.component.scss']
 })
@@ -41,6 +43,10 @@ export class RuletaComponent {
   errorSaldo: string | null = null;
   errorPassword: string | null = null;
   esCuentaGoogle = false;
+
+  mostrarScratch = false;
+  cantidadGanada = 0;
+  rascado = false;
 
   constructor() {
     const authInstance = this.auth.getAuthInstance();
@@ -147,80 +153,54 @@ export class RuletaComponent {
   // Header
   onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
   onChangePassword() { this.errorPassword = null; this.mostrarModalPassword = true; }
-  onAddSaldo() { this.errorSaldo = null; this.mostrarModalSaldo = true; }
-  onLogout() {this.auth.logout().subscribe(() => this.router.navigate(['/login']));}
-  onGoHome() {this.router.navigate(['/']);}
-  onNombreModal(res: string | boolean) {
-    if (res === false) {
-      this.mostrarModalNombre = false;
-      return;
-    }
-
+  onAddSaldo() {
+    this.errorSaldo = null;
+    this.mostrarScratch = true;
+    this.cantidadGanada = this.generarPremio();
+    this.rascado = true;
+  }
+  onLogout() { this.auth.logout().subscribe(() => this.router.navigate(['/login'])); }
+  onGoHome() {
+    this.router.navigate(['/']);
+  }
+  // Modals callbacks
+  onNombreModal(res: boolean | string | File) {
     this.mostrarModalNombre = false;
     this.errorNombre = null;
-
     if (typeof res === 'string' && res.trim() && this.user) {
-      const nuevoNombre = res.trim();
-      const refDoc = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(refDoc, { nombre: nuevoNombre }).then(() => {
-        this.nombre = nuevoNombre;
-      }).catch(() => {
-        this.errorNombre = 'Error al guardar el nombre.';
-        this.mostrarModalNombre = true;
-      });
-    } else {
-      this.errorNombre = 'Nombre no válido.';
-      this.mostrarModalNombre = true;
+      const nuevo = res.trim();
+      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { nombre: nuevo })
+        .then(()=> this.nombre = nuevo)
+        .catch(()=>{ this.errorNombre='Error al guardar nombre'; this.mostrarModalNombre=true; });
+    } else if (typeof res==='string') {
+      this.errorNombre='Nombre no válido'; this.mostrarModalNombre=true;
     }
   }
-  onPasswordModal(res: string | boolean) {
-    if (res === false) {
-      this.mostrarModalPassword = false;
-      return;
-    }
+  generarPremio(): number {
+    const premios = [0, 0, 0, 2, 5, 10, 20]; 
+    const index = Math.floor(Math.random() * premios.length);
+    return premios[index];
+  }
 
+
+  onPasswordModal(res: boolean | string | File) {
     this.mostrarModalPassword = false;
     this.errorPassword = null;
-
     if (this.esCuentaGoogle) return;
-
-    if (typeof res === 'string' && res.length >= 6 && this.user) {
-      updatePassword(this.user, res).catch(() => {
-        this.errorPassword = 'Error al cambiar la contraseña.';
-        this.mostrarModalPassword = true;
-      });
-    } else {
-      this.errorPassword = 'La contraseña debe tener al menos 6 caracteres.';
-      this.mostrarModalPassword = true;
+    if (typeof res==='string' && res.length>=6 && this.user) {
+      updatePassword(this.user, res)
+        .catch(()=>{ this.errorPassword='Error al cambiar contraseña'; this.mostrarModalPassword=true; });
+    } else if (typeof res==='string') {
+      this.errorPassword='Mínimo 6 caracteres'; this.mostrarModalPassword=true;
     }
   }
-  onSaldoModal(res: string | boolean) {
-    if (res === false) {
-      this.mostrarModalSaldo = false;
-      return;
-    }
-
-    this.mostrarModalSaldo = false;
-    this.errorSaldo = null;
-
-    if (typeof res === 'string' && this.user) {
-      const cantidad = parseFloat(res);
-
-      if (isNaN(cantidad) || cantidad <= 0) {
-        this.errorSaldo = 'Cantidad inválida.';
-        this.mostrarModalSaldo = true;
-        return;
-      }
-
-      this.saldo += cantidad;
-      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(ref, { saldo: this.saldo }).catch(() => {
-        this.errorSaldo = 'Error al actualizar saldo.';
-        this.mostrarModalSaldo = true;
-      });
-    } else {
-      this.errorSaldo = 'Entrada inválida.';
-      this.mostrarModalSaldo = true;
+  onCerrarScratch() {
+    this.mostrarScratch = false;
+    if (this.cantidadGanada > 0 && this.user) {
+      const nuevoSaldo = this.saldo + this.cantidadGanada;
+      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+        .then(() => this.saldo = nuevoSaldo)
+        .catch(() => this.errorSaldo = 'Error al actualizar saldo');
     }
   }
 }

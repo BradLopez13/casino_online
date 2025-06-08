@@ -99,7 +99,7 @@ export class HomeComponent {
     }
   }
   generarPremio(): number {
-    const premios = [0, 0, 0, 2, 5, 10, 20]; // Puedes ajustar probabilidades
+    const premios = [0, 0, 0, 2, 5, 10, 20]; 
     const index = Math.floor(Math.random() * premios.length);
     return premios[index];
   }
