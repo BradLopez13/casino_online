@@ -1,15 +1,16 @@
-FROM node:18
-
+# Etapa 1: compilar la app
+FROM node:22-alpine AS build
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+ENV NG_CLI_ANALYTICS=false
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
 COPY . .
+RUN npx ng build
 
-# Evita prompt de analytics
-ENV NG_CLI_ANALYTICS=false
-
-EXPOSE 4200
-
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--poll=2000"]
+# Etapa 2: servir solo los ficheros estáticos
+FROM nginx:1.27-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist/casino/browser /usr/share/nginx/html
+EXPOSE 80
