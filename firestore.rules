@@ -1,0 +1,49 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Un documento por jugador: usuarios/{uid}. Cualquier otra ruta queda
+    // denegada porque ninguna regla la permite.
+    match /usuarios/{uid} {
+
+      function esDueno() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+
+      function nuevo() {
+        return request.resource.data;
+      }
+
+      function nombreValido() {
+        return !('nombre' in nuevo())
+          || (nuevo().nombre is string
+              && nuevo().nombre.size() >= 1
+              && nuevo().nombre.size() <= 40);
+      }
+
+      allow read: if esDueno();
+
+      // Registro: el perfil nace siempre con los mismos valores iniciales.
+      allow create: if esDueno()
+        && nuevo().keys().hasAll(['email', 'saldo', 'mayorDeEdad', 'createdAt'])
+        && nuevo().keys().hasOnly(['email', 'saldo', 'mayorDeEdad', 'createdAt', 'nombre'])
+        && nuevo().email == request.auth.token.email
+        && nuevo().saldo == 1000
+        && nuevo().mayorDeEdad == false
+        && nuevo().createdAt == request.time
+        && nombreValido();
+
+      // Partidas, premios, nombre y verificación de edad. La edad solo
+      // puede confirmarse, nunca retirarse.
+      allow update: if esDueno()
+        && nuevo().diff(resource.data).affectedKeys().hasOnly(['saldo', 'nombre', 'mayorDeEdad'])
+        && nuevo().saldo is number
+        && nuevo().saldo >= 0
+        && (nuevo().mayorDeEdad == resource.data.mayorDeEdad || nuevo().mayorDeEdad == true)
+        && nombreValido();
+
+      allow delete: if false;
+    }
+  }
+}

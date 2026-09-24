@@ -16,6 +16,7 @@ import {
   getDoc,
   doc,
   setDoc,
+  serverTimestamp,
 } from '@angular/fire/firestore';
 
 import { from, switchMap, of, throwError } from 'rxjs';
@@ -36,7 +37,7 @@ export class AuthService {
           email: cred.user.email,
           saldo: 1000,
           mayorDeEdad: false,
-          createdAt: new Date()
+          createdAt: serverTimestamp()
         }));
       })
     );
@@ -54,7 +55,7 @@ export class AuthService {
                 email: cred.user.email,
                 saldo: 1000,
                 mayorDeEdad: false,
-                createdAt: new Date()
+                createdAt: serverTimestamp()
               }));
             } else {
               return of(null); // Ya existe
