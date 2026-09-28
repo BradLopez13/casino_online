@@ -1,29 +1,45 @@
-<div class="modal-overlay">
-  <div class="modal">
-    <h2>{{ title }}</h2>
-    <p>{{ message }}</p>
+<div class="dialog-backdrop" (click)="onBackdrop($event)">
+  <div
+    class="dialog plaque"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="ids.title"
+    [attr.aria-describedby]="ids.message">
+    <p class="eyebrow">Cuenta</p>
+    <h2 class="display" [id]="ids.title">{{ title }}</h2>
+    <p [id]="ids.message">{{ message }}</p>
 
-    <div *ngIf="isPrompt" class="input-wrapper">
-      <input
-        [type]="isPasswordField ? inputType : 'text'"
-        [(ngModel)]="inputValue"
-        [placeholder]="inputPlaceholder"
-      />
-      <button
-        *ngIf="isPasswordField"
-        type="button"
-        class="toggle-visibility"
-        (click)="togglePasswordVisibility()"
-      >
-        {{ inputType === 'password' ? '🔒' : '👁️' }}
-      </button>
+    <div *ngIf="isPrompt" class="field prompt">
+      <label class="sr-only" [for]="ids.input">{{ message }}</label>
+      <div class="input-row">
+        <input
+          #campo
+          class="input"
+          [id]="ids.input"
+          [type]="isPasswordField ? inputType : 'text'"
+          [(ngModel)]="inputValue"
+          [placeholder]="inputPlaceholder"
+          [attr.autocomplete]="isPasswordField ? 'new-password' : 'nickname'"
+          [attr.aria-invalid]="errorMessage ? 'true' : null"
+          [attr.aria-describedby]="errorMessage ? ids.error : null"
+          (keydown.enter)="aceptar()" />
+        <button
+          *ngIf="isPasswordField"
+          type="button"
+          class="toggle-visibility"
+          [attr.aria-pressed]="inputType === 'text'"
+          [attr.aria-label]="inputType === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          (click)="togglePasswordVisibility()">
+          <app-icon [name]="inputType === 'password' ? 'eye' : 'eye-off'"></app-icon>
+        </button>
+      </div>
     </div>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="error" [id]="ids.error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
 
-    <div class="modal-actions">
-      <button (click)="aceptar()">{{ acceptText }}</button>
-      <button class="cancel" (click)="cancelar()">{{ cancelText }}</button>
+    <div class="dialog-actions split">
+      <button #primario type="button" class="btn btn-primary" (click)="aceptar()">{{ acceptText }}</button>
+      <button type="button" class="btn btn-ghost" (click)="cancelar()">{{ cancelText }}</button>
     </div>
   </div>
 </div>

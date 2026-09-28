@@ -1,0 +1,193 @@
+/* Pantalla dividida compartida por login y registro */
+
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.auth {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .auth {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+}
+
+/* ---------- Panel editorial ---------- */
+.auth-panel {
+  display: none;
+  position: relative;
+  padding: 2.5rem;
+  background:
+    radial-gradient(50rem 30rem at -20% 110%, rgba(201, 169, 97, 0.12), transparent 60%),
+    linear-gradient(160deg, var(--bg-2), var(--bg));
+  border-right: 1px solid var(--line);
+  grid-template-rows: auto 1fr auto auto;
+  gap: 3rem;
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .auth-panel {
+    display: grid;
+  }
+}
+
+.auth-panel::after {
+  content: '';
+  position: absolute;
+  right: -30%;
+  top: 15%;
+  width: 60vmin;
+  height: 60vmin;
+  border-radius: 50%;
+  border: 1px dashed var(--line-strong);
+  animation: spin 140s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.panel-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-mark {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1px solid var(--accent);
+  transform: rotate(45deg);
+  background:
+    linear-gradient(var(--accent), var(--accent)) center / 5px 5px no-repeat;
+}
+
+.brand-word {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.panel-copy {
+  align-self: end;
+  display: grid;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.panel-title {
+  font-size: clamp(2.5rem, 4.2vw, 4rem);
+  max-width: 14ch;
+}
+
+.panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+
+.panel-list li {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.panel-list span {
+  color: var(--accent);
+}
+
+.panel-foot {
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ---------- Formulario ---------- */
+.auth-main {
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 900px) {
+  .auth-main {
+    padding: 3rem 4rem;
+    justify-items: start;
+    padding-left: clamp(3rem, 10vw, 9rem);
+  }
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 26rem;
+  padding: 2.25rem 1.75rem;
+  display: grid;
+  gap: 0.75rem;
+  animation: card-in 0.6s var(--ease-out);
+}
+
+@media (min-width: 480px) {
+  .auth-card {
+    padding: 2.75rem 2.5rem;
+  }
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card .display {
+  font-size: clamp(2.25rem, 5vw, 3rem);
+}
+
+.lead {
+  font-size: 0.95rem;
+}
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.actions {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.form-error {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(217, 115, 123, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(217, 115, 123, 0.08);
+}
+
+.switch {
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}

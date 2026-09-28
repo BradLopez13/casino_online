@@ -4,11 +4,12 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, Validators, FormGroup } 
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { onAuthStateChanged } from '@angular/fire/auth';
+import { IconComponent } from '../../ui/icon/icon.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IconComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

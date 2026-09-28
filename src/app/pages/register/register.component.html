@@ -1,31 +1,83 @@
-<div class="form-container">
-  <h2>Crear cuenta</h2>
-
-  <form [formGroup]="form" (ngSubmit)="register()" novalidate>
-    <label>Email</label>
-    <input formControlName="email" type="email" class="inputText" />
-
-    <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
-      <small *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
-      <small *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+<div class="auth">
+  <aside class="auth-panel" aria-hidden="true">
+    <div class="panel-brand">
+      <span class="brand-mark"></span>
+      <span class="brand-word">Meridiano</span>
     </div>
 
-    <label>Contraseña</label>
-    <input formControlName="password" type="password" class="inputText"/>
-
-    <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
-      <small *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
-      <small *ngIf="form.get('password')?.errors?.['minlength']">
-        Mínimo 6 caracteres
-      </small>
+    <div class="panel-copy">
+      <p class="eyebrow">Nueva cuenta · Fichas de cortesía</p>
+      <p class="display panel-title">Mil fichas <em>al sentarte</em>. Ninguna sale de tu bolsillo.</p>
     </div>
 
-    <button type="submit" [disabled]="form.invalid">Registrarse</button>
-    <button type="button" (click)="loginWithGoogle()">Registrate con Google</button>
-    <button type="button" class="alt-button" (click)="goToLogin()">
-      ¿Ya tienes cuenta? Inicia sesión
-    </button>
+    <ul class="panel-list mono">
+      <li><span>01</span>Regístrate</li>
+      <li><span>02</span>Confirma tu edad</li>
+      <li><span>03</span>Elige mesa</li>
+    </ul>
 
-    <p *ngIf="error">{{ error }}</p>
-  </form>
+    <p class="panel-foot mono">Dinero de juego · Sin valor real · +18</p>
+  </aside>
+
+  <main class="auth-main" id="contenido">
+    <div class="auth-card plaque">
+      <p class="eyebrow">Alta</p>
+      <h1 class="display">Crear cuenta</h1>
+      <p class="muted lead">Un email, una contraseña y una mesa esperándote.</p>
+
+      <form [formGroup]="form" (ngSubmit)="register()" novalidate class="form">
+        <div class="field">
+          <label for="register-email">Email</label>
+          <input
+            id="register-email"
+            class="input"
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            inputmode="email"
+            [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid ? 'true' : null"
+            aria-describedby="register-email-error" />
+          <div id="register-email-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+            <small class="error" *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
+            <small class="error" *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="register-password">Contraseña</label>
+          <input
+            id="register-password"
+            class="input"
+            formControlName="password"
+            type="password"
+            autocomplete="new-password"
+            [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid ? 'true' : null"
+            aria-describedby="register-password-help register-password-error" />
+          <small id="register-password-help" class="help">Al menos 6 caracteres.</small>
+          <div id="register-password-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+            <small class="error" *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
+            <small class="error" *ngIf="form.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid">
+            Registrarse
+            <app-icon name="arrow"></app-icon>
+          </button>
+          <button type="button" class="btn btn-ghost btn-block" (click)="loginWithGoogle()">
+            <app-icon name="google"></app-icon>
+            Registrarse con Google
+          </button>
+        </div>
+
+        <p class="error form-error" role="alert" *ngIf="error">{{ error }}</p>
+      </form>
+
+      <p class="switch">
+        ¿Ya tienes cuenta?
+        <button type="button" class="btn-link" (click)="goToLogin()">Inicia sesión</button>
+      </p>
+    </div>
+  </main>
 </div>

@@ -1,156 +1,322 @@
 :host {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: radial-gradient(circle at center, #080808 0%, #000000 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #fff;
-  position: fixed;
-  inset: 0;
+  min-height: 100dvh;
+  background:
+    radial-gradient(60rem 40rem at 110% -10%, rgba(201, 169, 97, 0.07), transparent 60%),
+    var(--bg);
+}
+
+.salon {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 1rem 5rem;
+  display: grid;
+  gap: 3rem;
   overflow: hidden;
 }
 
-:host::before {
+.salon:focus {
+  outline: none;
+}
+
+@media (min-width: 1024px) {
+  .salon {
+    padding: 5rem 2rem 8rem;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    column-gap: 5rem;
+    align-items: start;
+  }
+}
+
+/* ---------- Intro ---------- */
+.intro {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+}
+
+.intro .display {
+  font-size: clamp(3rem, 8vw, 6.25rem);
+}
+
+.lede {
+  max-width: 38ch;
+  color: var(--ink-2);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.ledger {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 2rem;
+  margin: 0.5rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.ledger div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ledger dt {
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.ledger dd {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.ledger div:first-child dd {
+  color: var(--accent-2);
+}
+
+/* ---------- Lista de mesas ---------- */
+.mesas {
+  position: relative;
+  z-index: 1;
+}
+
+.mesas-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.mesa {
+  --sweep: 0;
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  grid-template-areas:
+    "num body icon"
+    "num body arrow";
+  align-items: center;
+  column-gap: 1rem;
+  padding: 1.75rem 0.5rem 1.75rem 0;
+  border-top: 1px solid var(--line-strong);
+  color: var(--ink);
+  text-align: left;
+  isolation: isolate;
+  transition: padding-left 0.45s var(--ease-out);
+}
+
+.mesa::before {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--accent-soft), transparent 80%);
+  transform: scaleX(var(--sweep));
+  transform-origin: left;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.mesa:hover,
+.mesa:focus-visible {
+  --sweep: 1;
+  padding-left: 0.75rem;
+  outline-offset: -3px;
+}
+
+.mesa-num {
+  grid-area: num;
+  align-self: start;
+  padding-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+.mesa-body {
+  grid-area: body;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.mesa-name {
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  transition: color 0.3s var(--ease-out);
+}
+
+.mesa:hover .mesa-name {
+  color: var(--accent-2);
+}
+
+.mesa-desc {
+  max-width: 44ch;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.mesa-meta {
+  display: none;
+  grid-area: body;
+  align-self: end;
+  justify-self: start;
+  margin-top: 0.75rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.mesa-icon {
+  grid-area: icon;
+  justify-self: end;
+  width: 2rem;
+  height: 2rem;
+  color: var(--ink-3);
+  transition: color 0.3s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.mesa-arrow {
+  grid-area: arrow;
+  justify-self: end;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 0.3s var(--ease-out), transform 0.45s var(--ease-out);
+}
+
+.mesa:hover .mesa-icon,
+.mesa:focus-visible .mesa-icon {
+  color: var(--accent-2);
+  transform: rotate(-8deg);
+}
+
+.mesa:hover .mesa-arrow,
+.mesa:focus-visible .mesa-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (min-width: 768px) {
+  .mesa {
+    grid-template-columns: 3.5rem minmax(0, 1fr) 11rem 2.5rem 2rem;
+    grid-template-areas: "num body meta icon arrow";
+    padding: 2.25rem 1rem 2.25rem 0;
+  }
+
+  .mesa-meta {
+    display: block;
+    align-self: center;
+    justify-self: end;
+    margin: 0;
+    text-align: right;
+  }
+
+  .mesa-body {
+    padding-right: 1rem;
+  }
+}
+
+/* ---------- Rueda ornamental ---------- */
+.ornament {
+  position: absolute;
   z-index: 0;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 2px, transparent 2.6px);
-  background-size: 28px 28px;
-  animation: particlesMove 80s linear infinite, glow 4s ease-in-out infinite alternate;
   pointer-events: none;
-  opacity: 0.35;
+  display: grid;
+  place-items: center;
+  width: 30rem;
+  height: 30rem;
+  right: -12rem;
+  top: -10rem;
+  opacity: 0.55;
 }
 
-
-
-@keyframes particlesMove {
-  0% { background-position: 0 0; }
-  100% { background-position: 800px 800px; }
+@media (min-width: 1024px) {
+  .ornament {
+    width: 44rem;
+    height: 44rem;
+    left: -16rem;
+    right: auto;
+    top: auto;
+    bottom: -18rem;
+    opacity: 0.8;
+  }
 }
 
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 2rem 1.5rem 4rem;
-  position: relative;
-  z-index: 1;
-  animation: fadeIn 0.5s ease;
+.ring {
+  position: absolute;
+  border-radius: 50%;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(1rem); }
-  to   { opacity: 1; transform: translateY(0); }
+.ring-outer {
+  inset: 0;
+  border: 1px dashed var(--line-strong);
+  animation: spin 160s linear infinite;
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #ffd700;
-  font-size: 2.4rem;
-  text-shadow: 0 0 1rem #ff8c00;
-  animation: pulsar 2s infinite alternate;
+/* 37 casillas alternas, dibujadas con un gradiente cónico enmascarado a un anillo */
+.ring-inner {
+  inset: 9%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(168, 50, 62, 0.55) 0deg 9.73deg,
+    rgba(27, 29, 28, 0.9) 9.73deg 19.46deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 66%, #000 66.5%, #000 84%, transparent 84.5%);
+  mask: radial-gradient(circle, transparent 66%, #000 66.5%, #000 84%, transparent 84.5%);
+  animation: spin 110s linear infinite reverse;
 }
 
-@keyframes pulsar {
-  0% { text-shadow: 0 0 0.4rem #ff8c00; }
-  100% { text-shadow: 0 0 1.2rem #ffd700; }
+.ring-core {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 40% 35%, var(--surface-2), var(--bg-2) 70%);
 }
 
-.game-grid {
+.ring-core .display {
+  font-style: italic;
+  font-size: clamp(3rem, 8vw, 7rem);
+  color: var(--accent);
+  opacity: 0.6;
+  padding-bottom: 0.05em;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Pie ---------- */
+.pie {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
-  padding-bottom: 2rem;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: 0.8rem;
 }
 
-.game-card {
-  background: linear-gradient(to bottom, #1b1b1b, #111);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 0.75rem;
-  padding: 2rem 1.5rem 1.5rem;
-  width: 18rem;
-  text-align: center;
-  box-shadow: inset 0 0 0.5rem #000, 0 0 1rem rgba(255, 215, 0, 0.15);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  h3 {
-    color: #ffea00;
-    font-size: 1.4rem;
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    font-size: 0.95rem;
-    color: #ccc;
-    margin-bottom: 1rem;
-  }
-
-  .icono-juego {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-    animation: iconoEntrada 0.6s ease-out;
-  }
-
-  button {
-    background: linear-gradient(to right, #ffd700, #ff8c00);
-    border: none;
-    padding: 0.7rem 1.4rem;
-    border-radius: 0.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    color: #111;
-    font-size: 1rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 0.5rem #ffd700;
-  }
-
-  &:hover {
-    transform: translateY(-0.4rem);
-    box-shadow: 0 0 1.5rem rgba(255, 215, 0, 0.3);
-  }
-}
-
-@keyframes iconoEntrada {
-  from { opacity: 0; transform: scale(0.8); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-footer {
-  text-align: center;
-  padding: 1rem;
-  color: #888;
-  font-size: 0.85rem;
-  background: transparent;
-  border-top: 1px solid rgba(255, 215, 0, 0.1);
-  z-index: 2;
-  position: relative;
-}
-
-@media (max-width: 768px) {
-  .game-grid {
-    flex-direction: column;
-    align-items: center;
-    gap: 1.2rem;
-  }
-
-  .game-card {
-    width: 90%;
-    max-width: 20rem;
-  }
-
-  h2 {
-    font-size: 2rem;
-  }
-
-  .main-content {
-    padding: 1.2rem;
+@media (min-width: 768px) {
+  .pie {
+    padding: 1.25rem 2rem;
   }
 }

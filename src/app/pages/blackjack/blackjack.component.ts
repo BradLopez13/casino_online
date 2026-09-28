@@ -216,6 +216,33 @@ export class BlackjackComponent {
     this.evaluarGanador();
   }
 
+  /* Ayudas de presentación: una carta es "10♥" → valor "10", palo "♥". */
+  valorDe(carta: string): string {
+    return carta.slice(0, -1);
+  }
+
+  paloDe(carta: string): string {
+    return carta.slice(-1);
+  }
+
+  esRoja(carta: string): boolean {
+    const palo = this.paloDe(carta);
+    return palo === '♥' || palo === '♦';
+  }
+
+  describirCarta(carta: string): string {
+    const nombres: Record<string, string> = { A: 'As', J: 'Jota', Q: 'Reina', K: 'Rey' };
+    const palos: Record<string, string> = { '♠': 'picas', '♥': 'corazones', '♦': 'diamantes', '♣': 'tréboles' };
+    const valor = this.valorDe(carta);
+    return `${nombres[valor] ?? valor} de ${palos[this.paloDe(carta)] ?? ''}`.trim();
+  }
+
+  get resultadoClase(): string {
+    if (this.resultado.includes('Ganaste')) return 'win';
+    if (this.resultado.includes('Empate')) return '';
+    return 'lose';
+  }
+
   calcularPuntos(mano: string[]): number {
     let total = 0;
     let ases = 0;

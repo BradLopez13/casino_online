@@ -8,30 +8,89 @@
   (goHome)="onGoHome()"
 />
 
-<div class="slot-container">
-  <h2>🎰 Tragaperras Deluxe</h2>
+<main class="page" id="contenido" tabindex="-1">
+  <header class="table-head stagger">
+    <p class="eyebrow" [style.--i]="0">Mesa 01 · Tres rodillos</p>
+    <h1 class="display" [style.--i]="1">Tragaperras</h1>
+    <p class="muted rules" [style.--i]="2">
+      Cinco líneas de pago: tres horizontales y dos diagonales. Tres símbolos iguales en una línea multiplican tu apuesta.
+    </p>
+  </header>
 
-  <div class="slot-machine">
-    <div class="columna" *ngFor="let columna of reels">
-      <div class="reel" *ngFor="let simbolo of columna">
-        {{ simbolo }}
+  <div class="layout">
+    <!-- Máquina -->
+    <section class="machine" aria-label="Rodillos">
+      <div class="cabinet">
+        <div class="window" [class.spinning]="isSpinning">
+          <div class="reel" *ngFor="let columna of reels; let c = index" [style.--c]="c">
+            <div
+              class="sym"
+              *ngFor="let simbolo of columna; let r = index"
+              [class.blank]="!simbolo"
+              [class.center]="r === 1">
+              <app-icon [name]="iconoDe(simbolo)" [label]="nombreDe(simbolo)"></app-icon>
+            </div>
+          </div>
+          <div class="payline" aria-hidden="true"></div>
+        </div>
+
+        <div class="cabinet-foot mono" aria-hidden="true">
+          <span>Meridiano</span>
+          <span>Mod. M-3 · 5 líneas</span>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <div class="controles">
-    <button (click)="spin()" [disabled]="isSpinning || apuesta <= 0">🎯 Girar</button>
-    <div class="apuesta-controles">
-      <label>Apuesta:</label>
-      <input type="number" [(ngModel)]="apuesta" [max]="saldo" min="1" />
-    </div>
-    <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
-  </div>
+      <p class="sr-only" role="status" aria-live="polite">
+        {{ isSpinning ? 'Rodillos girando' : (mensajeResultado || '') }}
+      </p>
+    </section>
 
-  <div class="resultado" *ngIf="mensajeResultado">
-    <p>{{ mensajeResultado }}</p>
+    <!-- Banco -->
+    <aside class="bank">
+      <form class="bank-block" (submit)="$event.preventDefault(); spin()" aria-labelledby="slot-apuesta">
+        <h2 class="eyebrow" id="slot-apuesta">Apuesta por tirada</h2>
+        <div class="field">
+          <label for="slot-importe">Importe en euros</label>
+          <div class="custom-row">
+            <input
+              id="slot-importe"
+              class="input mono"
+              type="number"
+              [(ngModel)]="apuesta"
+              name="apuesta"
+              [max]="saldo"
+              min="1"
+              inputmode="numeric"
+              [disabled]="isSpinning"
+              aria-describedby="slot-help slot-error" />
+            <button type="submit" class="btn btn-primary" [disabled]="isSpinning || apuesta <= 0">
+              {{ isSpinning ? 'Girando…' : 'Girar' }}
+              <app-icon name="reels"></app-icon>
+            </button>
+          </div>
+          <small id="slot-help" class="help">Saldo disponible <strong class="mono">{{ saldo | currency:'EUR' }}</strong></small>
+        </div>
+        <p class="error" id="slot-error" role="alert" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+      </form>
+
+      <div class="result" *ngIf="mensajeResultado && !isSpinning" [ngClass]="resultadoClase">
+        <span class="eyebrow">Tirada</span>
+        <p class="display">{{ mensajeResultado }}</p>
+      </div>
+
+      <section class="bank-block" aria-labelledby="slot-pagos">
+        <h2 class="eyebrow" id="slot-pagos">Tabla de pagos</h2>
+        <ul class="paytable">
+          <li *ngFor="let p of paytable">
+            <app-icon [name]="p.icono"></app-icon>
+            <span>{{ p.nombre }}</span>
+            <span class="mono">×{{ p.multiplicador }}</span>
+          </li>
+        </ul>
+      </section>
+    </aside>
   </div>
-</div>
+</main>
 
 <!-- modales -->
 <app-modal

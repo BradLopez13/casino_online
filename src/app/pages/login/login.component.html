@@ -1,39 +1,91 @@
-<div class="form-container">
-  <h2>Iniciar sesión</h2>
-
-  <form [formGroup]="form" (ngSubmit)="login()" novalidate>
-    <label>Email</label>
-    <input formControlName="email" type="email" class="inputText" />
-
-    <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
-      <small *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
-      <small *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+<div class="auth">
+  <aside class="auth-panel" aria-hidden="true">
+    <div class="panel-brand">
+      <span class="brand-mark"></span>
+      <span class="brand-word">Meridiano</span>
     </div>
 
-    <label>Contraseña</label>
-    <input formControlName="password" type="password" class="inputText"/>
-
-    <div *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
-      <small *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
-      <small *ngIf="form.get('password')?.errors?.['minlength']">
-        Mínimo 6 caracteres
-      </small>
+    <div class="panel-copy">
+      <p class="eyebrow">Salón de juego · Desde 2025</p>
+      <p class="display panel-title">La casa <em>presta</em> las fichas. Tú pones la suerte.</p>
     </div>
 
-    <label class="checkbox-label">
-      <input
-        type="checkbox"
-        [(ngModel)]="rememberMe"
-        name="rememberMe"
-        [ngModelOptions]="{ standalone: true }"
-      />
-      Mantener sesión iniciada
-    </label>
+    <ul class="panel-list mono">
+      <li><span>01</span>Blackjack</li>
+      <li><span>02</span>Ruleta</li>
+      <li><span>03</span>Tragaperras</li>
+    </ul>
 
-    <button type="submit" [disabled]="form.invalid">Entrar</button>
-    <button type="button" (click)="loginWithGoogle()">Iniciar sesión con Google</button>
-    <button type="button" class="alt-button" (click)="goToRegister()">¿No tienes cuenta? Regístrate</button>
+    <p class="panel-foot mono">Dinero de juego · Sin valor real · +18</p>
+  </aside>
 
-    <p *ngIf="error">{{ error }}</p>
-  </form>
+  <main class="auth-main" id="contenido">
+    <div class="auth-card plaque">
+      <p class="eyebrow">Acceso</p>
+      <h1 class="display">Iniciar sesión</h1>
+      <p class="muted lead">Tu saldo te espera exactamente donde lo dejaste.</p>
+
+      <form [formGroup]="form" (ngSubmit)="login()" novalidate class="form">
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input
+            id="login-email"
+            class="input"
+            formControlName="email"
+            type="email"
+            autocomplete="email"
+            inputmode="email"
+            [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid ? 'true' : null"
+            aria-describedby="login-email-error" />
+          <div id="login-email-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+            <small class="error" *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
+            <small class="error" *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="login-password">Contraseña</label>
+          <input
+            id="login-password"
+            class="input"
+            formControlName="password"
+            type="password"
+            autocomplete="current-password"
+            [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid ? 'true' : null"
+            aria-describedby="login-password-error" />
+          <div id="login-password-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+            <small class="error" *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
+            <small class="error" *ngIf="form.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+          </div>
+        </div>
+
+        <label class="check">
+          <input
+            type="checkbox"
+            [(ngModel)]="rememberMe"
+            name="rememberMe"
+            [ngModelOptions]="{ standalone: true }" />
+          Mantener sesión iniciada
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid">
+            Entrar
+            <app-icon name="arrow"></app-icon>
+          </button>
+          <button type="button" class="btn btn-ghost btn-block" (click)="loginWithGoogle()">
+            <app-icon name="google"></app-icon>
+            Continuar con Google
+          </button>
+        </div>
+
+        <p class="error form-error" role="alert" *ngIf="error">{{ error }}</p>
+      </form>
+
+      <p class="switch">
+        ¿Aún no tienes cuenta?
+        <button type="button" class="btn-link" (click)="goToRegister()">Regístrate</button>
+      </p>
+    </div>
+  </main>
 </div>

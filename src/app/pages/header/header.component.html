@@ -1,16 +1,55 @@
-<header class="navbar">
-  <div class="logo" (click)="onGoHome()">🎰 Casino Deluxe</div>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 
-  <div class="user-dropdown" #dropdownRef (click)="toggleMenu()" [class.open]="menuAbierto">
-    <div class="user-summary">👤 {{ nombre }}</div>
-    <div class="user-summary">Saldo: {{ saldo | currency:'EUR' }}</div>
+<header class="topbar">
+  <button type="button" class="brand" (click)="onGoHome()" aria-label="Meridiano, volver al salón">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-word">Meridiano</span>
+    <span class="brand-sub mono">Salón de juego</span>
+  </button>
 
-    <div class="dropdown-menu" *ngIf="menuAbierto">
-      <button class="dropdown-item" (click)="onGoHome()">🏠 Home</button>
-      <button class="dropdown-item" (click)="onChangeName()">✏ Cambiar nombre</button>
-      <button class="dropdown-item" (click)="onChangePassword()">🔑 Cambiar contraseña</button>
-      <button class="dropdown-item" (click)="onAddSaldo()">💰 Añadir saldo</button>
-      <button class="dropdown-item logout" (click)="onLogout()">🚪 Cerrar sesión</button>
+  <div class="account" #dropdownRef>
+    <div class="balance" aria-live="polite" aria-atomic="true">
+      <span class="balance-label">Saldo</span>
+      <span class="balance-value mono">{{ saldo | currency:'EUR' }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="account-toggle"
+      id="menu-cuenta-toggle"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="menuAbierto"
+      aria-controls="menu-cuenta"
+      (click)="toggleMenu()"
+      (keydown)="onToggleKeydown($event)">
+      <span class="avatar mono" aria-hidden="true">{{ inicial }}</span>
+      <span class="account-name">{{ nombre }}</span>
+      <app-icon name="chevron" class="account-chevron" [class.open]="menuAbierto"></app-icon>
+    </button>
+
+    <div
+      class="menu"
+      id="menu-cuenta"
+      role="menu"
+      aria-labelledby="menu-cuenta-toggle"
+      *ngIf="menuAbierto"
+      (keydown)="onMenuKeydown($event)">
+      <button type="button" role="menuitem" class="menu-item" (click)="onGoHome()">
+        <app-icon name="home"></app-icon><span>Salón</span>
+      </button>
+      <button type="button" role="menuitem" class="menu-item" (click)="onChangeName()">
+        <app-icon name="pencil"></app-icon><span>Cambiar nombre</span>
+      </button>
+      <button type="button" role="menuitem" class="menu-item" (click)="onChangePassword()">
+        <app-icon name="key"></app-icon><span>Cambiar contraseña</span>
+      </button>
+      <button type="button" role="menuitem" class="menu-item" (click)="onAddSaldo()">
+        <app-icon name="ticket"></app-icon><span>Rasca y recarga</span>
+      </button>
+      <span class="menu-rule" role="separator"></span>
+      <button type="button" role="menuitem" class="menu-item danger" (click)="onLogout()">
+        <app-icon name="sign-out"></app-icon><span>Cerrar sesión</span>
+      </button>
     </div>
   </div>
 </header>

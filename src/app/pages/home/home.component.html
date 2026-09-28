@@ -13,27 +13,59 @@
   (goHome)="jugar('/')">
 </app-header>
 
-
-<main class="main-content">
-  <h2>Selecciona tu juego</h2>
-  <div class="game-grid">
-    <div class="game-card" *ngFor="let j of juegos">
-      <div class="icono-juego">
-        <span [ngSwitch]="j.nombre">
-          <span *ngSwitchCase="'Tragaperras'">🎰</span>
-          <span *ngSwitchCase="'Ruleta'">🎡</span>
-          <span *ngSwitchCase="'Blackjack'">🃏</span>
-          <span *ngSwitchDefault>🎮</span>
-        </span>
+<main class="salon" id="contenido" tabindex="-1">
+  <section class="intro stagger">
+    <p class="eyebrow" [style.--i]="0">Mesa abierta · {{ horaApertura }}</p>
+    <h1 class="display" [style.--i]="1">Elige tu <em>mesa</em>.</h1>
+    <p class="lede" [style.--i]="2">
+      Mil fichas de cortesía al sentarte. Dinero de juego, sin riesgo real:
+      si se acaban, un rasca te devuelve al juego.
+    </p>
+    <dl class="ledger mono" [style.--i]="3">
+      <div>
+        <dt>Saldo</dt>
+        <dd>{{ saldo | currency:'EUR' }}</dd>
       </div>
-      <h3>{{ j.nombre }}</h3>
-      <p>{{ j.descripcion }}</p>
-      <button (click)="jugar(j.ruta)">Jugar</button>
+      <div>
+        <dt>Jugador</dt>
+        <dd>{{ nombreVisual }}</dd>
+      </div>
+      <div>
+        <dt>Mesas</dt>
+        <dd>{{ juegos.length | number:'2.0-0' }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <nav class="mesas" aria-label="Mesas disponibles">
+    <ol class="mesas-list stagger">
+      <li *ngFor="let j of juegos; let i = index" [style.--i]="i + 2">
+        <button type="button" class="mesa" (click)="jugar(j.ruta)">
+          <span class="mesa-num mono">{{ i + 1 | number:'2.0-0' }}</span>
+          <span class="mesa-body">
+            <span class="mesa-name display">{{ j.nombre }}</span>
+            <span class="mesa-desc">{{ j.descripcion }}</span>
+          </span>
+          <span class="mesa-meta mono">{{ j.nota }}</span>
+          <app-icon [name]="j.icono" class="mesa-icon"></app-icon>
+          <app-icon name="arrow" class="mesa-arrow"></app-icon>
+        </button>
+      </li>
+    </ol>
+  </nav>
+
+  <aside class="ornament" aria-hidden="true">
+    <div class="ring ring-outer"></div>
+    <div class="ring ring-inner"></div>
+    <div class="ring-core">
+      <span class="display">M</span>
     </div>
-  </div>
+  </aside>
 </main>
-<footer class="footer">
-  © 2025 Casino Online - Todos los derechos reservados
+
+<footer class="pie">
+  <span>© 2025 Meridiano. Proyecto académico.</span>
+  <span class="mono">Fichas sin valor real · +18</span>
 </footer>
 
 <!--modales -->

@@ -1,68 +1,119 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 1000;
+/* Boleto con bordes troquelados */
+.ticket {
+  position: relative;
+  width: 100%;
+  max-width: 24rem;
+  padding: 1.75rem 1.5rem 1.25rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+  box-shadow: var(--shadow-lift);
+  animation: ticket-in 0.5s var(--ease-out);
+  /* Muescas laterales, como un tique perforado */
+  -webkit-mask:
+    radial-gradient(circle at 0 62%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 62%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle at 0 62%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 62%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat;
 }
 
-.scratch-modal {
-  background: #1a1a1a;
-  color: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  text-align: center;
-  max-width: 340px;
-  width: 90%;
-  box-shadow: 0 0 12px #ffd700;
-  z-index: 1001;
+@keyframes ticket-in {
+  from { opacity: 0; transform: translateY(16px) rotate(-1deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0); }
+}
 
-  h2 {
-    margin-bottom: 1rem;
-    color: #ffd700;
-  }
+.ticket-head {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
 
-  .scratch-container {
-    position: relative;
-    width: 300px;
-    height: 150px;
-    margin: auto;
-  }
+.ticket-head .display {
+  font-size: clamp(1.9rem, 4vw, 2.4rem);
+}
 
-  canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 0.5rem;
-    z-index: 2;
-  }
+.ticket-head .muted {
+  font-size: 0.875rem;
+  max-width: 36ch;
+}
 
-  .premio {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #00e676;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-    background: #000;
-    border-radius: 0.5rem;
-  }
+.scratch-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 2 / 1;
+  margin: 0 auto;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  touch-action: none;
+}
 
-  button {
-    margin-top: 2rem;
-    padding: 0.7rem 2rem;
-    background: #ffd700;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 1.1rem;
-    cursor: pointer;
-    color: #000;
-  }
+canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  cursor: crosshair;
+  transition: opacity 0.4s var(--ease-out);
+}
+
+.revelado canvas {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.premio {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.2rem;
+  background:
+    radial-gradient(circle at 50% 120%, rgba(201, 169, 97, 0.28), transparent 60%),
+    var(--surface);
+}
+
+.premio-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.premio-valor {
+  font-size: 2.6rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent-2);
+}
+
+.premio-nota {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+
+.ticket-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.serial {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-3);
+}
+
+.ticket-actions {
+  display: flex;
+  gap: 0.5rem;
 }

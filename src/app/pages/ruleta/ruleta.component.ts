@@ -7,12 +7,13 @@ import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { authState, User, updatePassword } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
+import { IconComponent } from '../../ui/icon/icon.component';
 
 
 @Component({
   selector: 'app-ruleta',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, ModalComponent,ScratchModalComponent],
+  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent, IconComponent],
   templateUrl: './ruleta.component.html',
   styleUrls: ['./ruleta.component.scss']
 })
@@ -35,6 +36,45 @@ export class RuletaComponent {
   numeros = Array.from({ length: 37 }, (_, i) => i);
   fichas = [1, 5, 10, 25, 50, 100];
   rojos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+
+  /** Apuestas exteriores, en el orden en que se pintan bajo la mesa. */
+  readonly especiales = [
+    { tipo: '1-18', etiqueta: '1 – 18', clase: 'low' },
+    { tipo: 'par', etiqueta: 'Par', clase: 'even' },
+    { tipo: 'rojo', etiqueta: 'Rojo', clase: 'rojo' },
+    { tipo: 'negro', etiqueta: 'Negro', clase: 'negro' },
+    { tipo: 'impar', etiqueta: 'Impar', clase: 'odd' },
+    { tipo: '19-36', etiqueta: '19 – 36', clase: 'high' }
+  ];
+
+  /** Orden real de los números en una rueda europea, en el sentido de las agujas del reloj. */
+  private readonly ordenRueda = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+
+  /** Gradiente cónico con los 37 sectores de la rueda, calculado una sola vez. */
+  readonly gradienteRueda = (() => {
+    const paso = 360 / 37;
+    const colores: Record<string, string> = { rojo: '#a8323e', negro: '#1b1d1c', verde: '#2f6b4f' };
+    const paradas = this.ordenRueda.map((n, i) => {
+      const color = colores[n === 0 ? 'verde' : this.rojos.includes(n) ? 'rojo' : 'negro'];
+      return `${color} ${(i * paso).toFixed(3)}deg ${((i + 1) * paso).toFixed(3)}deg`;
+    });
+    return `conic-gradient(from ${(-paso / 2).toFixed(3)}deg, ${paradas.join(', ')})`;
+  })();
+
+  /**
+   * Posición de cada número en la mesa clásica: el 0 ocupa la primera columna
+   * y el resto se reparte en 12 columnas de 3 filas, con el 3 arriba y el 1 abajo.
+   */
+  posicion(n: number): { col: number; row: number } {
+    if (n === 0) return { col: 1, row: 1 };
+    return { col: Math.ceil(n / 3) + 1, row: 3 - ((n - 1) % 3) };
+  }
+
+  nombreColor(n: number | null): string {
+    if (n === null) return '';
+    if (n === 0) return 'verde';
+    return this.rojos.includes(n) ? 'rojo' : 'negro';
+  }
 
   mostrarModalNombre = false;
   mostrarModalSaldo = false;

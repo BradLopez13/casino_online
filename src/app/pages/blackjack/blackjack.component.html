@@ -8,66 +8,139 @@
   (goHome)="onGoHome()"
 />
 
-<div class="blackjack-container">
-  <h2>Blackjack</h2>
+<main class="page" id="contenido" tabindex="-1">
+  <header class="table-head stagger">
+    <p class="eyebrow" [style.--i]="0">Mesa 03 · Cartas</p>
+    <h1 class="display" [style.--i]="1">Blackjack</h1>
+    <p class="muted rules" [style.--i]="2">
+      Llega a 21 sin pasarte. El as vale 1 u 11, según convenga. La banca pide carta hasta 17.
+    </p>
+  </header>
 
-  <!-- Apuesta activa -->
-  <div *ngIf="apuesta" class="apuesta-actual">
-    💶 Apostado: {{ apuesta | currency:'EUR' }}
-  </div>
+  <div class="layout">
+    <!-- Mesa y cartas -->
+    <section class="felt" aria-label="Mesa de blackjack">
+      <div class="felt-arc" aria-hidden="true"></div>
 
-  <!-- Mesa y cartas -->
-  <div class="mesa">
-    <div class="mano">
-      <h3>Crupier</h3>
-      <div class="cartas">
-        <div class="carta" *ngFor="let carta of dealerHand">{{ carta }}</div>
+      <div class="hand dealer">
+        <div class="hand-label">
+          <span class="eyebrow">Crupier</span>
+          <span class="points mono" aria-live="polite">{{ dealerHand.length ? calcularPuntos(dealerHand) : '—' }}</span>
+        </div>
+        <div class="cards" role="list" [attr.aria-label]="'Cartas del crupier: ' + dealerHand.join(', ')">
+          <div
+            class="card"
+            role="listitem"
+            *ngFor="let carta of dealerHand; let i = index"
+            [class.red]="esRoja(carta)"
+            [style.--i]="i"
+            [attr.aria-label]="describirCarta(carta)">
+            <span class="corner mono">{{ valorDe(carta) }}<i>{{ paloDe(carta) }}</i></span>
+            <span class="pip">{{ paloDe(carta) }}</span>
+            <span class="corner corner-b mono">{{ valorDe(carta) }}<i>{{ paloDe(carta) }}</i></span>
+          </div>
+          <div class="card slot" *ngIf="!dealerHand.length" aria-hidden="true"></div>
+        </div>
       </div>
-      <p>Puntos: {{ calcularPuntos(dealerHand) }}</p>
-    </div>
 
-    <div class="mano">
-      <h3>Tú</h3>
-      <div class="cartas">
-        <div class="carta" *ngFor="let carta of playerHand">{{ carta }}</div>
+      <div class="hand player">
+        <div class="cards" role="list" [attr.aria-label]="'Tus cartas: ' + playerHand.join(', ')">
+          <div
+            class="card"
+            role="listitem"
+            *ngFor="let carta of playerHand; let i = index"
+            [class.red]="esRoja(carta)"
+            [style.--i]="i"
+            [attr.aria-label]="describirCarta(carta)">
+            <span class="corner mono">{{ valorDe(carta) }}<i>{{ paloDe(carta) }}</i></span>
+            <span class="pip">{{ paloDe(carta) }}</span>
+            <span class="corner corner-b mono">{{ valorDe(carta) }}<i>{{ paloDe(carta) }}</i></span>
+          </div>
+          <div class="card slot" *ngIf="!playerHand.length" aria-hidden="true"></div>
+          <div class="card slot" *ngIf="!playerHand.length" aria-hidden="true"></div>
+        </div>
+        <div class="hand-label">
+          <span class="eyebrow">Tú</span>
+          <span class="points mono" aria-live="polite">{{ playerHand.length ? calcularPuntos(playerHand) : '—' }}</span>
+        </div>
       </div>
-      <p>Puntos: {{ calcularPuntos(playerHand) }}</p>
-    </div>
+
+      <p class="bet-tag mono" *ngIf="apuesta">
+        <span>En juego</span> {{ apuesta | currency:'EUR' }}
+      </p>
+    </section>
+
+    <!-- Banco: apuesta, acciones y resultado -->
+    <aside class="bank">
+      <!-- Selección de apuesta -->
+      <section *ngIf="!apuesta" class="bank-block" aria-labelledby="bj-apuesta">
+        <h2 class="eyebrow" id="bj-apuesta">Elige tu apuesta</h2>
+        <p class="bank-hint muted">Saldo disponible <strong class="mono">{{ saldo | currency:'EUR' }}</strong></p>
+
+        <div class="chips">
+          <button
+            type="button"
+            *ngFor="let cantidad of fichas"
+            class="chip"
+            [ngClass]="'chip-' + cantidad"
+            [disabled]="cantidad > saldo"
+            [attr.aria-label]="'Apostar ' + cantidad + ' euros'"
+            (click)="apostar(cantidad)">
+            {{ cantidad }}
+          </button>
+        </div>
+
+        <form class="custom" (submit)="$event.preventDefault(); apostar(+apuestaInput.value)">
+          <div class="field">
+            <label for="bj-otra">Otra cantidad</label>
+            <div class="custom-row">
+              <input
+                id="bj-otra"
+                class="input mono"
+                type="number"
+                min="1"
+                [max]="saldo"
+                inputmode="numeric"
+                placeholder="0"
+                aria-describedby="bj-error"
+                #apuestaInput />
+              <button type="submit" class="btn btn-primary">Apostar</button>
+            </div>
+          </div>
+        </form>
+
+        <p class="error" id="bj-error" role="alert" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+      </section>
+
+      <!-- Turno del jugador -->
+      <section class="bank-block" *ngIf="!juegoTerminado && turnoJugador" aria-labelledby="bj-turno">
+        <h2 class="eyebrow" id="bj-turno">Tu turno</h2>
+        <p class="bank-hint muted">Tienes <strong class="mono">{{ calcularPuntos(playerHand) }}</strong>. La banca muestra <strong class="mono">{{ calcularPuntos(dealerHand) }}</strong>.</p>
+        <div class="actions">
+          <button type="button" class="btn btn-primary" (click)="pedirCarta()">Pedir carta</button>
+          <button type="button" class="btn btn-ghost" (click)="plantarse()">Plantarse</button>
+        </div>
+      </section>
+
+      <!-- Resultado final -->
+      <section class="bank-block" *ngIf="juegoTerminado" aria-live="assertive">
+        <div class="result" [ngClass]="resultadoClase">
+          <span class="eyebrow">Mano cerrada</span>
+          <p class="display">{{ resultado }}</p>
+          <p class="muted">Tú {{ calcularPuntos(playerHand) }} · Crupier {{ calcularPuntos(dealerHand) }}</p>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" (click)="resetearJuego()">Nueva mano</button>
+      </section>
+
+      <dl class="paytable mono">
+        <div><dt>Blackjack</dt><dd>Paga 1 a 1</dd></div>
+        <div><dt>Empate</dt><dd>Se devuelve</dd></div>
+        <div><dt>Banca</dt><dd>Se planta en 17</dd></div>
+      </dl>
+    </aside>
   </div>
+</main>
 
-  <!-- Fichas de apuesta (DESPUÉS de la mesa) -->
-  <div *ngIf="!apuesta" class="apuesta-seleccion">
-    <p>Selecciona tu apuesta:</p>
-    <div class="fichas">
-      <button
-        *ngFor="let cantidad of fichas"
-        [class.activa]="cantidad === apuesta"
-        (click)="apostar(cantidad)"
-      >
-         {{ cantidad | currency:'EUR':'symbol':'1.0-0' }}
-      </button>
-    </div>
-
-    <div class="apuesta-input">
-      <input type="number" min="1" [max]="saldo" placeholder="Otra cantidad" #apuestaInput />
-      <button (click)="apostar(+apuestaInput.value)">🎲 Apostar</button>
-    </div>
-
-    <p class="error" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
-  </div>
-
-  <!-- Controles del jugador -->
-  <div class="controles" *ngIf="!juegoTerminado && turnoJugador">
-    <button (click)="pedirCarta()">🃏 Pedir carta</button>
-    <button (click)="plantarse()">✋ Plantarse</button>
-  </div>
-
-  <!-- Resultado final -->
-  <div class="resultado" *ngIf="juegoTerminado">
-    <p>{{ resultado }}</p>
-    <button (click)="resetearJuego()">🔁 Nuevo juego</button>
-  </div>
-</div>
 <!-- modales -->
 <app-modal
   *ngIf="mostrarModalNombre"

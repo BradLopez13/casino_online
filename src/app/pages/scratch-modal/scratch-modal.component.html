@@ -1,10 +1,42 @@
-<div class="modal-overlay">
-  <div class="scratch-modal">
-    <h2>¡Rasca y gana!</h2>
-    <div class="scratch-container">
-      <canvas #scratchCanvas width="300" height="150"></canvas>
-      <div class="premio">{{ cantidadGanada }} €</div>
+<div class="dialog-backdrop">
+  <div
+    class="ticket"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rasca-titulo"
+    aria-describedby="rasca-texto">
+    <header class="ticket-head">
+      <p class="eyebrow">Boleto de recarga</p>
+      <h2 class="display" id="rasca-titulo">Rasca y <em>gana</em></h2>
+      <p id="rasca-texto" class="muted">
+        Frota la lámina con el dedo o el ratón. Si prefieres el teclado, pulsa «Revelar».
+      </p>
+    </header>
+
+    <div class="scratch-container" [class.revelado]="revelado">
+      <canvas
+        #scratchCanvas
+        width="300"
+        height="150"
+        role="img"
+        aria-label="Lámina para rascar que cubre el premio"></canvas>
+      <div class="premio">
+        <span class="premio-label mono">Premio</span>
+        <span class="premio-valor mono">{{ cantidadGanada }} €</span>
+        <span class="premio-nota">{{ cantidadGanada > 0 ? 'Se suma a tu saldo al aceptar' : 'Sin premio esta vez' }}</span>
+      </div>
     </div>
-    <button (click)="cerrarModal()">Aceptar</button>
+
+    <p class="sr-only" role="status" aria-live="polite">
+      {{ revelado ? (cantidadGanada > 0 ? 'Has ganado ' + cantidadGanada + ' euros.' : 'Sin premio esta vez.') : '' }}
+    </p>
+
+    <footer class="ticket-foot">
+      <span class="serial mono" aria-hidden="true">Nº {{ serie }}</span>
+      <div class="ticket-actions">
+        <button type="button" class="btn btn-ghost" (click)="revelar()" *ngIf="!revelado">Revelar</button>
+        <button #primario type="button" class="btn btn-primary" (click)="cerrarModal()">Aceptar</button>
+      </div>
+    </footer>
   </div>
 </div>

@@ -8,96 +8,111 @@
   (goHome)="onGoHome()"
 />
 
-<div class="ruleta-container">
-  <h2>🎡 Ruleta</h2>
+<main class="page" id="contenido" tabindex="-1">
+  <header class="table-head stagger">
+    <p class="eyebrow" [style.--i]="0">Mesa 02 · Rueda europea</p>
+    <h1 class="display" [style.--i]="1">Ruleta</h1>
+    <p class="muted rules" [style.--i]="2">
+      Elige una ficha, colócala en la mesa y gira. El pleno paga 36 a 1; color, paridad y mitades pagan 2 a 1.
+    </p>
+  </header>
 
-  <div class="ruleta-visual">
-    <div class="rueda" [class.girando]="enJuego" [ngClass]="getColorClaseResultado()">
-      <div class="numero">{{ resultado !== null ? resultado : '?' }}</div>
-    </div>
+  <div class="layout">
+    <!-- Rueda y estado -->
+    <section class="wheel-side" aria-label="Rueda">
+      <div class="wheel" [class.girando]="enJuego" [ngClass]="getColorClaseResultado()">
+        <div class="wheel-ring" [style.background]="gradienteRueda" aria-hidden="true"></div>
+        <div class="wheel-ticks" aria-hidden="true"></div>
+        <div class="wheel-hub">
+          <span class="wheel-label mono">{{ enJuego ? 'Girando' : (resultado !== null ? 'Salió' : 'Rueda') }}</span>
+          <span class="wheel-number mono" aria-live="assertive" aria-atomic="true">
+            {{ enJuego ? '·' : (resultado !== null ? resultado : '—') }}
+          </span>
+        </div>
+        <span class="wheel-pointer" aria-hidden="true"></span>
+      </div>
+
+      <div class="status">
+        <dl class="ledger mono">
+          <div><dt>En mesa</dt><dd>{{ apuestaActual | currency:'EUR' }}</dd></div>
+          <div><dt>Apuestas</dt><dd>{{ apuestas.length | number:'2.0-0' }}</dd></div>
+          <div><dt>Ficha</dt><dd>{{ fichaSeleccionada ? (fichaSeleccionada + ' €') : '—' }}</dd></div>
+        </dl>
+
+        <div class="result" *ngIf="resultadoMensaje as msg" [ngClass]="msg.ganancia > 0 ? 'win' : 'lose'" role="status">
+          <span class="eyebrow">Resultado</span>
+          <p class="display">{{ msg.ganancia > 0 ? ('Ganas ' + msg.ganancia + ' €') : 'La casa recoge' }}</p>
+          <p class="muted">Ha salido el <strong class="mono">{{ resultado }}</strong>, {{ nombreColor(resultado) }}.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mesa de apuestas -->
+    <section class="board" aria-label="Mesa de apuestas">
+      <div class="chips-row">
+        <p class="eyebrow" id="ruleta-fichas">Ficha</p>
+        <div class="chips" role="group" aria-labelledby="ruleta-fichas">
+          <button
+            type="button"
+            *ngFor="let f of fichas"
+            class="chip"
+            [ngClass]="'chip-' + f"
+            [attr.aria-pressed]="fichaSeleccionada === f"
+            [attr.aria-label]="'Ficha de ' + f + ' euros'"
+            [disabled]="enJuego"
+            (click)="seleccionarFicha(f)">
+            {{ f }}
+          </button>
+        </div>
+      </div>
+
+      <p class="board-hint muted" *ngIf="!fichaSeleccionada">Selecciona una ficha para poder apostar.</p>
+
+      <div class="grid" role="group" aria-label="Números">
+        <button
+          type="button"
+          *ngFor="let n of numeros"
+          class="cell"
+          [ngClass]="getColor(n)"
+          [class.zero]="n === 0"
+          [class.bet]="getApuesta(n.toString()) !== null"
+          [style.--c]="posicion(n).col"
+          [style.--r]="posicion(n).row"
+          [disabled]="enJuego || !fichaSeleccionada"
+          [attr.aria-label]="'Apostar al ' + n + ', ' + nombreColor(n) + (getApuesta(n.toString()) !== null ? ', llevas ' + getApuesta(n.toString()) + ' euros' : '')"
+          (click)="apostar(n.toString())">
+          <span class="cell-num mono">{{ n }}</span>
+          <span class="mini mono" *ngIf="getApuesta(n.toString()) !== null">{{ getApuesta(n.toString()) }}</span>
+        </button>
+      </div>
+
+      <div class="outside" role="group" aria-label="Apuestas exteriores">
+        <button
+          type="button"
+          *ngFor="let e of especiales"
+          class="out"
+          [ngClass]="e.clase"
+          [class.bet]="getApuesta(e.tipo) !== null"
+          [disabled]="enJuego || !fichaSeleccionada"
+          [attr.aria-label]="'Apostar a ' + e.etiqueta + (getApuesta(e.tipo) !== null ? ', llevas ' + getApuesta(e.tipo) + ' euros' : '')"
+          (click)="apostar(e.tipo)">
+          <span>{{ e.etiqueta }}</span>
+          <span class="mini mono" *ngIf="getApuesta(e.tipo) !== null">{{ getApuesta(e.tipo) }}</span>
+        </button>
+      </div>
+
+      <div class="controls">
+        <button type="button" class="btn btn-ghost" (click)="cancelarApuestas()" [disabled]="apuestas.length === 0 || enJuego">
+          Retirar fichas
+        </button>
+        <button type="button" class="btn btn-primary" (click)="girarRuleta()" [disabled]="apuestas.length === 0 || enJuego">
+          {{ enJuego ? 'Girando…' : 'Girar' }}
+          <app-icon name="wheel"></app-icon>
+        </button>
+      </div>
+    </section>
   </div>
-
-  <div class="fichas-container">
-    <p>Selecciona ficha:</p>
-    <div class="fichas">
-      <button
-        *ngFor="let f of fichas"
-        [class.activa]="fichaSeleccionada === f"
-        [ngClass]="'ficha-' + f"
-        (click)="seleccionarFicha(f)"
-      >
-        {{ f }}€
-      </button>
-    </div>
-  </div>
-
-  <div class="mesa">
-    <div class="numeros">
-      <button
-        *ngFor="let n of numeros"
-        [ngClass]="['casilla', getColor(n)]"
-        (click)="apostar(n.toString())"
-      >
-        {{ n }}
-        <span
-          class="ficha-mini"
-          *ngIf="getApuesta(n.toString()) !== null"
-        >
-          {{ getApuesta(n.toString()) }}
-        </span>
-      </button>
-    </div>
-  </div>
-
-  <div class="apuestas-especiales">
-    <button (click)="apostar('par')">
-      Par
-      <span class="ficha-mini" *ngIf="getApuesta('par') !== null">
-        {{ getApuesta('par') }}
-      </span>
-    </button>
-    <button (click)="apostar('impar')">
-      Impar
-      <span class="ficha-mini" *ngIf="getApuesta('impar') !== null">
-        {{ getApuesta('impar') }}
-      </span>
-    </button>
-    <button (click)="apostar('rojo')">
-      Rojo
-      <span class="ficha-mini" *ngIf="getApuesta('rojo') !== null">
-        {{ getApuesta('rojo') }}
-      </span>
-    </button>
-    <button (click)="apostar('negro')">
-      Negro
-      <span class="ficha-mini" *ngIf="getApuesta('negro') !== null">
-        {{ getApuesta('negro') }}
-      </span>
-    </button>
-    <button (click)="apostar('1-18')">
-      1 - 18
-      <span class="ficha-mini" *ngIf="getApuesta('1-18') !== null">
-        {{ getApuesta('1-18') }}
-      </span>
-    </button>
-    <button (click)="apostar('19-36')">
-      19 - 36
-      <span class="ficha-mini" *ngIf="getApuesta('19-36') !== null">
-        {{ getApuesta('19-36') }}
-      </span>
-    </button>
-  </div>
-
-  <div class="controles">
-    <button class="cancelar" (click)="cancelarApuestas()" [disabled]="apuestas.length === 0">❌ Cancelar</button>
-    <button class="jugar" (click)="girarRuleta()" [disabled]="apuestas.length === 0">🎰 Girar</button>
-  </div>
-
-  <p *ngIf="resultadoMensaje as msg">
-    {{ msg.ganancia > 0 ? ('¡Ganaste ' + msg.ganancia + '€!') : 'No ganaste esta vez.' }}
-  </p>
-
-</div>
+</main>
 
 <!-- Modales -->
 <app-modal

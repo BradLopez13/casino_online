@@ -1,17 +1,32 @@
-<div class="modal-backdrop">
-  <div class="modal-content">
+<div class="curtain">
+  <div
+    class="gate plaque"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="edad-titulo"
+    aria-describedby="edad-texto">
     <ng-container *ngIf="!mensajeRechazo; else bloqueado">
-      <h2>Verificación de Edad</h2>
-      <p>Debes confirmar que tienes al menos 18 años para usar este casino.</p>
-      <div class="buttons">
-        <button (click)="aceptar()">Sí, tengo más de 18</button>
-        <button (click)="rechazar()">No</button>
+      <p class="eyebrow">Antes de sentarte</p>
+      <h2 class="display" id="edad-titulo">¿Tienes <em>18 años</em> o más?</h2>
+      <p id="edad-texto">
+        Este salón es solo para mayores de edad. Confirma tu edad para abrir las mesas.
+        Todo el dinero es de juego, sin valor real.
+      </p>
+      <div class="dialog-actions split">
+        <button #primario type="button" class="btn btn-primary" (click)="aceptar()">Sí, soy mayor de edad</button>
+        <button type="button" class="btn btn-danger" (click)="rechazar()">No lo soy</button>
       </div>
     </ng-container>
 
     <ng-template #bloqueado>
-      <h2>Acceso Denegado</h2>
-      <p>No puedes acceder al casino si no eres mayor de edad.</p>
+      <p class="eyebrow">Acceso denegado</p>
+      <h2 class="display" id="edad-titulo">Lo sentimos, <em>hoy no</em>.</h2>
+      <p id="edad-texto" role="status">
+        No puedes acceder al casino si no eres mayor de edad. Cerrando la sesión…
+      </p>
+      <div class="countdown" aria-hidden="true"></div>
     </ng-template>
   </div>
+
+  <p class="gate-foot mono" aria-hidden="true">Meridiano · Salón de juego · +18</p>
 </div>

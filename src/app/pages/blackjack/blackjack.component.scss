@@ -1,198 +1,294 @@
 :host {
   display: block;
-  height: 100vh;
-  background: radial-gradient(circle at center, #0b3d0b 0%, #064d06 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #fff;
-  overflow-y: auto;
-  position: fixed;
-  inset: 0;
+  min-height: 100dvh;
 }
 
-.blackjack-container {
-  padding: 2rem;
-  max-width: 1200px;
+.page {
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 2.5rem 1rem 5rem;
 }
 
-h2 {
-  text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  color: #ffd700;
-  text-shadow: 0 0 0.5rem #000;
+.page:focus {
+  outline: none;
 }
 
-.mesa {
-  background-color: #0e4e0e;
-  border: 3px solid #004400;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: inset 0 0 1rem #003300, 0 0 1rem #000;
-  margin-bottom: 2rem;
+@media (min-width: 768px) {
+  .page {
+    padding: 3.5rem 2rem 6rem;
+  }
 }
 
-.mano {
-  margin-bottom: 2rem;
-  text-align: center;
+.rules {
+  max-width: 52ch;
 }
 
-.mano h3 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  color: #fff;
+.layout {
+  display: grid;
+  gap: 2rem;
 }
 
-.cartas {
-  display: flex;
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: 3rem;
+    align-items: start;
+  }
+}
+
+/* ---------- Tapete ---------- */
+.felt {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  --arc: clamp(3rem, 18vw, 12rem);
+  min-height: 24rem;
+  padding: 2.5rem 1.25rem 2rem;
+  border-radius: var(--arc) var(--arc) var(--radius-md) var(--radius-md);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 55%),
+    radial-gradient(80% 60% at 50% 100%, rgba(0, 0, 0, 0.35), transparent 70%),
+    var(--felt);
+  border: 1px solid rgba(242, 234, 216, 0.14);
+  box-shadow:
+    inset 0 0 0 10px var(--felt-2),
+    inset 0 0 0 11px rgba(201, 169, 97, 0.35),
+    var(--shadow-lift);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .felt {
+    padding: 3.5rem 2.5rem 2.5rem;
+  }
+}
+
+/* La etiqueta del crupier va centrada para no chocar con el arco superior */
+.dealer .hand-label {
   justify-content: center;
+  gap: 1.5rem;
+}
+
+/* Arco pintado del tapete, con la leyenda de la casa */
+.felt-arc {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 48%;
+  height: 40%;
+  border: 1px solid rgba(201, 169, 97, 0.35);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  pointer-events: none;
+}
+
+.felt-arc::after {
+  content: 'La banca se planta en 17 · Blackjack paga 1 a 1';
+  position: absolute;
+  left: 50%;
+  top: 0.9rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(201, 169, 97, 0.7);
+}
+
+.hand {
+  position: relative;
+  z-index: 1;
+  display: grid;
   gap: 1rem;
-  flex-wrap: wrap;
 }
 
-.carta {
-  background-color: #fff;
-  color: #000;
-  border: 2px solid #333;
-  border-radius: 0.5rem;
-  width: 3.5rem;
-  height: 5rem;
-  font-size: 1.5rem;
+.hand-label {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.apuesta-seleccion {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.apuesta-seleccion p {
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
-  color: #fff;
-}
-
-.fichas {
-  display: flex;
-  justify-content: center;
+  align-items: baseline;
+  justify-content: space-between;
   gap: 1rem;
+}
+
+.hand-label .eyebrow {
+  color: rgba(242, 234, 216, 0.7);
+}
+
+.points {
+  font-size: 1.5rem;
+  color: var(--ink);
+}
+
+.cards {
+  display: flex;
   flex-wrap: wrap;
-  margin-bottom: 1rem;
+  gap: 0.6rem;
+  min-height: 6.25rem;
 }
 
-.fichas button {
-  border: none;
-  border-radius: 50%;
-  width: 3.5rem;
-  height: 3.5rem;
-  font-weight: bold;
-  color: #fff;
-  cursor: pointer;
-  font-size: 1rem;
-  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.6);
-  transition: transform 0.2s;
+.dealer .cards {
+  justify-content: center;
 }
 
-.fichas button:hover {
-  transform: scale(1.1);
+.player .cards {
+  justify-content: center;
 }
 
-.fichas button:nth-child(1) { background-color: red; }
-.fichas button:nth-child(2) { background-color: blue; }
-.fichas button:nth-child(3) { background-color: green; }
-.fichas button:nth-child(4) { background-color: purple; }
-.fichas button:nth-child(5) { background-color: orange; }
-
-.apuesta-input {
-  margin-top: 0.5rem;
+/* ---------- Carta ---------- */
+.card {
+  --ink-card: #1b1b1b;
+  position: relative;
+  width: 4.25rem;
+  height: 6.25rem;
+  padding: 0.4rem;
+  border-radius: 6px;
+  background: linear-gradient(160deg, #fbf8f1, #ebe6da);
+  color: var(--ink-card);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 10px 20px -10px rgba(0, 0, 0, 0.8);
+  display: grid;
+  place-items: center;
+  animation: deal 0.55s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+  transform-origin: bottom center;
 }
 
-.apuesta-input input {
-  padding: 0.5rem;
-  width: 6rem;
-  margin-right: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.3rem;
+@keyframes deal {
+  from { opacity: 0; transform: translateY(-24px) rotate(-6deg) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
 }
 
-.apuesta-input button {
-  background-color: #ffd700;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-weight: bold;
-  border-radius: 0.3rem;
-  cursor: pointer;
+.card.red {
+  --ink-card: #a8323e;
 }
 
-.controles {
-  text-align: center;
-  margin-top: 1.5rem;
+.corner {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.45rem;
+  display: grid;
+  line-height: 1;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.controles button {
-  margin: 0 1rem;
-  padding: 0.7rem 1.5rem;
-  border: none;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #fff;
-  background-color: #333;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.corner i {
+  font-style: normal;
+  font-size: 0.7rem;
 }
 
-.controles button:hover {
-  background-color: #555;
+.corner-b {
+  top: auto;
+  left: auto;
+  right: 0.45rem;
+  bottom: 0.35rem;
+  transform: rotate(180deg);
 }
 
-.resultado {
-  text-align: center;
-  font-size: 1.3rem;
-  margin-top: 2rem;
-  color: #ffd700;
+.pip {
+  font-size: 2rem;
+  line-height: 1;
 }
 
-.error {
-  color: #ff4d4d;
-  margin-top: 0.5rem;
+/* Hueco vacío antes de repartir */
+.card.slot {
+  background: transparent;
+  border: 1px dashed rgba(242, 234, 216, 0.3);
+  box-shadow: none;
+  animation: none;
 }
 
-.apuesta-actual {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #ffd700;
-  margin-bottom: 1.5rem;
+.bet-tag {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1rem;
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(201, 169, 97, 0.45);
+  border-radius: 999px;
+  background: rgba(14, 16, 15, 0.5);
+  font-size: 0.85rem;
+  color: var(--accent-2);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .cartas {
-    flex-wrap: wrap;
-  }
-
-  .fichas {
-    flex-wrap: wrap;
-  }
-
-  .mesa {
-    padding: 1rem;
-  }
+.bet-tag span {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-2);
 }
-/* Responsive */
-@media (max-height: 650px) {
-  .cartas {
-    flex-wrap: wrap;
-  }
 
-  .fichas {
-    flex-wrap: wrap;
-  }
+/* ---------- Banco ---------- */
+.bank {
+  display: grid;
+  gap: 1.5rem;
+}
 
-  .mesa {
-    padding: 1rem;
-  }
+.bank-block {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.bank-hint {
+  font-size: 0.9rem;
+}
+
+.bank-hint strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 0.9rem;
+  padding: 0.75rem 0.5rem 0.5rem;
+}
+
+.custom-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.result .display {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+}
+
+.paytable {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.75rem;
+}
+
+.paytable div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.paytable dt {
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.paytable dd {
+  margin: 0;
+  color: var(--ink-2);
 }

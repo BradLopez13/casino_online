@@ -8,12 +8,13 @@ import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { authState, updatePassword, User } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
+import { IconComponent } from '../../ui/icon/icon.component';
 
 
 @Component({
   selector: 'app-slot',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, ModalComponent, FormsModule, ScratchModalComponent],
+  imports: [CommonModule, HeaderComponent, ModalComponent, FormsModule, ScratchModalComponent, IconComponent],
   templateUrl: './slot.component.html',
   styleUrls: ['./slot.component.scss']
 })
@@ -79,13 +80,35 @@ export class SlotComponent {
       this.isSpinning = false;
       const ganancia = this.calcularGanancia();
       if (ganancia > 0) {
-        this.mensajeResultado = `¡Ganaste ${ganancia}€! 🎉`;
+        this.mensajeResultado = `¡Ganaste ${ganancia} €!`;
         this.saldo += ganancia;
       } else {
         this.mensajeResultado = 'Sigue intentándolo...';
       }
       this.actualizarSaldo();
     }, 1000);
+  }
+
+  /* Presentación: cada símbolo de datos se dibuja con un icono y se nombra en voz alta. */
+  private readonly iconos = ['cherry', 'lemon', 'grape', 'bell', 'diamond', 'seven'];
+  private readonly nombres = ['Cereza', 'Limón', 'Uva', 'Campana', 'Diamante', 'Siete'];
+
+  iconoDe(simbolo: string): string {
+    const i = this.symbols.indexOf(simbolo);
+    return i >= 0 ? this.iconos[i] : 'blank';
+  }
+
+  nombreDe(simbolo: string): string {
+    const i = this.symbols.indexOf(simbolo);
+    return i >= 0 ? this.nombres[i] : 'Vacío';
+  }
+
+  get paytable() {
+    return this.symbols.map((s, i) => ({ icono: this.iconos[i], nombre: this.nombres[i], multiplicador: this.obtenerMultiplicador(s) }));
+  }
+
+  get resultadoClase(): string {
+    return this.mensajeResultado.startsWith('¡Ganaste') ? 'win' : 'lose';
   }
 
   randomSymbol(): string {

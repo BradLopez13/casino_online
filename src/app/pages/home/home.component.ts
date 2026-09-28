@@ -8,6 +8,7 @@ import { HeaderComponent } from '../header/header.component';
 import { ModalComponent } from '../modal/modal.component';
 import { AgeVerificationComponent } from '../age-verification/age-verification.component';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
+import { IconComponent } from '../../ui/icon/icon.component';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,8 @@ import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component'
     HeaderComponent,
     AgeVerificationComponent,
     ModalComponent,
-    ScratchModalComponent
+    ScratchModalComponent,
+    IconComponent
   ]
 })
 export class HomeComponent {
@@ -44,10 +46,13 @@ export class HomeComponent {
 
 
   juegos = [
-    { nombre: 'Tragaperras', descripcion: 'Prueba suerte en las slots', ruta: '/slot' },
-    { nombre: 'Ruleta', descripcion: 'Apuesta al rojo o negro', ruta: '/ruleta' },
-    { nombre: 'Blackjack', descripcion: 'Llega a 21 sin pasarte', ruta: '/blackjack' }
+    { nombre: 'Tragaperras', descripcion: 'Tres rodillos, cinco líneas. Del ×2 de las cerezas al ×15 del siete.', nota: 'Paga hasta ×15', icono: 'reels', ruta: '/slot' },
+    { nombre: 'Ruleta', descripcion: 'Treinta y siete números. Pleno, color, par o impar, mitades altas y bajas.', nota: 'Pleno 36 a 1', icono: 'wheel', ruta: '/ruleta' },
+    { nombre: 'Blackjack', descripcion: 'Llega a 21 sin pasarte. La banca pide carta hasta plantarse en 17.', nota: 'Banca planta en 17', icono: 'cards', ruta: '/blackjack' }
   ];
+
+  /** Hora local en la que se abrió la sesión, para la línea de cabecera. */
+  readonly horaApertura = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(new Date());
 
   private auth = inject(AuthService);
   private firestore = inject(Firestore);
