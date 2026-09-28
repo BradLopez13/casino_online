@@ -1,30 +1,47 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { HomeComponent } from './pages/home/home.component';
-import { BlackjackComponent } from './pages/blackjack/blackjack.component';
 import { authGuard } from './guards/auth.guard';
 import { mayorDeEdadGuard } from './guards/mayor-de-edad.guard';
-import { SlotComponent } from './pages/slot/slot.component';
-import { RuletaComponent } from './pages/ruleta/ruleta.component';
-import { from } from 'rxjs';
 
+/*
+ * Cada pantalla se descarga al visitarla por primera vez (loadComponent), así
+ * el bundle inicial solo lleva el armazón, los guards y Firebase. Las mesas,
+ * que además exigen sesión y mayoría de edad, nunca se bajan si no se entra.
+ */
 export const routes: Routes = [
   // Rutas públicas
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent)
+  },
 
-  // Ruta protegida
-  { path: 'home', component: HomeComponent, canActivate: [authGuard] },
-  {path: 'blackjack',component: BlackjackComponent, canActivate: [authGuard, mayorDeEdadGuard]},
-  {path: 'slot',component: SlotComponent, canActivate: [authGuard, mayorDeEdadGuard]},
-  {path: 'ruleta',component: RuletaComponent, canActivate: [authGuard, mayorDeEdadGuard]},
+  // Salón: requiere sesión
+  {
+    path: 'home',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
+  },
 
-  // Redirección por defecto
+  // Mesas: requieren sesión y mayoría de edad confirmada
+  {
+    path: 'blackjack',
+    canActivate: [authGuard, mayorDeEdadGuard],
+    loadComponent: () => import('./pages/blackjack/blackjack.component').then(m => m.BlackjackComponent)
+  },
+  {
+    path: 'slot',
+    canActivate: [authGuard, mayorDeEdadGuard],
+    loadComponent: () => import('./pages/slot/slot.component').then(m => m.SlotComponent)
+  },
+  {
+    path: 'ruleta',
+    canActivate: [authGuard, mayorDeEdadGuard],
+    loadComponent: () => import('./pages/ruleta/ruleta.component').then(m => m.RuletaComponent)
+  },
+
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-  
-
-  
-  // Ruta 404 opcional
   { path: '**', redirectTo: 'home' }
 ];
