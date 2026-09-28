@@ -60,6 +60,19 @@ Las claves están tipadas a partir de `es.json`: una clave mal escrita, o una qu
 
 Las reglas de Firestore están en [`firestore.rules`](firestore.rules): cada jugador solo puede leer y modificar su propio documento, el perfil nace siempre con los mismos valores iniciales y la verificación de edad no se puede retirar. Se prueban con 21 tests contra el emulador de Firestore, en [`firestore-tests/`](firestore-tests/rules.test.ts).
 
+Las reglas protegen los datos de un jugador frente a los demás. No protegen el saldo frente al propio jugador; eso se explica en la sección siguiente.
+
+## Limitaciones conocidas
+
+La app no tiene backend propio: el navegador habla directamente con Firestore y toda la lógica de juego corre en el cliente. Para un proyecto con fichas sin valor era una simplificación aceptable, pero tiene consecuencias que conviene dejar claras.
+
+- **El jugador controla su propio saldo.** La regla de actualización solo exige que `saldo` sea un número mayor o igual que cero. Cualquiera con sesión iniciada puede abrir la consola del navegador y escribir el saldo que quiera en su documento.
+- **Los resultados se calculan en el navegador.** La ruleta, los rodillos, la baraja del blackjack y el premio del rasca salen de `Math.random()` en el cliente, y el cliente decide cuánto se gana. No hay forma de comprobar desde fuera que una partida fue legítima.
+- **El rasca se puede repetir sin límite.** No hay ningún control de cuántas veces se recargan fichas.
+- **La verificación de edad es una declaración.** El jugador pulsa «Sí, soy mayor de edad» y el perfil queda marcado; no se comprueba nada.
+
+**Cómo se arreglaría.** El saldo tendría que dejar de ser escribible desde el cliente (`saldo` fuera de los campos permitidos en la regla de `update`) y cada jugada pasaría por un servidor, por ejemplo una Cloud Function. El cliente enviaría solo la apuesta, y la función generaría el resultado con un generador aleatorio del servidor, calcularía el pago y actualizaría el saldo dentro de una transacción. El rasca pasaría por la misma vía, con un límite por jugador y día. El historial de jugadas quedaría registrado en el servidor para poder auditarlo.
+
 ## Cómo ejecutarlo
 
 Requiere Node.js 22.
