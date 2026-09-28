@@ -5,19 +5,21 @@
   (changePassword)="onChangePassword()"
   (addSaldo)="onAddSaldo()"
   (logout)="onLogout()"
-  (goHome)="onGoHome()"
 />
 
-<main class="page" id="contenido" tabindex="-1">
+<main class="page mesa" id="contenido" tabindex="-1">
   <header class="table-head stagger">
     <p class="eyebrow" [style.--i]="0">{{ t('slot.eyebrow') }}</p>
     <h1 class="display" [style.--i]="1">{{ t('juegos.slot.nombre') }}</h1>
-    <p class="muted rules" [style.--i]="2">{{ t('slot.reglas') }}</p>
+    <details class="reglas" [open]="vp.amplio()" [style.--i]="2">
+      <summary [title]="t('comun.reglas')"><app-icon name="info"></app-icon><span class="reglas-texto">{{ t('comun.reglas') }}</span></summary>
+      <p>{{ t('slot.reglas') }}</p>
+    </details>
   </header>
 
   <div class="layout">
-    <!-- Máquina -->
-    <section class="machine" [attr.aria-label]="t('slot.rodillos')">
+    <!-- Escena: la máquina -->
+    <section class="machine escena" [attr.aria-label]="t('slot.rodillos')">
       <div class="cabinet">
         <div class="window" [class.spinning]="isSpinning" [class.idle]="sinTirar">
           <div class="reel" *ngFor="let columna of reels; let c = index" [style.--c]="c">
@@ -44,12 +46,32 @@
       </p>
     </section>
 
-    <!-- Banco -->
-    <aside class="bank">
-      <form class="bank-block" (submit)="$event.preventDefault(); spin()" aria-labelledby="slot-apuesta">
-        <h2 class="eyebrow" id="slot-apuesta">{{ t('slot.apuestaTitulo') }}</h2>
+    <div class="bank">
+      <!-- Mando: resultado, apuesta y giro. En móvil queda pegado abajo -->
+      <form class="mando" (submit)="$event.preventDefault(); spin()" aria-labelledby="slot-apuesta">
+        <div class="result" *ngIf="mensajeResultado && !isSpinning" [ngClass]="resultadoClase">
+          <span class="eyebrow">{{ t('slot.tirada') }}</span>
+          <p class="display">{{ mensajeResultado }}</p>
+        </div>
+
+        <h2 class="eyebrow solo-amplio" id="slot-apuesta">{{ t('slot.apuestaTitulo') }}</h2>
+
+        <div class="fila-fichas" role="group" [attr.aria-label]="t('slot.importe')">
+          <button
+            type="button"
+            *ngFor="let valor of apuestasRapidas"
+            class="chip chip-sm"
+            [ngClass]="'chip-' + valor"
+            [attr.aria-pressed]="apuesta === valor"
+            [attr.aria-label]="t('slot.fijarApuesta', { fichas: (valor | fichas) })"
+            [disabled]="isSpinning || valor > saldo"
+            (click)="apuesta = valor">
+            {{ valor }}
+          </button>
+        </div>
+
         <div class="field">
-          <label for="slot-importe">{{ t('slot.importe') }}</label>
+          <label for="slot-importe" class="solo-amplio">{{ t('slot.importe') }}</label>
           <div class="custom-row">
             <input
               id="slot-importe"
@@ -60,24 +82,21 @@
               [max]="saldo"
               min="1"
               inputmode="numeric"
+              [attr.aria-label]="t('slot.importe')"
               [disabled]="isSpinning"
               aria-describedby="slot-help slot-error" />
-            <button type="submit" class="btn btn-primary" [disabled]="isSpinning || apuesta <= 0">
+            <button type="submit" class="btn btn-primary girar" [disabled]="isSpinning || apuesta <= 0">
               {{ isSpinning ? t('comun.girando') : t('comun.girar') }}
               <app-icon name="reels"></app-icon>
             </button>
           </div>
-          <small id="slot-help" class="help">{{ t('comun.saldoDisponible') }} <strong class="mono">{{ saldo | fichas }}</strong></small>
+          <small id="slot-help" class="help solo-amplio">{{ t('comun.saldoDisponible') }} <strong class="mono">{{ saldo | fichas }}</strong></small>
         </div>
         <p class="error" id="slot-error" role="alert" *ngIf="mensajeApuesta">{{ t(mensajeApuesta) }}</p>
       </form>
 
-      <div class="result" *ngIf="mensajeResultado && !isSpinning" [ngClass]="resultadoClase">
-        <span class="eyebrow">{{ t('slot.tirada') }}</span>
-        <p class="display">{{ mensajeResultado }}</p>
-      </div>
-
-      <section class="bank-block" aria-labelledby="slot-pagos">
+      <!-- Detalle: tabla de pagos -->
+      <section class="detalle bank-block" aria-labelledby="slot-pagos">
         <h2 class="eyebrow" id="slot-pagos">{{ t('slot.pagos') }}</h2>
         <ul class="paytable">
           <li *ngFor="let p of paytable">
@@ -87,7 +106,7 @@
           </li>
         </ul>
       </section>
-    </aside>
+    </div>
   </div>
 </main>
 

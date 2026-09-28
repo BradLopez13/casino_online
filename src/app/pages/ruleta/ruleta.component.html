@@ -5,19 +5,22 @@
   (changePassword)="onChangePassword()"
   (addSaldo)="onAddSaldo()"
   (logout)="onLogout()"
-  (goHome)="onGoHome()"
 />
 
-<main class="page" id="contenido" tabindex="-1">
+<main class="page mesa" id="contenido" tabindex="-1">
   <header class="table-head stagger">
     <p class="eyebrow" [style.--i]="0">{{ t('ruleta.eyebrow') }}</p>
     <h1 class="display" [style.--i]="1">{{ t('juegos.ruleta.nombre') }}</h1>
-    <p class="muted rules" [style.--i]="2">{{ t('ruleta.reglas') }}</p>
+    <details class="reglas" [open]="vp.amplio()" [style.--i]="2">
+      <summary [title]="t('comun.reglas')"><app-icon name="info"></app-icon><span class="reglas-texto">{{ t('comun.reglas') }}</span></summary>
+      <p>{{ t('ruleta.reglas') }}</p>
+    </details>
   </header>
 
   <div class="layout">
-    <!-- Rueda y estado -->
-    <section class="wheel-side" [attr.aria-label]="t('ruleta.rueda')">
+    <!-- Escena: rueda y marcador -->
+    <section class="wheel-side escena" [attr.aria-label]="t('ruleta.rueda')">
+      <div class="rueda-marcador">
       <div class="wheel" [class.girando]="enJuego" [ngClass]="getColorClaseResultado()">
         <div class="wheel-ring" [style.background]="gradienteRueda" aria-hidden="true"></div>
         <div class="wheel-ticks" aria-hidden="true"></div>
@@ -37,23 +40,57 @@
           <div><dt>{{ t('ruleta.ficha') }}</dt><dd>{{ fichaSeleccionada ? (fichaSeleccionada | fichas) : '—' }}</dd></div>
         </dl>
 
-        <div class="result" *ngIf="resultadoMensaje as msg" [ngClass]="msg.ganancia > 0 ? 'win' : 'lose'" role="status">
-          <span class="eyebrow">{{ t('ruleta.resultado') }}</span>
-          <p class="display">{{ msg.ganancia > 0 ? t('ruleta.ganas', { fichas: (msg.ganancia | fichas) }) : t('ruleta.casaRecoge') }}</p>
-          <p class="muted" [innerHTML]="t('ruleta.haSalido', { n: resultado ?? '', color: nombreColor(resultado) })"></p>
-        </div>
+        <ng-container *ngTemplateOutlet="resultadoTpl; context: { clase: 'solo-amplio' }"></ng-container>
+      </div>
       </div>
     </section>
 
-    <!-- Mesa de apuestas -->
-    <section class="board" [attr.aria-label]="t('ruleta.mesa')">
-      <div class="chips-row">
-        <p class="eyebrow" id="ruleta-fichas">{{ t('ruleta.ficha') }}</p>
-        <div class="chips" role="group" aria-labelledby="ruleta-fichas">
+    <div class="bank">
+      <!-- Tablero de apuestas -->
+      <section class="board tablero" [attr.aria-label]="t('ruleta.mesa')">
+        <div class="grid" role="group" [attr.aria-label]="t('ruleta.numeros')">
+          <button
+            type="button"
+            *ngFor="let n of numeros"
+            class="cell"
+            [ngClass]="getColor(n)"
+            [class.zero]="n === 0"
+            [class.bet]="getApuesta(n.toString()) !== null"
+            [style.--c]="posicion(n).col"
+            [style.--r]="posicion(n).row"
+            [disabled]="enJuego || !fichaSeleccionada"
+            [attr.aria-label]="etiquetaCasilla(t('ruleta.apostarAl', { n: n, color: nombreColor(n) }), n.toString())"
+            (click)="apostar(n.toString())">
+            <span class="cell-num mono">{{ n }}</span>
+            <span class="mini mono" *ngIf="getApuesta(n.toString()) !== null">{{ getApuesta(n.toString()) }}</span>
+          </button>
+        </div>
+
+        <div class="outside" role="group" [attr.aria-label]="t('ruleta.exteriores')">
+          <button
+            type="button"
+            *ngFor="let e of especiales"
+            class="out"
+            [ngClass]="e.clase"
+            [class.bet]="getApuesta(e.tipo) !== null"
+            [disabled]="enJuego || !fichaSeleccionada"
+            [attr.aria-label]="etiquetaCasilla(t('ruleta.apostarA', { etiqueta: t(e.etiqueta) }), e.tipo)"
+            (click)="apostar(e.tipo)">
+            <span>{{ t(e.etiqueta) }}</span>
+            <span class="mini mono" *ngIf="getApuesta(e.tipo) !== null">{{ getApuesta(e.tipo) }}</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Mando: resultado (en móvil), ficha y giro -->
+      <section class="mando" [attr.aria-label]="t('ruleta.ficha')">
+        <ng-container *ngTemplateOutlet="resultadoTpl; context: { clase: 'solo-compacto' }"></ng-container>
+
+        <div class="fila-fichas" role="group" [attr.aria-label]="t('ruleta.ficha')">
           <button
             type="button"
             *ngFor="let f of fichas"
-            class="chip"
+            class="chip chip-sm"
             [ngClass]="'chip-' + f"
             [attr.aria-pressed]="fichaSeleccionada === f"
             [attr.aria-label]="t('ruleta.fichaDe', { n: (f | fichas) })"
@@ -62,55 +99,29 @@
             {{ f }}
           </button>
         </div>
-      </div>
 
-      <p class="board-hint muted" *ngIf="!fichaSeleccionada">{{ t('ruleta.hint') }}</p>
-
-      <div class="grid" role="group" [attr.aria-label]="t('ruleta.numeros')">
-        <button
-          type="button"
-          *ngFor="let n of numeros"
-          class="cell"
-          [ngClass]="getColor(n)"
-          [class.zero]="n === 0"
-          [class.bet]="getApuesta(n.toString()) !== null"
-          [style.--c]="posicion(n).col"
-          [style.--r]="posicion(n).row"
-          [disabled]="enJuego || !fichaSeleccionada"
-          [attr.aria-label]="etiquetaCasilla(t('ruleta.apostarAl', { n: n, color: nombreColor(n) }), n.toString())"
-          (click)="apostar(n.toString())">
-          <span class="cell-num mono">{{ n }}</span>
-          <span class="mini mono" *ngIf="getApuesta(n.toString()) !== null">{{ getApuesta(n.toString()) }}</span>
-        </button>
-      </div>
-
-      <div class="outside" role="group" [attr.aria-label]="t('ruleta.exteriores')">
-        <button
-          type="button"
-          *ngFor="let e of especiales"
-          class="out"
-          [ngClass]="e.clase"
-          [class.bet]="getApuesta(e.tipo) !== null"
-          [disabled]="enJuego || !fichaSeleccionada"
-          [attr.aria-label]="etiquetaCasilla(t('ruleta.apostarA', { etiqueta: t(e.etiqueta) }), e.tipo)"
-          (click)="apostar(e.tipo)">
-          <span>{{ t(e.etiqueta) }}</span>
-          <span class="mini mono" *ngIf="getApuesta(e.tipo) !== null">{{ getApuesta(e.tipo) }}</span>
-        </button>
-      </div>
-
-      <div class="controls">
-        <button type="button" class="btn btn-ghost" (click)="cancelarApuestas()" [disabled]="apuestas.length === 0 || enJuego">
-          {{ t('ruleta.retirar') }}
-        </button>
-        <button type="button" class="btn btn-primary" (click)="girarRuleta()" [disabled]="apuestas.length === 0 || enJuego">
-          {{ enJuego ? t('comun.girando') : t('comun.girar') }}
-          <app-icon name="wheel"></app-icon>
-        </button>
-      </div>
-    </section>
+        <div class="controls">
+          <button type="button" class="btn btn-ghost" (click)="cancelarApuestas()" [disabled]="apuestas.length === 0 || enJuego">
+            {{ t('ruleta.retirar') }}
+          </button>
+          <button type="button" class="btn btn-primary" (click)="girarRuleta()" [disabled]="apuestas.length === 0 || enJuego">
+            {{ enJuego ? t('comun.girando') : t('comun.girar') }}
+            <app-icon name="wheel"></app-icon>
+          </button>
+        </div>
+      </section>
+    </div>
   </div>
 </main>
+
+<!-- Resultado de la tirada: junto a la rueda en escritorio, dentro del mando en móvil -->
+<ng-template #resultadoTpl let-clase="clase">
+  <div class="result" *ngIf="resultadoMensaje as msg" [ngClass]="[msg.ganancia > 0 ? 'win' : 'lose', clase]" role="status">
+    <span class="eyebrow">{{ t('ruleta.resultado') }}</span>
+    <p class="display">{{ msg.ganancia > 0 ? t('ruleta.ganas', { fichas: (msg.ganancia | fichas) }) : t('ruleta.casaRecoge') }}</p>
+    <p class="muted" [innerHTML]="t('ruleta.haSalido', { n: resultado ?? '', color: nombreColor(resultado) })"></p>
+  </div>
+</ng-template>
 
 <!-- Diálogos de cuenta -->
 <app-modal

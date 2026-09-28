@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export type IconName =
   | 'home' | 'pencil' | 'key' | 'ticket' | 'sign-out' | 'chevron' | 'arrow'
   | 'eye' | 'eye-off' | 'google' | 'cards' | 'wheel' | 'reels' | 'close' | 'spark'
-  | 'cherry' | 'lemon' | 'grape' | 'bell' | 'diamond' | 'seven' | 'blank';
+  | 'plus' | 'info' | 'cherry' | 'lemon' | 'grape' | 'bell' | 'diamond' | 'seven' | 'blank';
 
 /**
  * Iconos de trazo único, 24x24, grosor 1.5.
@@ -48,6 +48,12 @@ export type IconName =
         }
         @case ('arrow') {
           <path d="M5 12h14m-6-6 6 6-6 6"/>
+        }
+        @case ('plus') {
+          <path d="M12 5v14M5 12h14"/>
+        }
+        @case ('info') {
+          <circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.1"/>
         }
         @case ('close') {
           <path d="m6 6 12 12M18 6 6 18"/>

@@ -4,6 +4,7 @@ import { HeaderComponent } from '../header/header.component';
 import { ModalComponent } from '../modal/modal.component';
 import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
+import { ViewportService } from '../../ui/viewport.service';
 import { Router } from '@angular/router';
 import { authState, User, updatePassword } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
@@ -22,6 +23,8 @@ import { Clave, useI18n } from '../../i18n/i18n.service';
 export class RuletaComponent {
   protected readonly i18n = useI18n();
   protected readonly t = this.i18n.t;
+  /** Reglas abiertas de serie solo con dos columnas. */
+  protected readonly vp = inject(ViewportService);
 
   private auth = inject(AuthService);
   private perfiles = inject(PerfilService);

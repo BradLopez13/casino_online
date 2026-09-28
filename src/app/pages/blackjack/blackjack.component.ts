@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
+import { ViewportService } from '../../ui/viewport.service';
 import { Router } from '@angular/router';
 import { ModalComponent } from '../modal/modal.component';
 import { authState, updatePassword, User } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
 import { FichasPipe } from '../../ui/fichas.pipe';
+import { IconComponent } from '../../ui/icon/icon.component';
 import { Clave, useI18n } from '../../i18n/i18n.service';
 
 
@@ -16,11 +18,13 @@ import { Clave, useI18n } from '../../i18n/i18n.service';
   standalone: true,
   templateUrl: './blackjack.component.html',
   styleUrls: ['./blackjack.component.scss'],
-  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent, FichasPipe]
+  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent, FichasPipe, IconComponent]
 })
 export class BlackjackComponent {
   protected readonly i18n = useI18n();
   protected readonly t = this.i18n.t;
+  /** Reglas abiertas de serie solo con dos columnas. */
+  protected readonly vp = inject(ViewportService);
 
   private auth = inject(AuthService);
   private perfiles = inject(PerfilService);

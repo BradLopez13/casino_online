@@ -17,7 +17,8 @@
     "entendido": "Entendido",
     "girar": "Girar",
     "girando": "Girando…",
-    "usuario": "usuario"
+    "usuario": "usuario",
+    "reglas": "Reglas"
   },
   "fichas": {
     "una": "{{n}} ficha",
@@ -73,7 +74,10 @@
       "punto2": "Recibes mil al crear la cuenta.",
       "punto3": "Si te quedas sin fichas, abre el menú de cuenta y elige «Rasca y recarga». El boleto es gratuito.",
       "punto4": "Meridiano es un proyecto académico para mayores de 18 años."
-    }
+    },
+    "navMesas": "Mesas",
+    "tuCuenta": "Tu cuenta",
+    "saldoCorto": "{{saldo}} en fichas"
   },
   "cuenta": {
     "eyebrow": "Cuenta",
@@ -196,7 +200,8 @@
       "diamante": "Diamante",
       "siete": "Siete",
       "vacio": "Vacío"
-    }
+    },
+    "fijarApuesta": "{{fichas}} por tirada"
   },
   "ruleta": {
     "eyebrow": "Mesa 02 · Rueda europea",

@@ -5,6 +5,7 @@ import { ModalComponent } from '../modal/modal.component';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
+import { ViewportService } from '../../ui/viewport.service';
 import { Router } from '@angular/router';
 import { authState, updatePassword, User } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
@@ -23,6 +24,8 @@ import { Clave, useI18n } from '../../i18n/i18n.service';
 export class SlotComponent {
   protected readonly i18n = useI18n();
   protected readonly t = this.i18n.t;
+  /** Reglas abiertas de serie solo con dos columnas. */
+  protected readonly vp = inject(ViewportService);
 
   private auth = inject(AuthService);
   private perfiles = inject(PerfilService);
@@ -37,6 +40,8 @@ export class SlotComponent {
   sinTirar = true;
   isSpinning = false;
   apuesta = 10;
+  /** Importes de un toque en el mando. */
+  readonly apuestasRapidas = [5, 10, 25, 50, 100];
   mensajeApuesta: Clave | null = null;
   /** Resultado de la última tirada; se traduce al pintarse. */
   resultado: { gana: boolean; fichas: number } | null = null;

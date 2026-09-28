@@ -199,6 +199,13 @@
   color: var(--ink-2);
 }
 
+/* En una columna el tapete no necesita altura mínima: la marcan las cartas */
+@include hasta($bp-xl) {
+  .felt {
+    min-height: 0;
+  }
+}
+
 /* ---------- Banco ---------- */
 .bank {
   display: grid;
@@ -221,12 +228,6 @@
   font-weight: 600;
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 0.9rem;
-  padding: 0.75rem 0.5rem 0.5rem;
-}
 
 .custom-row {
   display: grid;

@@ -516,6 +516,45 @@ img, svg, canvas {
   }
 }
 
+/* Diálogo informativo (ayuda de fichas) y su botón de cierre */
+.info {
+  position: relative;
+  max-width: 28rem;
+}
+
+.dialog-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: var(--touch);
+  height: var(--touch);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink-2);
+  transition: color 0.2s var(--ease-out), background-color 0.2s var(--ease-out);
+}
+
+.dialog-close:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.info-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+.info-list li {
+  padding-left: 1rem;
+  border-left: var(--hairline) solid var(--accent);
+}
+
 @keyframes backdrop-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -589,6 +628,54 @@ img, svg, canvas {
     0 0.875rem 1.125rem -0.625rem rgba(0, 0, 0, 0.9);
 }
 
+/* Ficha pequeña para selectores rápidos: mantiene el objetivo táctil mínimo */
+.chip.chip-sm {
+  width: var(--touch);
+  height: var(--touch);
+  font-size: 0.8rem;
+  box-shadow:
+    0 0 0 var(--hairline) rgba(0, 0, 0, 0.45),
+    0 0 0 0.25rem var(--chip),
+    0 0 0 0.3125rem rgba(0, 0, 0, 0.45);
+}
+
+.chip.chip-sm::before {
+  inset: -0.25rem;
+}
+
+.chip.chip-sm::after {
+  inset: 0.35rem;
+}
+
+.chip.chip-sm[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 var(--hairline) rgba(0, 0, 0, 0.45),
+    0 0 0 0.25rem var(--chip),
+    0 0 0 0.3125rem rgba(0, 0, 0, 0.45),
+    0 0 0 0.4375rem var(--accent-2);
+}
+
+/* Fila de fichas que se desplaza en horizontal en vez de partirse */
+/* El relleno deja sitio al canto y al anillo de la ficha activa, que sobresalen */
+.fila-fichas {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.6rem 0.6rem 0.5rem;
+  scroll-padding-inline: 0.6rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+
+.fila-fichas::-webkit-scrollbar {
+  display: none;
+}
+
+.fila-fichas > * {
+  flex: none;
+  scroll-snap-align: start;
+}
+
 .chip:disabled {
   opacity: 0.45;
   filter: grayscale(0.85);
@@ -607,12 +694,95 @@ img, svg, canvas {
 /* ---------- Página de juego: cabecera de mesa ---------- */
 .table-head {
   display: grid;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--space-2xs) var(--space-s);
+  margin-bottom: var(--space-l);
+}
+
+.table-head .eyebrow {
+  grid-column: 1 / -1;
 }
 
 .table-head .display {
   font-size: var(--text-4xl);
+}
+
+/* Reglas: en móvil, plegadas tras un botón junto al título; abiertas en escritorio */
+.reglas {
+  max-width: var(--measure);
+}
+
+.reglas[open] {
+  grid-column: 1 / -1;
+}
+
+.reglas > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--touch);
+  padding: 0 0.9rem 0 0.7rem;
+  border: var(--hairline) solid var(--line-strong);
+  border-radius: var(--radius-full);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  list-style: none;
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+
+/* En teléfonos muy estrechos el botón queda en icono; el texto sigue para lectores */
+@include hasta($bp-xs) {
+  .reglas > summary {
+    justify-content: center;
+    width: var(--touch);
+    padding: 0;
+  }
+
+  .reglas-texto {
+    position: absolute;
+    width: var(--hairline);
+    height: var(--hairline);
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+.reglas > summary::-webkit-details-marker {
+  display: none;
+}
+
+.reglas > summary .icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--accent);
+}
+
+.reglas[open] > summary,
+.reglas > summary:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+.reglas > p {
+  margin-top: var(--space-2xs);
+  color: var(--ink-2);
+}
+
+@include desde($bp-xl) {
+  .reglas {
+    grid-column: 1 / -1;
+  }
+
+  .reglas > summary {
+    display: none;
+  }
+
+  .reglas > p {
+    margin-top: 0;
+  }
 }
 
 /* ---------- Página de mesa: contenedor y rejilla compartidos ---------- */
@@ -642,6 +812,106 @@ img, svg, canvas {
     grid-template-columns: var(--reparto, minmax(0, 7fr) minmax(0, 4fr));
     align-items: start;
   }
+}
+
+.bank {
+  display: grid;
+  gap: var(--space-l);
+}
+
+/* Visibilidad por tamaño: una sola plantilla, dos composiciones */
+@include hasta($bp-xl) {
+  .solo-amplio {
+    display: none !important;
+  }
+}
+
+@include desde($bp-xl) {
+  .solo-compacto {
+    display: none !important;
+  }
+}
+
+/* ---------- Mesas en móvil ----------
+   Una sola columna en orden de juego: escena, tablero, información y, al
+   final, el mando pegado abajo, en la zona del pulgar, con el resultado
+   de la jugada dentro. Así nunca hace falta subir y bajar para jugar. */
+@include hasta($bp-xl) {
+  .page.mesa {
+    padding-bottom: 0;
+  }
+
+  .page.mesa .layout {
+    gap: var(--space-m);
+  }
+
+  /* El banco cede sus hijos a la rejilla para poder reordenarlos */
+  .page.mesa .bank {
+    display: contents;
+  }
+
+  .escena { order: 1; }
+  .tablero { order: 2; }
+  .detalle { order: 3; }
+
+  .mando {
+    order: 4;
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    display: grid;
+    gap: var(--space-xs);
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--space-s) var(--gutter) max(var(--space-s), env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg-2) 92%, transparent);
+    backdrop-filter: blur(0.75rem) saturate(1.2);
+    -webkit-backdrop-filter: blur(0.75rem) saturate(1.2);
+    border-top: var(--hairline) solid var(--line-strong);
+    border-radius: 1.25rem 1.25rem 0 0;
+    box-shadow: 0 -1rem 2rem -1rem rgba(0, 0, 0, 0.8);
+  }
+
+  /* Resultado compacto dentro del mando */
+  .mando .result {
+    padding: 0.6rem 0.9rem;
+    gap: 0.1rem;
+  }
+
+  .mando .result .display {
+    font-size: var(--text-xl);
+  }
+}
+
+/* En escritorio el mando es el primer bloque de la columna del banco */
+@include desde($bp-xl) {
+  .mando {
+    display: grid;
+    gap: var(--space-s);
+    padding-top: var(--space-s);
+    border-top: var(--hairline) solid var(--line-strong);
+  }
+}
+
+/* Importe libre: plegado en móvil para no alargar el mando */
+.otra > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 0.25em;
+  list-style: none;
+  cursor: pointer;
+}
+
+.otra > summary::-webkit-details-marker {
+  display: none;
+}
+
+.otra[open] > summary {
+  color: var(--ink);
 }
 
 /* ---------- Estados de resultado ---------- */

@@ -7,25 +7,25 @@ import {
   ViewChild,
   HostListener,
   OnChanges,
-  SimpleChanges,
-  DestroyRef,
-  inject,
-  signal
+  SimpleChanges
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../../ui/icon/icon.component';
 import { LogoComponent } from '../../ui/logo/logo.component';
 import { FichasPipe } from '../../ui/fichas.pipe';
 import { IdiomaComponent } from '../../ui/idioma/idioma.component';
-import { useI18n } from '../../i18n/i18n.service';
+import { Clave, useI18n } from '../../i18n/i18n.service';
 
-/** A partir de este ancho la cuenta se muestra como barra de navegación, sin desplegable. */
-const CONSULTA_ESCRITORIO = '(width >= 74em)'; // = $bp-2xl en src/styles/_medidas.scss
-
+/**
+ * Barra superior. Desde 64em muestra las mesas como navegación principal;
+ * por debajo, las mesas, la cuenta y el idioma viven en una hoja inferior
+ * que se abre desde el avatar. Qué se ve en cada tamaño lo decide el CSS.
+ */
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, IconComponent, LogoComponent, FichasPipe, IdiomaComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent, LogoComponent, FichasPipe, IdiomaComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
@@ -37,7 +37,13 @@ export class HeaderComponent implements OnChanges {
   @Output() changePassword = new EventEmitter<void>();
   @Output() addSaldo = new EventEmitter<void>();
   @Output() logout = new EventEmitter<void>();
-  @Output() goHome = new EventEmitter<void>();
+
+  readonly mesas: { ruta: string; nombre: Clave; icono: string }[] = [
+    { ruta: '/home', nombre: 'header.salon', icono: 'home' },
+    { ruta: '/slot', nombre: 'juegos.slot.nombre', icono: 'reels' },
+    { ruta: '/ruleta', nombre: 'juegos.ruleta.nombre', icono: 'wheel' },
+    { ruta: '/blackjack', nombre: 'juegos.blackjack.nombre', icono: 'cards' }
+  ];
 
   menuAbierto = false;
   infoAbierta = false;
@@ -51,26 +57,18 @@ export class HeaderComponent implements OnChanges {
   protected readonly i18n = useI18n();
   protected readonly t = this.i18n.t;
 
-  /** Verdadero en pantallas anchas: la navegación queda visible y no hay menú desplegable. */
-  readonly esEscritorio = signal(false);
-
   private pulsoTimer?: ReturnType<typeof setTimeout>;
-
-  constructor() {
-    const consulta = window.matchMedia(CONSULTA_ESCRITORIO);
-    const actualizar = () => {
-      this.esEscritorio.set(consulta.matches);
-      if (consulta.matches) this.menuAbierto = false;
-    };
-    actualizar();
-    consulta.addEventListener('change', actualizar);
-    inject(DestroyRef).onDestroy(() => consulta.removeEventListener('change', actualizar));
-  }
 
   get etiquetaMenu(): string {
     const nombre = this.nombre.trim();
     if (nombre) return this.t(this.menuAbierto ? 'header.cerrarMenuDe' : 'header.abrirMenuDe', { nombre });
     return this.t(this.menuAbierto ? 'header.cerrarMenu' : 'header.abrirMenu');
+  }
+
+  /** Inicial mostrada en el avatar tipográfico. */
+  get inicial(): string {
+    const limpio = this.nombre.trim();
+    return limpio ? limpio.charAt(0).toUpperCase() : '·';
   }
 
   ngOnChanges(cambios: SimpleChanges) {
@@ -99,7 +97,7 @@ export class HeaderComponent implements OnChanges {
   }
 
   abrirInfo() {
-    this.cerrar();
+    this.menuAbierto = false;
     this.infoAbierta = true;
     requestAnimationFrame(() => this.cerrarInfoRef?.nativeElement.focus());
   }
@@ -113,24 +111,18 @@ export class HeaderComponent implements OnChanges {
     if (event.target === event.currentTarget) this.cerrarInfo();
   }
 
-  /** Inicial mostrada en el avatar tipográfico. */
-  get inicial(): string {
-    const limpio = this.nombre.trim();
-    return limpio ? limpio.charAt(0).toUpperCase() : '·';
-  }
-
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
     if (this.menuAbierto) this.enfocarItem(0);
   }
 
+  cerrarMenu() {
+    this.menuAbierto = false;
+  }
+
   @HostListener('document:click', ['$event'])
   closeMenuOutside(event: MouseEvent) {
-    if (
-      this.menuAbierto &&
-      this.dropdownRef &&
-      !this.dropdownRef.nativeElement.contains(event.target as Node)
-    ) {
+    if (this.menuAbierto && this.dropdownRef && !this.dropdownRef.nativeElement.contains(event.target as Node)) {
       this.menuAbierto = false;
     }
   }
@@ -146,7 +138,7 @@ export class HeaderComponent implements OnChanges {
     this.enfocarToggle();
   }
 
-  /** Flecha abajo sobre el botón abre el menú y entra en el primer elemento. */
+  /** Flecha abajo sobre el avatar abre el menú y entra en el primer elemento. */
   onToggleKeydown(event: KeyboardEvent) {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
@@ -186,40 +178,34 @@ export class HeaderComponent implements OnChanges {
 
   onChangeName() {
     this.changeName.emit();
-    this.cerrar();
+    this.cerrarMenu();
   }
 
   onChangePassword() {
     this.changePassword.emit();
-    this.cerrar();
+    this.cerrarMenu();
   }
 
   onAddSaldo() {
     this.addSaldo.emit();
-    this.cerrar();
+    this.cerrarMenu();
   }
 
   onLogout() {
     this.logout.emit();
-    this.cerrar();
+    this.cerrarMenu();
   }
 
-  onGoHome() {
-    this.goHome.emit();
-    this.cerrar();
-  }
-
-  private cerrar() {
-    this.menuAbierto = false;
-  }
-
+  /** Solo los elementos visibles: las mesas y el idioma del panel se ocultan en escritorio. */
   private items(): HTMLElement[] {
     const raiz = this.dropdownRef?.nativeElement;
-    return raiz ? Array.from(raiz.querySelectorAll<HTMLElement>('[role="menuitem"], [role="menuitemradio"]')) : [];
+    if (!raiz) return [];
+    return Array.from(raiz.querySelectorAll<HTMLElement>('[role="menuitem"], [role="menuitemradio"]'))
+      .filter(item => item.offsetParent !== null);
   }
 
   private enfocarItem(indice: number) {
-    // El menú se renderiza con *ngIf; se espera al siguiente frame.
+    // El panel se renderiza con @if; se espera al siguiente frame.
     requestAnimationFrame(() => {
       const items = this.items();
       if (!items.length) return;
@@ -228,6 +214,6 @@ export class HeaderComponent implements OnChanges {
   }
 
   private enfocarToggle() {
-    this.dropdownRef?.nativeElement.querySelector<HTMLElement>('.account-toggle')?.focus();
+    document.getElementById('menu-cuenta-toggle')?.focus();
   }
 }

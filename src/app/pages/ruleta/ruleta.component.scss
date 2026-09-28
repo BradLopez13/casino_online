@@ -10,9 +10,38 @@
 /* ---------- Rueda ---------- */
 .wheel-side {
   @include contenedor(lado-rueda);
+}
+
+.rueda-marcador {
   display: grid;
-  gap: 2rem;
+  gap: var(--space-l);
   justify-items: center;
+}
+
+/* En una columna (móvil y tableta): rueda a la izquierda y marcador a su lado,
+   para que la rueda, el tablero y el mando quepan casi en una pantalla. En
+   escritorio la columna de la rueda es estrecha pero debe lucir grande, así
+   que aquí manda el viewport y no el contenedor. */
+@include hasta($bp-xl) {
+  .rueda-marcador {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    justify-items: stretch;
+    gap: var(--space-m);
+  }
+
+  /* Más específico que la regla base de .wheel, que va después */
+  .rueda-marcador .wheel {
+    width: min(14rem, 42cqi);
+  }
+
+  .status .ledger {
+    white-space: nowrap;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding-top: 0;
+    border-top: 0;
+  }
 }
 
 .wheel {
@@ -160,23 +189,6 @@
 }
 
 
-.chips-row {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.9rem 0.85rem;
-  padding: 0.6rem 0.4rem 0.4rem;
-}
-
-.board-hint {
-  font-size: 0.85rem;
-  color: rgba(242, 234, 216, 0.7);
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -305,5 +317,4 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
-  padding-top: 0.5rem;
 }

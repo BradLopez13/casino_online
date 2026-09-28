@@ -1,124 +1,146 @@
 <a class="skip-link" href="#contenido" (click)="saltarAlContenido($event)">{{ t('comun.saltar') }}</a>
 
-<header class="topbar">
-  <button type="button" class="brand" (click)="onGoHome()" [attr.aria-label]="t('header.volverSalon')">
-    <app-logo class="brand-mark"></app-logo>
-    <span class="brand-text" aria-hidden="true">
-      <span class="brand-word">{{ t('comun.marca') }}</span>
-      <span class="brand-sub mono">{{ t('comun.salonDeJuego') }}</span>
+<header class="barra">
+  <!-- Marca: vuelve al salón -->
+  <a class="marca" routerLink="/home" [attr.aria-label]="t('header.volverSalon')">
+    <app-logo class="marca-logo"></app-logo>
+    <span class="marca-texto" aria-hidden="true">
+      <span class="marca-nombre">{{ t('comun.marca') }}</span>
+      <span class="marca-sub mono">{{ t('comun.salonDeJuego') }}</span>
     </span>
-  </button>
+  </a>
 
-  <!-- Escritorio: las opciones de cuenta quedan a la vista, sin desplegable -->
-  @if (esEscritorio()) {
-    <nav class="nav" [attr.aria-label]="t('header.navCuenta')">
-      <button type="button" class="nav-item" (click)="onGoHome()">
-        <app-icon name="home"></app-icon><span>{{ t('header.salon') }}</span>
-      </button>
-      <button type="button" class="nav-item" (click)="onAddSaldo()">
-        <app-icon name="ticket"></app-icon><span>{{ t('header.rasca') }}</span>
-      </button>
-      <span class="nav-rule" aria-hidden="true"></span>
-      <!-- Ajustes de cuenta: solo icono, con nombre accesible y descripción emergente -->
-      <button type="button" class="nav-item solo-icono" (click)="onChangeName()" [attr.aria-label]="t('header.cambiarNombre')" [title]="t('header.cambiarNombre')">
-        <app-icon name="pencil"></app-icon>
-      </button>
-      <button type="button" class="nav-item solo-icono" (click)="onChangePassword()" [attr.aria-label]="t('header.cambiarPassword')" [title]="t('header.cambiarPassword')">
-        <app-icon name="key"></app-icon>
-      </button>
-      <button type="button" class="nav-item danger" (click)="onLogout()">
-        <app-icon name="sign-out"></app-icon><span>{{ t('header.salir') }}</span>
-      </button>
-    </nav>
-  }
+  <!-- Mesas: navegación principal, visible desde 64em -->
+  <nav class="mesas-nav" [attr.aria-label]="t('header.navMesas')">
+    @for (m of mesas; track m.ruta) {
+      <a
+        class="mesas-link"
+        [routerLink]="m.ruta"
+        routerLinkActive="activa"
+        ariaCurrentWhenActive="page">
+        <app-icon [name]="m.icono"></app-icon>
+        <span>{{ t(m.nombre) }}</span>
+      </a>
+    }
+  </nav>
 
-  <div class="account" #dropdownRef>
-    <button
-      #saldoRef
-      type="button"
-      class="balance"
-      aria-haspopup="dialog"
-      [attr.aria-expanded]="infoAbierta"
-      aria-controls="info-fichas"
-      (click)="abrirInfo()">
-      <span class="balance-label">{{ t('header.saldoEtiqueta') }} · <span class="nowrap">{{ t('header.saldoSinValor') }}</span></span>
-      <span class="balance-value mono" [class.pulso]="pulso">
-        {{ saldo | fichas:false }}<span class="balance-unit"> {{ t('fichas.unidad') }}</span>
-      </span>
-      <span class="sr-only">. {{ t('header.comoFunciona') }}</span>
-    </button>
+  <div class="acciones" #dropdownRef>
+    <!-- Saldo: la cifra explica las fichas; el «+» abre el rasca -->
+    <div class="saldo" [class.pulso]="pulso">
+      <button
+        #saldoRef
+        type="button"
+        class="saldo-cifra"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="infoAbierta"
+        aria-controls="info-fichas"
+        [title]="t('header.comoFunciona')"
+        (click)="abrirInfo()">
+        <span class="saldo-ficha" aria-hidden="true"></span>
+        <span class="mono saldo-valor">{{ saldo | fichas:false }}</span>
+        <span class="saldo-unidad">{{ t('fichas.unidad') }}</span>
+        <span class="sr-only">. {{ t('header.comoFunciona') }}</span>
+      </button>
+      <button
+        type="button"
+        class="saldo-recarga"
+        [attr.aria-label]="t('header.rasca')"
+        [title]="t('header.rasca')"
+        (click)="onAddSaldo()">
+        <app-icon name="plus"></app-icon>
+      </button>
+    </div>
 
     <span class="sr-only" aria-live="polite" aria-atomic="true">{{ t('header.saldoAnuncio', { saldo: (saldo | fichas) }) }}</span>
 
-    @if (esEscritorio()) {
-      <span class="player" [title]="nombre">
-        <span class="avatar mono" aria-hidden="true">{{ inicial }}</span>
-        <span class="account-name">{{ nombre }}</span>
-      </span>
-      <app-idioma></app-idioma>
-    } @else {
-      <button
-        type="button"
-        class="account-toggle"
-        id="menu-cuenta-toggle"
-        aria-haspopup="menu"
-        [attr.aria-expanded]="menuAbierto"
-        [attr.aria-label]="etiquetaMenu"
-        aria-controls="menu-cuenta"
-        (click)="toggleMenu()"
-        (keydown)="onToggleKeydown($event)">
-        <span class="avatar mono" aria-hidden="true">{{ inicial }}</span>
-        <span class="account-name" aria-hidden="true">{{ nombre }}</span>
-        <app-icon name="chevron" class="account-chevron" [class.open]="menuAbierto"></app-icon>
-      </button>
+    <app-idioma class="solo-amplio"></app-idioma>
+
+    <button
+      type="button"
+      class="avatar-btn"
+      id="menu-cuenta-toggle"
+      aria-haspopup="menu"
+      [attr.aria-expanded]="menuAbierto"
+      [attr.aria-label]="etiquetaMenu"
+      aria-controls="menu-cuenta"
+      (click)="toggleMenu()"
+      (keydown)="onToggleKeydown($event)">
+      <span class="mono" aria-hidden="true">{{ inicial }}</span>
+    </button>
+
+    @if (menuAbierto) {
+      <!-- En móvil el panel es una hoja inferior con fondo; en escritorio, un desplegable -->
+      <div class="panel-fondo" aria-hidden="true" (click)="cerrarMenu()"></div>
 
       <div
-        class="menu"
+        class="panel"
         id="menu-cuenta"
         role="menu"
-        [attr.aria-label]="t('header.menuCuenta')"
-        *ngIf="menuAbierto"
+        [attr.aria-label]="t('header.tuCuenta')"
         (keydown)="onMenuKeydown($event)">
-        <button type="button" role="menuitem" class="menu-item" (click)="onGoHome()">
-          <app-icon name="home"></app-icon><span>{{ t('header.salon') }}</span>
-        </button>
-        <button type="button" role="menuitem" class="menu-item" (click)="onChangeName()">
-          <app-icon name="pencil"></app-icon><span>{{ t('header.cambiarNombre') }}</span>
-        </button>
-        <button type="button" role="menuitem" class="menu-item" (click)="onChangePassword()">
-          <app-icon name="key"></app-icon><span>{{ t('header.cambiarPassword') }}</span>
-        </button>
-        <button type="button" role="menuitem" class="menu-item" (click)="onAddSaldo()">
-          <app-icon name="ticket"></app-icon><span>{{ t('header.rasca') }}</span>
-        </button>
-        <button type="button" role="menuitem" class="menu-item" (click)="abrirInfo()">
-          <app-icon name="spark"></app-icon><span>{{ t('header.comoFunciona') }}</span>
-        </button>
-        <span class="menu-rule" role="separator"></span>
-        <div role="group" [attr.aria-label]="t('idioma.grupo')">
+        <span class="panel-asa" aria-hidden="true"></span>
+
+        <div class="panel-cabecera" role="presentation">
+          <span class="panel-avatar mono" aria-hidden="true">{{ inicial }}</span>
+          <span class="panel-quien">
+            <span class="panel-nombre">{{ nombre }}</span>
+            <span class="panel-saldo mono">{{ saldo | fichas }}</span>
+          </span>
+        </div>
+
+        <!-- Mesas: en móvil no hay barra de navegación, así que viven aquí -->
+        <div class="panel-grupo solo-compacto" role="group" [attr.aria-label]="t('header.navMesas')">
+          @for (m of mesas; track m.ruta) {
+            <a
+              role="menuitem"
+              class="panel-item"
+              [routerLink]="m.ruta"
+              routerLinkActive="activa"
+              ariaCurrentWhenActive="page"
+              (click)="cerrarMenu()">
+              <app-icon [name]="m.icono"></app-icon><span>{{ t(m.nombre) }}</span>
+            </a>
+          }
+        </div>
+
+        <div class="panel-grupo" role="group" [attr.aria-label]="t('header.menuCuenta')">
+          <button type="button" role="menuitem" class="panel-item" (click)="onChangeName()">
+            <app-icon name="pencil"></app-icon><span>{{ t('header.cambiarNombre') }}</span>
+          </button>
+          <button type="button" role="menuitem" class="panel-item" (click)="onChangePassword()">
+            <app-icon name="key"></app-icon><span>{{ t('header.cambiarPassword') }}</span>
+          </button>
+          <button type="button" role="menuitem" class="panel-item" (click)="abrirInfo()">
+            <app-icon name="info"></app-icon><span>{{ t('header.comoFunciona') }}</span>
+          </button>
+        </div>
+
+        <div class="panel-grupo solo-compacto" role="group" [attr.aria-label]="t('idioma.grupo')">
           @for (codigo of i18n.idiomas; track codigo) {
             <button
               type="button"
               role="menuitemradio"
-              class="menu-item"
+              class="panel-item"
               [attr.lang]="codigo"
               [attr.aria-checked]="i18n.idioma() === codigo"
               (click)="i18n.cambiar(codigo)">
-              <span class="menu-code mono" aria-hidden="true">{{ codigo.toUpperCase() }}</span>
+              <span class="panel-codigo mono" aria-hidden="true">{{ codigo.toUpperCase() }}</span>
               <span>{{ t(codigo === 'es' ? 'idioma.es' : 'idioma.en') }}</span>
             </button>
           }
         </div>
-        <span class="menu-rule" role="separator"></span>
-        <button type="button" role="menuitem" class="menu-item danger" (click)="onLogout()">
-          <app-icon name="sign-out"></app-icon><span>{{ t('header.cerrarSesion') }}</span>
-        </button>
+
+        <div class="panel-grupo">
+          <button type="button" role="menuitem" class="panel-item peligro" (click)="onLogout()">
+            <app-icon name="sign-out"></app-icon><span>{{ t('header.cerrarSesion') }}</span>
+          </button>
+        </div>
       </div>
     }
   </div>
 </header>
 
-<!-- Ayuda contextual del saldo: el carácter ficticio de las fichas, sin llegar al pie -->
+<!-- Ayuda contextual del saldo -->
 <div class="dialog-backdrop" *ngIf="infoAbierta" (click)="onInfoBackdrop($event)">
   <div
     class="dialog plaque info"

@@ -17,7 +17,8 @@
     "entendido": "Got it",
     "girar": "Spin",
     "girando": "Spinning…",
-    "usuario": "user"
+    "usuario": "user",
+    "reglas": "Rules"
   },
   "fichas": {
     "una": "{{n}} chip",
@@ -73,7 +74,10 @@
       "punto2": "You get a thousand when you create your account.",
       "punto3": "If you run out, open the account menu and choose “Scratch and refill”. The ticket is free.",
       "punto4": "Meridiano is an academic project for people aged 18 and over."
-    }
+    },
+    "navMesas": "Tables",
+    "tuCuenta": "Your account",
+    "saldoCorto": "{{saldo}} in chips"
   },
   "cuenta": {
     "eyebrow": "Account",
@@ -196,7 +200,8 @@
       "diamante": "Diamond",
       "siete": "Seven",
       "vacio": "Empty"
-    }
+    },
+    "fijarApuesta": "{{fichas}} per spin"
   },
   "ruleta": {
     "eyebrow": "Table 02 · European wheel",
