@@ -15,38 +15,35 @@
 
 <main class="salon" id="contenido" tabindex="-1">
   <section class="intro stagger">
-    <p class="eyebrow" [style.--i]="0">Mesa abierta · {{ horaApertura }}</p>
-    <h1 class="display" [style.--i]="1">Elige tu <em>mesa</em>.</h1>
-    <p class="lede" [style.--i]="2">
-      Mil fichas de cortesía al sentarte. Dinero de juego, sin riesgo real:
-      si se acaban, un rasca te devuelve al juego.
-    </p>
+    <p class="eyebrow" [style.--i]="0">{{ t('home.abierta', { hora: horaApertura }) }}</p>
+    <h1 class="display" [style.--i]="1" [innerHTML]="t('home.titulo')"></h1>
+    <p class="lede" [style.--i]="2">{{ t('home.lede') }}</p>
     <dl class="ledger mono" [style.--i]="3">
       <div>
-        <dt>Saldo</dt>
-        <dd>{{ saldo | currency:'EUR' }}</dd>
+        <dt>{{ t('home.saldo') }}</dt>
+        <dd>{{ saldo | fichas }}</dd>
       </div>
       <div>
-        <dt>Jugador</dt>
+        <dt>{{ t('home.jugador') }}</dt>
         <dd>{{ nombreVisual }}</dd>
       </div>
       <div>
-        <dt>Mesas</dt>
+        <dt>{{ t('home.mesas') }}</dt>
         <dd>{{ juegos.length | number:'2.0-0' }}</dd>
       </div>
     </dl>
   </section>
 
-  <nav class="mesas" aria-label="Mesas disponibles">
+  <nav class="mesas" [attr.aria-label]="t('home.navMesas')">
     <ol class="mesas-list stagger">
       <li *ngFor="let j of juegos; let i = index" [style.--i]="i + 2">
         <button type="button" class="mesa" (click)="jugar(j.ruta)">
           <span class="mesa-num mono">{{ i + 1 | number:'2.0-0' }}</span>
           <span class="mesa-body">
-            <span class="mesa-name display">{{ j.nombre }}</span>
-            <span class="mesa-desc">{{ j.descripcion }}</span>
+            <span class="mesa-name display">{{ t(j.nombre) }}</span>
+            <span class="mesa-desc">{{ t(j.descripcion) }}</span>
           </span>
-          <span class="mesa-meta mono">{{ j.nota }}</span>
+          <span class="mesa-meta mono">{{ t(j.nota) }}</span>
           <app-icon [name]="j.icono" class="mesa-icon"></app-icon>
           <app-icon name="arrow" class="mesa-arrow"></app-icon>
         </button>
@@ -58,47 +55,48 @@
     <div class="ring ring-outer"></div>
     <div class="ring ring-inner"></div>
     <div class="ring-core">
-      <span class="display">M</span>
+      <app-logo class="core-logo"></app-logo>
     </div>
   </aside>
 </main>
 
 <footer class="pie">
-  <span>© 2025 Meridiano. Proyecto académico.</span>
-  <span class="mono">Fichas sin valor real · +18</span>
+  <p class="pie-mantra lede-serif">{{ t('comun.mantra') }}</p>
+  <span>{{ t('home.copyright', { anio: anio }) }}</span>
+  <span class="mono">{{ t('comun.sinValorReal') }} · {{ t('comun.mayores') }}</span>
 </footer>
 
-<!--modales -->
+<!-- Diálogos de cuenta -->
 <app-modal
   *ngIf="mostrarModalNombre"
-  title="Cambiar nombre"
-  message="Introduce tu nuevo nombre:"
-  acceptText="Guardar"
-  cancelText="Cancelar"
+  [title]="t('cuenta.nombreTitulo')"
+  [message]="t('cuenta.nombreMensaje')"
+  [acceptText]="t('comun.guardar')"
+  [cancelText]="t('comun.cancelar')"
   [isPrompt]="true"
-  [errorMessage]="errorNombre"
-  inputPlaceholder="Ej: JugadorX"
+  [errorMessage]="errorNombre ? t(errorNombre) : null"
+  [inputPlaceholder]="t('cuenta.nombrePlaceholder')"
   (accepted)="onNombreModal($event)">
 </app-modal>
 
 <app-modal
   *ngIf="mostrarModalPassword && !esCuentaGoogle"
-  title="Cambiar contraseña"
-  message="Introduce tu nueva contraseña:"
-  acceptText="Guardar"
-  cancelText="Cancelar"
+  [title]="t('cuenta.passwordTitulo')"
+  [message]="t('cuenta.passwordMensaje')"
+  [acceptText]="t('comun.guardar')"
+  [cancelText]="t('comun.cancelar')"
   [isPrompt]="true"
   [isPasswordField]="true"
   inputPlaceholder="********"
-  [errorMessage]="errorPassword"
+  [errorMessage]="errorPassword ? t(errorPassword) : null"
   (accepted)="onPasswordModal($event)">
 </app-modal>
 
 <app-modal
   *ngIf="esCuentaGoogle && mostrarModalPassword"
-  title="Cambio de contraseña"
-  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
-  acceptText="Aceptar"
+  [title]="t('cuenta.googleTitulo')"
+  [message]="t('cuenta.googleMensaje')"
+  [acceptText]="t('comun.aceptar')"
   (accepted)="mostrarModalPassword = false">
 </app-modal>
 
@@ -107,4 +105,5 @@
   [cantidadGanada]="cantidadGanada"
   [rascado]="rascado"
   (cerrar)="onCerrarScratch()"
+  (cancelar)="mostrarScratch = false"
 />

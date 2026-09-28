@@ -10,18 +10,16 @@
 
 <main class="page" id="contenido" tabindex="-1">
   <header class="table-head stagger">
-    <p class="eyebrow" [style.--i]="0">Mesa 01 · Tres rodillos</p>
-    <h1 class="display" [style.--i]="1">Tragaperras</h1>
-    <p class="muted rules" [style.--i]="2">
-      Cinco líneas de pago: tres horizontales y dos diagonales. Tres símbolos iguales en una línea multiplican tu apuesta.
-    </p>
+    <p class="eyebrow" [style.--i]="0">{{ t('slot.eyebrow') }}</p>
+    <h1 class="display" [style.--i]="1">{{ t('juegos.slot.nombre') }}</h1>
+    <p class="muted rules" [style.--i]="2">{{ t('slot.reglas') }}</p>
   </header>
 
   <div class="layout">
     <!-- Máquina -->
-    <section class="machine" aria-label="Rodillos">
+    <section class="machine" [attr.aria-label]="t('slot.rodillos')">
       <div class="cabinet">
-        <div class="window" [class.spinning]="isSpinning">
+        <div class="window" [class.spinning]="isSpinning" [class.idle]="sinTirar">
           <div class="reel" *ngFor="let columna of reels; let c = index" [style.--c]="c">
             <div
               class="sym"
@@ -32,25 +30,26 @@
             </div>
           </div>
           <div class="payline" aria-hidden="true"></div>
+          <p class="idle-tag mono" *ngIf="sinTirar" aria-hidden="true">{{ t('slot.lista') }}</p>
         </div>
 
         <div class="cabinet-foot mono" aria-hidden="true">
-          <span>Meridiano</span>
-          <span>Mod. M-3 · 5 líneas</span>
+          <span>{{ t('comun.marca') }}</span>
+          <span>{{ t('slot.modelo') }}</span>
         </div>
       </div>
 
       <p class="sr-only" role="status" aria-live="polite">
-        {{ isSpinning ? 'Rodillos girando' : (mensajeResultado || '') }}
+        {{ isSpinning ? t('slot.girandoAnuncio') : (mensajeResultado || (sinTirar ? t('slot.listaAnuncio') : '')) }}
       </p>
     </section>
 
     <!-- Banco -->
     <aside class="bank">
       <form class="bank-block" (submit)="$event.preventDefault(); spin()" aria-labelledby="slot-apuesta">
-        <h2 class="eyebrow" id="slot-apuesta">Apuesta por tirada</h2>
+        <h2 class="eyebrow" id="slot-apuesta">{{ t('slot.apuestaTitulo') }}</h2>
         <div class="field">
-          <label for="slot-importe">Importe en euros</label>
+          <label for="slot-importe">{{ t('slot.importe') }}</label>
           <div class="custom-row">
             <input
               id="slot-importe"
@@ -64,22 +63,22 @@
               [disabled]="isSpinning"
               aria-describedby="slot-help slot-error" />
             <button type="submit" class="btn btn-primary" [disabled]="isSpinning || apuesta <= 0">
-              {{ isSpinning ? 'Girando…' : 'Girar' }}
+              {{ isSpinning ? t('comun.girando') : t('comun.girar') }}
               <app-icon name="reels"></app-icon>
             </button>
           </div>
-          <small id="slot-help" class="help">Saldo disponible <strong class="mono">{{ saldo | currency:'EUR' }}</strong></small>
+          <small id="slot-help" class="help">{{ t('comun.saldoDisponible') }} <strong class="mono">{{ saldo | fichas }}</strong></small>
         </div>
-        <p class="error" id="slot-error" role="alert" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+        <p class="error" id="slot-error" role="alert" *ngIf="mensajeApuesta">{{ t(mensajeApuesta) }}</p>
       </form>
 
       <div class="result" *ngIf="mensajeResultado && !isSpinning" [ngClass]="resultadoClase">
-        <span class="eyebrow">Tirada</span>
+        <span class="eyebrow">{{ t('slot.tirada') }}</span>
         <p class="display">{{ mensajeResultado }}</p>
       </div>
 
       <section class="bank-block" aria-labelledby="slot-pagos">
-        <h2 class="eyebrow" id="slot-pagos">Tabla de pagos</h2>
+        <h2 class="eyebrow" id="slot-pagos">{{ t('slot.pagos') }}</h2>
         <ul class="paytable">
           <li *ngFor="let p of paytable">
             <app-icon [name]="p.icono"></app-icon>
@@ -92,37 +91,37 @@
   </div>
 </main>
 
-<!-- modales -->
+<!-- Diálogos de cuenta -->
 <app-modal
   *ngIf="mostrarModalNombre"
-  title="Cambiar nombre"
-  message="Introduce tu nuevo nombre:"
-  acceptText="Guardar"
-  cancelText="Cancelar"
+  [title]="t('cuenta.nombreTitulo')"
+  [message]="t('cuenta.nombreMensaje')"
+  [acceptText]="t('comun.guardar')"
+  [cancelText]="t('comun.cancelar')"
   [isPrompt]="true"
-  [errorMessage]="errorNombre"
-  inputPlaceholder="Ej: JugadorX"
+  [errorMessage]="errorNombre ? t(errorNombre) : null"
+  [inputPlaceholder]="t('cuenta.nombrePlaceholder')"
   (accepted)="onNombreModal($event)">
 </app-modal>
 
 <app-modal
   *ngIf="mostrarModalPassword && !esCuentaGoogle"
-  title="Cambiar contraseña"
-  message="Introduce tu nueva contraseña:"
-  acceptText="Guardar"
-  cancelText="Cancelar"
+  [title]="t('cuenta.passwordTitulo')"
+  [message]="t('cuenta.passwordMensaje')"
+  [acceptText]="t('comun.guardar')"
+  [cancelText]="t('comun.cancelar')"
   [isPrompt]="true"
   [isPasswordField]="true"
   inputPlaceholder="********"
-  [errorMessage]="errorPassword"
+  [errorMessage]="errorPassword ? t(errorPassword) : null"
   (accepted)="onPasswordModal($event)">
 </app-modal>
 
 <app-modal
   *ngIf="esCuentaGoogle && mostrarModalPassword"
-  title="Cambio de contraseña"
-  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
-  acceptText="Aceptar"
+  [title]="t('cuenta.googleTitulo')"
+  [message]="t('cuenta.googleMensaje')"
+  [acceptText]="t('comun.aceptar')"
   (accepted)="mostrarModalPassword = false">
 </app-modal>
 
@@ -131,4 +130,5 @@
   [cantidadGanada]="cantidadGanada"
   [rascado]="rascado"
   (cerrar)="onCerrarScratch()"
+  (cancelar)="mostrarScratch = false"
 />

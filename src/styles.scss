@@ -1,3 +1,5 @@
+@use 'medidas' as *;
+
 /* =========================================================
    Meridiano · sistema visual global
    Tokens, reset, tipografía y primitivas compartidas.
@@ -16,7 +18,8 @@
   /* Tinta: marfil */
   --ink: #f2ead8;
   --ink-2: #b9b1a1;
-  --ink-3: #7f7a6e;
+  /* #858075 sobre --bg da ~4,8:1 (AA en texto pequeño) */
+  --ink-3: #858075;
 
   /* Un único acento: latón envejecido */
   --accent: #c9a961;
@@ -33,16 +36,56 @@
   --danger: #d9737b;
   --success: #8fc7a4;
 
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 8px;
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-full: 9999rem;
 
-  --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-sans: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* ---------- Medidas (ver src/styles/_medidas.scss) ----------
+     Sin píxeles: rem para respetar el tamaño de letra del usuario y clamp()
+     para crecer de forma continua entre 20rem y 90rem de viewport. */
+
+  /* Línea fina: 1/16 de rem, escala con el zoom */
+  --hairline: 0.0625rem;
+  /* Objetivo táctil mínimo (WCAG 2.5.5): 2.75rem */
+  --touch: 2.75rem;
+
+  /* Escala tipográfica fluida */
+  --text-2xs: clamp(0.625rem, 0.6071rem + 0.0893vi, 0.6875rem);
+  --text-xs: clamp(0.6875rem, 0.6696rem + 0.0893vi, 0.75rem);
+  --text-sm: clamp(0.8125rem, 0.7946rem + 0.0893vi, 0.875rem);
+  --text-base: clamp(0.9375rem, 0.9018rem + 0.1786vi, 1.0625rem);
+  --text-lg: clamp(1rem, 0.9464rem + 0.2679vi, 1.1875rem);
+  --text-xl: clamp(1.25rem, 1.1429rem + 0.5357vi, 1.625rem);
+  --text-2xl: clamp(1.5rem, 1.2857rem + 1.0714vi, 2.25rem);
+  --text-3xl: clamp(1.875rem, 1.5536rem + 1.6071vi, 3rem);
+  --text-4xl: clamp(2.25rem, 1.8214rem + 2.1429vi, 3.75rem);
+  --text-5xl: clamp(2.75rem, 1.75rem + 5vi, 6.25rem);
+
+  /* Escala de espaciado fluida */
+  --space-3xs: clamp(0.25rem, 0.2143rem + 0.1786vi, 0.375rem);
+  --space-2xs: clamp(0.5rem, 0.4643rem + 0.1786vi, 0.625rem);
+  --space-xs: clamp(0.625rem, 0.5536rem + 0.3571vi, 0.875rem);
+  --space-s: clamp(0.875rem, 0.7679rem + 0.5357vi, 1.25rem);
+  --space-m: clamp(1.125rem, 0.9464rem + 0.8929vi, 1.75rem);
+  --space-l: clamp(1.5rem, 1.2143rem + 1.4286vi, 2.5rem);
+  --space-xl: clamp(2rem, 1.5714rem + 2.1429vi, 3.5rem);
+  --space-2xl: clamp(2.5rem, 1.7857rem + 3.5714vi, 5rem);
+  --space-3xl: clamp(3rem, 1.5714rem + 7.1429vi, 8rem);
+
+  /* Maquetación */
+  --gutter: clamp(1rem, 0.5714rem + 2.1429vi, 2.5rem);
+  --page-max: 87.5rem;
+  --measure: 60ch;
+
+  /* Tipografía de marca: titulares, interfaz, texto literario y etiquetas */
+  --font-display: 'Playfair Display', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Spectral', 'Iowan Old Style', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --shadow-lift: 0 24px 48px -24px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(242, 234, 216, 0.06) inset;
+  --shadow-lift: 0 1.5rem 3rem -1.5rem rgba(0, 0, 0, 0.7), 0 var(--hairline) 0 rgba(242, 234, 216, 0.06) inset;
 
   color-scheme: dark;
 }
@@ -65,9 +108,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: var(--text-base);
   line-height: 1.55;
-  font-feature-settings: 'ss01', 'cv11';
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -81,7 +123,7 @@ body::before {
   pointer-events: none;
   opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 160px 160px;
+  background-size: 10rem 10rem;
 }
 
 h1, h2, h3, h4, p, figure {
@@ -116,18 +158,17 @@ img, svg, canvas {
 
 /* Foco visible en todo el sitio: anillo latón con separación */
 :focus-visible {
-  outline: 2px solid var(--accent-2);
-  outline-offset: 3px;
+  outline: 0.125rem solid var(--accent-2);
+  outline-offset: 0.1875rem;
   border-radius: var(--radius-xs);
 }
 
 /* ---------- Tipografía ---------- */
 .display {
   font-family: var(--font-display);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  line-height: 0.98;
-  font-variation-settings: 'opsz' 144;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
   text-wrap: balance;
 }
 
@@ -152,7 +193,7 @@ img, svg, canvas {
 .eyebrow::before {
   content: '';
   width: 1.5rem;
-  height: 1px;
+  height: var(--hairline);
   background: var(--accent);
 }
 
@@ -166,17 +207,25 @@ img, svg, canvas {
   color: var(--ink-2);
 }
 
+/* Voz literaria de la marca: Spectral cursiva */
+.lede-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 /* Doble filete fino, como la carta de un salón */
 .hairline {
-  height: 5px;
-  border-top: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--line);
+  height: 0.3125rem;
+  border-top: var(--hairline) solid var(--line-strong);
+  border-bottom: var(--hairline) solid var(--line);
 }
 
 /* ---------- Marcas de esquina ---------- */
 .plaque {
   position: relative;
-  border: 1px solid var(--line);
+  border: var(--hairline) solid var(--line);
   background: var(--bg-2);
 }
 
@@ -184,23 +233,23 @@ img, svg, canvas {
 .plaque::after {
   content: '';
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 0.875rem;
+  height: 0.875rem;
   pointer-events: none;
   border-color: var(--accent);
   border-style: solid;
 }
 
 .plaque::before {
-  top: -1px;
-  left: -1px;
-  border-width: 1px 0 0 1px;
+  top: calc(var(--hairline) * -1);
+  left: calc(var(--hairline) * -1);
+  border-width: var(--hairline) 0 0 var(--hairline);
 }
 
 .plaque::after {
-  right: -1px;
-  bottom: -1px;
-  border-width: 0 1px 1px 0;
+  right: calc(var(--hairline) * -1);
+  bottom: calc(var(--hairline) * -1);
+  border-width: 0 var(--hairline) var(--hairline) 0;
 }
 
 /* ---------- Botones ---------- */
@@ -215,7 +264,7 @@ img, svg, canvas {
   gap: 0.6rem;
   min-height: 2.875rem;
   padding: 0 1.25rem;
-  border: 1px solid var(--btn-line);
+  border: var(--hairline) solid var(--btn-line);
   border-radius: var(--radius-sm);
   background: var(--btn-bg);
   color: var(--btn-ink);
@@ -232,16 +281,22 @@ img, svg, canvas {
 }
 
 .btn:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(calc(var(--hairline) * -1));
   border-color: var(--accent);
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(1px) scale(0.985);
+  transform: translateY(var(--hairline)) scale(0.985);
 }
 
+/* Desactivado: no depende solo de la opacidad. Pierde relleno, el borde
+   pasa a discontinuo y la tinta baja a terciaria, con cursor de bloqueo. */
 .btn:disabled {
-  opacity: 0.42;
+  --btn-bg: transparent;
+  --btn-ink: var(--ink-3);
+  --btn-line: var(--line-strong);
+  border-style: dashed;
+  box-shadow: none;
 }
 
 .btn-primary {
@@ -316,7 +371,7 @@ img, svg, canvas {
   width: 100%;
   min-height: 3rem;
   padding: 0 0.9rem;
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--line-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
@@ -366,8 +421,8 @@ img, svg, canvas {
 .error::before {
   content: '';
   flex: none;
-  width: 6px;
-  height: 6px;
+  width: 0.375rem;
+  height: 0.375rem;
   margin-top: 0.5em;
   border-radius: 50%;
   background: currentColor;
@@ -389,7 +444,7 @@ img, svg, canvas {
   width: 1.125rem;
   height: 1.125rem;
   margin: 0;
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--line-strong);
   border-radius: var(--radius-xs);
   background: var(--surface);
   display: grid;
@@ -401,9 +456,9 @@ img, svg, canvas {
   content: '';
   width: 0.55rem;
   height: 0.3rem;
-  border-left: 2px solid var(--accent-ink);
-  border-bottom: 2px solid var(--accent-ink);
-  transform: rotate(-45deg) translate(1px, -1px) scale(0);
+  border-left: 0.125rem solid var(--accent-ink);
+  border-bottom: 0.125rem solid var(--accent-ink);
+  transform: rotate(-45deg) translate(var(--hairline), calc(var(--hairline) * -1)) scale(0);
   transition: transform 0.2s var(--ease-out);
 }
 
@@ -413,7 +468,7 @@ img, svg, canvas {
 }
 
 .check input:checked::before {
-  transform: rotate(-45deg) translate(1px, -1px) scale(1);
+  transform: rotate(-45deg) translate(var(--hairline), calc(var(--hairline) * -1)) scale(1);
 }
 
 /* ---------- Diálogos ---------- */
@@ -425,8 +480,8 @@ img, svg, canvas {
   place-items: center;
   padding: 1rem;
   background: rgba(8, 9, 8, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(0.375rem);
+  -webkit-backdrop-filter: blur(0.375rem);
   animation: backdrop-in 0.3s var(--ease-out);
 }
 
@@ -440,7 +495,7 @@ img, svg, canvas {
 }
 
 .dialog .display {
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-size: var(--text-2xl);
   margin: 0.5rem 0 0.75rem;
 }
 
@@ -455,7 +510,7 @@ img, svg, canvas {
   margin-top: 1.5rem;
 }
 
-@media (min-width: 26rem) {
+@include desde(26em) {
   .dialog-actions.split {
     grid-template-columns: 1fr 1fr;
   }
@@ -467,7 +522,7 @@ img, svg, canvas {
 }
 
 @keyframes dialog-in {
-  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  from { opacity: 0; transform: translateY(0.875rem) scale(0.985); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -487,10 +542,10 @@ img, svg, canvas {
   display: grid;
   place-items: center;
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45),
-    0 0 0 5px var(--chip),
-    0 0 0 6px rgba(0, 0, 0, 0.45),
-    0 8px 14px -8px rgba(0, 0, 0, 0.8);
+    0 0 0 var(--hairline) rgba(0, 0, 0, 0.45),
+    0 0 0 0.3125rem var(--chip),
+    0 0 0 0.375rem rgba(0, 0, 0, 0.45),
+    0 0.5rem 0.875rem -0.5rem rgba(0, 0, 0, 0.8);
   transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
 }
 
@@ -498,7 +553,7 @@ img, svg, canvas {
 .chip::before {
   content: '';
   position: absolute;
-  inset: -5px;
+  inset: -0.3125rem;
   border-radius: 50%;
   background: repeating-conic-gradient(from 0deg, rgba(242, 234, 216, 0.85) 0 14deg, transparent 14deg 45deg);
   -webkit-mask: radial-gradient(circle, transparent 62%, #000 63%);
@@ -511,12 +566,12 @@ img, svg, canvas {
   position: absolute;
   inset: 0.45rem;
   border-radius: 50%;
-  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border: var(--hairline) dashed rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
 
 .chip:hover:not(:disabled) {
-  transform: translateY(-3px);
+  transform: translateY(-0.1875rem);
 }
 
 .chip:active:not(:disabled) {
@@ -525,17 +580,18 @@ img, svg, canvas {
 
 .chip[aria-pressed="true"],
 .chip.activa {
-  transform: translateY(-4px);
+  transform: translateY(-0.25rem);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45),
-    0 0 0 5px var(--chip),
-    0 0 0 6px rgba(0, 0, 0, 0.45),
-    0 0 0 8px var(--accent-2),
-    0 14px 18px -10px rgba(0, 0, 0, 0.9);
+    0 0 0 var(--hairline) rgba(0, 0, 0, 0.45),
+    0 0 0 0.3125rem var(--chip),
+    0 0 0 0.375rem rgba(0, 0, 0, 0.45),
+    0 0 0 0.5rem var(--accent-2),
+    0 0.875rem 1.125rem -0.625rem rgba(0, 0, 0, 0.9);
 }
 
 .chip:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
+  filter: grayscale(0.85);
 }
 
 /* Paleta de fichas: sobria, no saturada */
@@ -556,7 +612,36 @@ img, svg, canvas {
 }
 
 .table-head .display {
-  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  font-size: var(--text-4xl);
+}
+
+/* ---------- Página de mesa: contenedor y rejilla compartidos ---------- */
+.page {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: var(--space-xl) var(--gutter) var(--space-3xl);
+}
+
+.page:focus {
+  outline: none;
+}
+
+.rules {
+  max-width: var(--measure);
+}
+
+/* Escenario (juego) + banco (apuestas). Cada mesa fija su reparto con --reparto. */
+.layout {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+@include desde($bp-xl) {
+  .layout {
+    grid-template-columns: var(--reparto, minmax(0, 7fr) minmax(0, 4fr));
+    align-items: start;
+  }
 }
 
 /* ---------- Estados de resultado ---------- */
@@ -564,13 +649,13 @@ img, svg, canvas {
   display: grid;
   gap: 0.35rem;
   padding: 1.25rem 1.5rem;
-  border-left: 2px solid var(--accent);
+  border-left: 0.125rem solid var(--accent);
   background: linear-gradient(90deg, var(--accent-soft), transparent 70%);
   animation: dialog-in 0.5s var(--ease-out);
 }
 
 .result .display {
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: var(--text-2xl);
 }
 
 .result.win {
@@ -586,10 +671,10 @@ img, svg, canvas {
 /* ---------- Utilidades ---------- */
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--hairline);
+  height: var(--hairline);
   padding: 0;
-  margin: -1px;
+  margin: calc(var(--hairline) * -1);
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
@@ -620,7 +705,7 @@ img, svg, canvas {
 }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(0.75rem); }
   to { opacity: 1; transform: translateY(0); }
 }
 

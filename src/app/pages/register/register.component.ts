@@ -5,17 +5,22 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { onAuthStateChanged } from '@angular/fire/auth';
 import { IconComponent } from '../../ui/icon/icon.component';
+import { LogoComponent } from '../../ui/logo/logo.component';
+import { IdiomaComponent } from '../../ui/idioma/idioma.component';
+import { Clave, useT } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IconComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IconComponent, LogoComponent, IdiomaComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
+  protected readonly t = useT();
+
   form!: FormGroup;
-  error: string | null = null;
+  error: Clave | null = null;
   rememberMe: boolean = false;
   
   constructor(
@@ -56,14 +61,14 @@ export class RegisterComponent {
       });
     });
   }
-  private getFirebaseError(code: string): string {
+  private getFirebaseError(code: string): Clave {
     switch (code) {
       case 'auth/email-already-in-use':
-        return 'Este email ya está registrado';
+        return 'registro.errores.enUso';
       case 'auth/invalid-email':
-        return 'Email inválido';
+        return 'registro.errores.emailInvalido';
       default:
-        return 'Error al registrar';
+        return 'registro.errores.generico';
     }
   }
 }

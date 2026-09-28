@@ -1,55 +1,143 @@
-<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<a class="skip-link" href="#contenido" (click)="saltarAlContenido($event)">{{ t('comun.saltar') }}</a>
 
 <header class="topbar">
-  <button type="button" class="brand" (click)="onGoHome()" aria-label="Meridiano, volver al salón">
-    <span class="brand-mark" aria-hidden="true"></span>
-    <span class="brand-word">Meridiano</span>
-    <span class="brand-sub mono">Salón de juego</span>
+  <button type="button" class="brand" (click)="onGoHome()" [attr.aria-label]="t('header.volverSalon')">
+    <app-logo class="brand-mark"></app-logo>
+    <span class="brand-text" aria-hidden="true">
+      <span class="brand-word">{{ t('comun.marca') }}</span>
+      <span class="brand-sub mono">{{ t('comun.salonDeJuego') }}</span>
+    </span>
   </button>
 
-  <div class="account" #dropdownRef>
-    <div class="balance" aria-live="polite" aria-atomic="true">
-      <span class="balance-label">Saldo</span>
-      <span class="balance-value mono">{{ saldo | currency:'EUR' }}</span>
-    </div>
+  <!-- Escritorio: las opciones de cuenta quedan a la vista, sin desplegable -->
+  @if (esEscritorio()) {
+    <nav class="nav" [attr.aria-label]="t('header.navCuenta')">
+      <button type="button" class="nav-item" (click)="onGoHome()">
+        <app-icon name="home"></app-icon><span>{{ t('header.salon') }}</span>
+      </button>
+      <button type="button" class="nav-item" (click)="onAddSaldo()">
+        <app-icon name="ticket"></app-icon><span>{{ t('header.rasca') }}</span>
+      </button>
+      <span class="nav-rule" aria-hidden="true"></span>
+      <button type="button" class="nav-item" (click)="onChangeName()" [attr.aria-label]="t('header.cambiarNombre')">
+        <app-icon name="pencil"></app-icon><span aria-hidden="true">{{ t('header.nombreCorto') }}</span>
+      </button>
+      <button type="button" class="nav-item" (click)="onChangePassword()" [attr.aria-label]="t('header.cambiarPassword')">
+        <app-icon name="key"></app-icon><span aria-hidden="true">{{ t('header.passwordCorto') }}</span>
+      </button>
+      <button type="button" class="nav-item danger" (click)="onLogout()">
+        <app-icon name="sign-out"></app-icon><span>{{ t('header.salir') }}</span>
+      </button>
+    </nav>
+  }
 
+  <div class="account" #dropdownRef>
     <button
+      #saldoRef
       type="button"
-      class="account-toggle"
-      id="menu-cuenta-toggle"
-      aria-haspopup="menu"
-      [attr.aria-expanded]="menuAbierto"
-      aria-controls="menu-cuenta"
-      (click)="toggleMenu()"
-      (keydown)="onToggleKeydown($event)">
-      <span class="avatar mono" aria-hidden="true">{{ inicial }}</span>
-      <span class="account-name">{{ nombre }}</span>
-      <app-icon name="chevron" class="account-chevron" [class.open]="menuAbierto"></app-icon>
+      class="balance"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="infoAbierta"
+      aria-controls="info-fichas"
+      (click)="abrirInfo()">
+      <span class="balance-label">{{ t('header.saldoEtiqueta') }} · <span class="nowrap">{{ t('header.saldoSinValor') }}</span></span>
+      <span class="balance-value mono" [class.pulso]="pulso">
+        {{ saldo | fichas:false }}<span class="balance-unit"> {{ t('fichas.unidad') }}</span>
+      </span>
+      <span class="sr-only">. {{ t('header.comoFunciona') }}</span>
     </button>
 
-    <div
-      class="menu"
-      id="menu-cuenta"
-      role="menu"
-      aria-labelledby="menu-cuenta-toggle"
-      *ngIf="menuAbierto"
-      (keydown)="onMenuKeydown($event)">
-      <button type="button" role="menuitem" class="menu-item" (click)="onGoHome()">
-        <app-icon name="home"></app-icon><span>Salón</span>
+    <span class="sr-only" aria-live="polite" aria-atomic="true">{{ t('header.saldoAnuncio', { saldo: (saldo | fichas) }) }}</span>
+
+    @if (esEscritorio()) {
+      <span class="player" [title]="nombre">
+        <span class="avatar mono" aria-hidden="true">{{ inicial }}</span>
+        <span class="account-name">{{ nombre }}</span>
+      </span>
+      <app-idioma></app-idioma>
+    } @else {
+      <button
+        type="button"
+        class="account-toggle"
+        id="menu-cuenta-toggle"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="menuAbierto"
+        [attr.aria-label]="etiquetaMenu"
+        aria-controls="menu-cuenta"
+        (click)="toggleMenu()"
+        (keydown)="onToggleKeydown($event)">
+        <span class="avatar mono" aria-hidden="true">{{ inicial }}</span>
+        <span class="account-name" aria-hidden="true">{{ nombre }}</span>
+        <app-icon name="chevron" class="account-chevron" [class.open]="menuAbierto"></app-icon>
       </button>
-      <button type="button" role="menuitem" class="menu-item" (click)="onChangeName()">
-        <app-icon name="pencil"></app-icon><span>Cambiar nombre</span>
-      </button>
-      <button type="button" role="menuitem" class="menu-item" (click)="onChangePassword()">
-        <app-icon name="key"></app-icon><span>Cambiar contraseña</span>
-      </button>
-      <button type="button" role="menuitem" class="menu-item" (click)="onAddSaldo()">
-        <app-icon name="ticket"></app-icon><span>Rasca y recarga</span>
-      </button>
-      <span class="menu-rule" role="separator"></span>
-      <button type="button" role="menuitem" class="menu-item danger" (click)="onLogout()">
-        <app-icon name="sign-out"></app-icon><span>Cerrar sesión</span>
-      </button>
-    </div>
+
+      <div
+        class="menu"
+        id="menu-cuenta"
+        role="menu"
+        [attr.aria-label]="t('header.menuCuenta')"
+        *ngIf="menuAbierto"
+        (keydown)="onMenuKeydown($event)">
+        <button type="button" role="menuitem" class="menu-item" (click)="onGoHome()">
+          <app-icon name="home"></app-icon><span>{{ t('header.salon') }}</span>
+        </button>
+        <button type="button" role="menuitem" class="menu-item" (click)="onChangeName()">
+          <app-icon name="pencil"></app-icon><span>{{ t('header.cambiarNombre') }}</span>
+        </button>
+        <button type="button" role="menuitem" class="menu-item" (click)="onChangePassword()">
+          <app-icon name="key"></app-icon><span>{{ t('header.cambiarPassword') }}</span>
+        </button>
+        <button type="button" role="menuitem" class="menu-item" (click)="onAddSaldo()">
+          <app-icon name="ticket"></app-icon><span>{{ t('header.rasca') }}</span>
+        </button>
+        <button type="button" role="menuitem" class="menu-item" (click)="abrirInfo()">
+          <app-icon name="spark"></app-icon><span>{{ t('header.comoFunciona') }}</span>
+        </button>
+        <span class="menu-rule" role="separator"></span>
+        <div role="group" [attr.aria-label]="t('idioma.grupo')">
+          @for (codigo of i18n.idiomas; track codigo) {
+            <button
+              type="button"
+              role="menuitemradio"
+              class="menu-item"
+              [attr.lang]="codigo"
+              [attr.aria-checked]="i18n.idioma() === codigo"
+              (click)="i18n.cambiar(codigo)">
+              <span class="menu-code mono" aria-hidden="true">{{ codigo.toUpperCase() }}</span>
+              <span>{{ t(codigo === 'es' ? 'idioma.es' : 'idioma.en') }}</span>
+            </button>
+          }
+        </div>
+        <span class="menu-rule" role="separator"></span>
+        <button type="button" role="menuitem" class="menu-item danger" (click)="onLogout()">
+          <app-icon name="sign-out"></app-icon><span>{{ t('header.cerrarSesion') }}</span>
+        </button>
+      </div>
+    }
   </div>
 </header>
+
+<!-- Ayuda contextual del saldo: el carácter ficticio de las fichas, sin llegar al pie -->
+<div class="dialog-backdrop" *ngIf="infoAbierta" (click)="onInfoBackdrop($event)">
+  <div
+    class="dialog plaque info"
+    id="info-fichas"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="info-fichas-titulo">
+    <button #cerrarInfoRef type="button" class="dialog-close" [attr.aria-label]="t('comun.cerrar')" (click)="cerrarInfo()">
+      <app-icon name="close"></app-icon>
+    </button>
+    <p class="eyebrow">{{ t('header.info.eyebrow') }}</p>
+    <h2 class="display" id="info-fichas-titulo" [innerHTML]="t('header.info.titulo')"></h2>
+    <ul class="info-list">
+      <li>{{ t('header.info.punto1') }}</li>
+      <li>{{ t('header.info.punto2') }}</li>
+      <li>{{ t('header.info.punto3') }}</li>
+      <li>{{ t('header.info.punto4') }}</li>
+    </ul>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-primary" (click)="cerrarInfo()">{{ t('comun.entendido') }}</button>
+    </div>
+  </div>
+</div>

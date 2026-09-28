@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../../ui/icon/icon.component';
+import { useT } from '../../i18n/i18n.service';
 
 let contador = 0;
 
@@ -15,8 +16,9 @@ let contador = 0;
 export class ModalComponent implements AfterViewInit {
   @Input() title = '';
   @Input() message = '';
-  @Input() acceptText = 'Aceptar';
-  @Input() cancelText = 'Cancelar';
+  /** Vacío usa el texto traducido por defecto. */
+  @Input() acceptText = '';
+  @Input() cancelText = '';
   @Input() isPrompt = false;
   @Input() isPasswordField = false;
   @Input() inputPlaceholder: string = '';
@@ -26,6 +28,8 @@ export class ModalComponent implements AfterViewInit {
 
   @ViewChild('campo') campo?: ElementRef<HTMLInputElement>;
   @ViewChild('primario') primario?: ElementRef<HTMLButtonElement>;
+
+  protected readonly t = useT();
 
   inputValue = '';
   inputType: 'text' | 'password' = 'password';

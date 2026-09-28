@@ -1,0 +1,60 @@
+// =========================================================
+// Meridiano · sistema de medidas responsive
+//
+// Sin píxeles. Tres reglas:
+//
+// 1. Todo tamaño se expresa en rem, así que respeta el tamaño de letra y el
+//    zoom que el usuario elija en su navegador.
+// 2. Los puntos de corte de viewport van en em. En una media query, 1em es el
+//    tamaño de letra por defecto del navegador, así que si alguien sube la
+//    letra a 20 px el diseño cambia antes de columna, como debe.
+// 3. Los componentes que viven en columnas de ancho variable (tapete, máquina,
+//    tablero, lista de mesas) se adaptan con consultas de contenedor: responden
+//    a su propio ancho, no al de la pantalla.
+//
+// La tipografía y el espaciado fluidos viven en styles.scss como tokens
+// clamp() (van de su mínimo en 20rem de ancho a su máximo en 90rem).
+// =========================================================
+
+// Puntos de corte de viewport (1em = 16 px con la configuración por defecto)
+$bp-xs: 22.5em;  // teléfonos estrechos
+$bp-sm: 30em;    // teléfonos
+$bp-md: 40em;    // teléfonos apaisados y tabletas pequeñas
+$bp-lg: 48em;    // tabletas
+$bp-split: 56em; // pantallas partidas (acceso con panel editorial)
+$bp-xl: 64em;    // portátiles: maquetación a dos columnas
+$bp-2xl: 74em;   // escritorio: navegación de cuenta siempre visible
+
+/// Estilos a partir de un ancho de viewport.
+@mixin desde($ancho) {
+  @media (width >= #{$ancho}) {
+    @content;
+  }
+}
+
+/// Estilos por debajo de un ancho de viewport.
+@mixin hasta($ancho) {
+  @media (width < #{$ancho}) {
+    @content;
+  }
+}
+
+/// Declara el elemento como contenedor de consultas por ancho.
+@mixin contenedor($nombre) {
+  container-name: $nombre;
+  container-type: inline-size;
+}
+
+/// Estilos cuando el contenedor con nombre alcanza un ancho (en rem).
+@mixin contenedor-desde($nombre, $ancho) {
+  @container #{$nombre} (inline-size >= #{$ancho}) {
+    @content;
+  }
+}
+
+/// Estilos mientras el contenedor con nombre no alcanza un ancho (en rem).
+@mixin contenedor-hasta($nombre, $ancho) {
+  @container #{$nombre} (inline-size < #{$ancho}) {
+    @content;
+  }
+}

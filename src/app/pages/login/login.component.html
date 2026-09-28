@@ -1,33 +1,41 @@
 <div class="auth">
   <aside class="auth-panel" aria-hidden="true">
     <div class="panel-brand">
-      <span class="brand-mark"></span>
-      <span class="brand-word">Meridiano</span>
+      <app-logo class="panel-logo"></app-logo>
+      <span class="panel-brand-text">
+        <span class="brand-word">{{ t('comun.marca') }}</span>
+        <span class="brand-sub mono">{{ t('comun.salonDeJuego') }}</span>
+      </span>
     </div>
 
     <div class="panel-copy">
-      <p class="eyebrow">Salón de juego · Desde 2025</p>
-      <p class="display panel-title">La casa <em>presta</em> las fichas. Tú pones la suerte.</p>
+      <p class="eyebrow">{{ t('login.panelEyebrow') }}</p>
+      <p class="display panel-title" [innerHTML]="t('login.panelTitulo')"></p>
     </div>
 
     <ul class="panel-list mono">
-      <li><span>01</span>Blackjack</li>
-      <li><span>02</span>Ruleta</li>
-      <li><span>03</span>Tragaperras</li>
+      <li><span>01</span>{{ t('juegos.blackjack.nombre') }}</li>
+      <li><span>02</span>{{ t('juegos.ruleta.nombre') }}</li>
+      <li><span>03</span>{{ t('juegos.slot.nombre') }}</li>
     </ul>
 
-    <p class="panel-foot mono">Dinero de juego · Sin valor real · +18</p>
+    <p class="panel-mantra lede-serif">{{ t('comun.mantra') }}</p>
+    <p class="panel-foot mono">{{ t('comun.sinValorReal') }} · {{ t('comun.mayores') }}</p>
   </aside>
 
   <main class="auth-main" id="contenido">
-    <div class="auth-card plaque">
-      <p class="eyebrow">Acceso</p>
-      <h1 class="display">Iniciar sesión</h1>
-      <p class="muted lead">Tu saldo te espera exactamente donde lo dejaste.</p>
+    <div class="auth-top">
+      <app-idioma></app-idioma>
+    </div>
 
-      <form [formGroup]="form" (ngSubmit)="login()" novalidate class="form">
+    <div class="auth-card plaque">
+      <p class="eyebrow">{{ t('login.eyebrow') }}</p>
+      <h1 class="display">{{ t('login.titulo') }}</h1>
+      <p class="muted lead">{{ t('login.lead') }}</p>
+
+      <form *ngIf="!recuperando; else recuperar" [formGroup]="form" (ngSubmit)="login()" novalidate class="form">
         <div class="field">
-          <label for="login-email">Email</label>
+          <label for="login-email">{{ t('auth.email') }}</label>
           <input
             id="login-email"
             class="input"
@@ -38,13 +46,13 @@
             [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid ? 'true' : null"
             aria-describedby="login-email-error" />
           <div id="login-email-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
-            <small class="error" *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
-            <small class="error" *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+            <small class="error" *ngIf="form.get('email')?.errors?.['required']">{{ t('auth.emailObligatorio') }}</small>
+            <small class="error" *ngIf="form.get('email')?.errors?.['email']">{{ t('auth.emailFormato') }}</small>
           </div>
         </div>
 
         <div class="field">
-          <label for="login-password">Contraseña</label>
+          <label for="login-password">{{ t('auth.password') }}</label>
           <input
             id="login-password"
             class="input"
@@ -54,9 +62,10 @@
             [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid ? 'true' : null"
             aria-describedby="login-password-error" />
           <div id="login-password-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
-            <small class="error" *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
-            <small class="error" *ngIf="form.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+            <small class="error" *ngIf="form.get('password')?.errors?.['required']">{{ t('auth.passwordObligatoria') }}</small>
+            <small class="error" *ngIf="form.get('password')?.errors?.['minlength']">{{ t('auth.passwordMinimo') }}</small>
           </div>
+          <button type="button" class="btn-link forgot" (click)="abrirRecuperar()">{{ t('login.olvido') }}</button>
         </div>
 
         <label class="check">
@@ -65,26 +74,65 @@
             [(ngModel)]="rememberMe"
             name="rememberMe"
             [ngModelOptions]="{ standalone: true }" />
-          Mantener sesión iniciada
+          {{ t('login.recordar') }}
         </label>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid">
-            Entrar
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid" [attr.aria-describedby]="form.invalid ? 'login-bloqueo' : null">
+            {{ t('login.entrar') }}
             <app-icon name="arrow"></app-icon>
           </button>
+          <small id="login-bloqueo" class="help" *ngIf="form.invalid">{{ t('login.bloqueo') }}</small>
           <button type="button" class="btn btn-ghost btn-block" (click)="loginWithGoogle()">
             <app-icon name="google"></app-icon>
-            Continuar con Google
+            {{ t('login.google') }}
           </button>
         </div>
 
-        <p class="error form-error" role="alert" *ngIf="error">{{ error }}</p>
+        <p class="error form-error" role="alert" *ngIf="error">{{ t(error) }}</p>
       </form>
 
+      <!-- Recuperación: un paso breve dentro de la misma tarjeta -->
+      <ng-template #recuperar>
+        <form class="form" (ngSubmit)="enviarRecuperacion()" novalidate aria-labelledby="recuperar-titulo">
+          <h2 class="eyebrow" id="recuperar-titulo">{{ t('login.recuperar.titulo') }}</h2>
+          <ng-container *ngIf="!recuperacionEnviada; else enviada">
+            <div class="field">
+              <label for="recuperar-email">{{ t('login.recuperar.email') }}</label>
+              <input
+                id="recuperar-email"
+                class="input"
+                type="email"
+                name="recuperarEmail"
+                autocomplete="email"
+                inputmode="email"
+                [(ngModel)]="emailRecuperar"
+                [attr.aria-invalid]="errorRecuperar ? 'true' : null"
+                aria-describedby="recuperar-help recuperar-error" />
+              <small id="recuperar-help" class="help">{{ t('login.recuperar.ayuda') }}</small>
+              <small id="recuperar-error" class="error" *ngIf="errorRecuperar">{{ t(errorRecuperar) }}</small>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="enviandoRecuperacion">
+                {{ enviandoRecuperacion ? t('login.recuperar.enviando') : t('login.recuperar.enviar') }}
+              </button>
+              <button type="button" class="btn btn-ghost btn-block" (click)="cerrarRecuperar()">{{ t('login.recuperar.volver') }}</button>
+            </div>
+          </ng-container>
+          <ng-template #enviada>
+            <p class="result win" role="status">{{ t('login.recuperar.enviado') }}</p>
+            <button type="button" class="btn btn-ghost btn-block" (click)="cerrarRecuperar()">{{ t('login.recuperar.volver') }}</button>
+          </ng-template>
+        </form>
+      </ng-template>
+
       <p class="switch">
-        ¿Aún no tienes cuenta?
-        <button type="button" class="btn-link" (click)="goToRegister()">Regístrate</button>
+        {{ t('login.sinCuenta') }}
+        <button type="button" class="btn-link" (click)="goToRegister()">{{ t('login.registrate') }}</button>
+      </p>
+
+      <p class="trust mono">
+        <span>{{ t('comun.mayores') }}</span><span aria-hidden="true">·</span><span>{{ t('comun.sinValorReal') }}</span><span aria-hidden="true">·</span><span>{{ t('comun.academico') }}</span>
       </p>
     </div>
   </main>

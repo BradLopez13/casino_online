@@ -1,33 +1,41 @@
 <div class="auth">
   <aside class="auth-panel" aria-hidden="true">
     <div class="panel-brand">
-      <span class="brand-mark"></span>
-      <span class="brand-word">Meridiano</span>
+      <app-logo class="panel-logo"></app-logo>
+      <span class="panel-brand-text">
+        <span class="brand-word">{{ t('comun.marca') }}</span>
+        <span class="brand-sub mono">{{ t('comun.salonDeJuego') }}</span>
+      </span>
     </div>
 
     <div class="panel-copy">
-      <p class="eyebrow">Nueva cuenta · Fichas de cortesía</p>
-      <p class="display panel-title">Mil fichas <em>al sentarte</em>. Ninguna sale de tu bolsillo.</p>
+      <p class="eyebrow">{{ t('registro.panelEyebrow') }}</p>
+      <p class="display panel-title" [innerHTML]="t('registro.panelTitulo')"></p>
     </div>
 
     <ul class="panel-list mono">
-      <li><span>01</span>Regístrate</li>
-      <li><span>02</span>Confirma tu edad</li>
-      <li><span>03</span>Elige mesa</li>
+      <li><span>01</span>{{ t('registro.paso1') }}</li>
+      <li><span>02</span>{{ t('registro.paso2') }}</li>
+      <li><span>03</span>{{ t('registro.paso3') }}</li>
     </ul>
 
-    <p class="panel-foot mono">Dinero de juego · Sin valor real · +18</p>
+    <p class="panel-mantra lede-serif">{{ t('comun.mantra') }}</p>
+    <p class="panel-foot mono">{{ t('comun.sinValorReal') }} · {{ t('comun.mayores') }}</p>
   </aside>
 
   <main class="auth-main" id="contenido">
+    <div class="auth-top">
+      <app-idioma></app-idioma>
+    </div>
+
     <div class="auth-card plaque">
-      <p class="eyebrow">Alta</p>
-      <h1 class="display">Crear cuenta</h1>
-      <p class="muted lead">Un email, una contraseña y una mesa esperándote.</p>
+      <p class="eyebrow">{{ t('registro.eyebrow') }}</p>
+      <h1 class="display">{{ t('registro.titulo') }}</h1>
+      <p class="muted lead">{{ t('registro.lead') }}</p>
 
       <form [formGroup]="form" (ngSubmit)="register()" novalidate class="form">
         <div class="field">
-          <label for="register-email">Email</label>
+          <label for="register-email">{{ t('auth.email') }}</label>
           <input
             id="register-email"
             class="input"
@@ -38,13 +46,13 @@
             [attr.aria-invalid]="form.get('email')?.touched && form.get('email')?.invalid ? 'true' : null"
             aria-describedby="register-email-error" />
           <div id="register-email-error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
-            <small class="error" *ngIf="form.get('email')?.errors?.['required']">Email obligatorio</small>
-            <small class="error" *ngIf="form.get('email')?.errors?.['email']">Formato de email inválido</small>
+            <small class="error" *ngIf="form.get('email')?.errors?.['required']">{{ t('auth.emailObligatorio') }}</small>
+            <small class="error" *ngIf="form.get('email')?.errors?.['email']">{{ t('auth.emailFormato') }}</small>
           </div>
         </div>
 
         <div class="field">
-          <label for="register-password">Contraseña</label>
+          <label for="register-password">{{ t('auth.password') }}</label>
           <input
             id="register-password"
             class="input"
@@ -53,30 +61,35 @@
             autocomplete="new-password"
             [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid ? 'true' : null"
             aria-describedby="register-password-help register-password-error" />
-          <small id="register-password-help" class="help">Al menos 6 caracteres.</small>
+          <small id="register-password-help" class="help">{{ t('registro.passwordAyuda') }}</small>
           <div id="register-password-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
-            <small class="error" *ngIf="form.get('password')?.errors?.['required']">Contraseña obligatoria</small>
-            <small class="error" *ngIf="form.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</small>
+            <small class="error" *ngIf="form.get('password')?.errors?.['required']">{{ t('auth.passwordObligatoria') }}</small>
+            <small class="error" *ngIf="form.get('password')?.errors?.['minlength']">{{ t('auth.passwordMinimo') }}</small>
           </div>
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid">
-            Registrarse
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid" [attr.aria-describedby]="form.invalid ? 'register-bloqueo' : null">
+            {{ t('registro.registrarse') }}
             <app-icon name="arrow"></app-icon>
           </button>
           <button type="button" class="btn btn-ghost btn-block" (click)="loginWithGoogle()">
             <app-icon name="google"></app-icon>
-            Registrarse con Google
+            {{ t('registro.google') }}
           </button>
+          <small id="register-bloqueo" class="help" *ngIf="form.invalid">{{ t('registro.bloqueo') }}</small>
         </div>
 
-        <p class="error form-error" role="alert" *ngIf="error">{{ error }}</p>
+        <p class="error form-error" role="alert" *ngIf="error">{{ t(error) }}</p>
       </form>
 
       <p class="switch">
-        ¿Ya tienes cuenta?
-        <button type="button" class="btn-link" (click)="goToLogin()">Inicia sesión</button>
+        {{ t('registro.conCuenta') }}
+        <button type="button" class="btn-link" (click)="goToLogin()">{{ t('registro.iniciaSesion') }}</button>
+      </p>
+
+      <p class="trust mono">
+        <span>{{ t('comun.mayores') }}</span><span aria-hidden="true">·</span><span>{{ t('comun.sinValorReal') }}</span><span aria-hidden="true">·</span><span>{{ t('comun.academico') }}</span>
       </p>
     </div>
   </main>

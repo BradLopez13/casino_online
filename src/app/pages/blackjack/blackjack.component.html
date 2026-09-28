@@ -10,24 +10,22 @@
 
 <main class="page" id="contenido" tabindex="-1">
   <header class="table-head stagger">
-    <p class="eyebrow" [style.--i]="0">Mesa 03 · Cartas</p>
-    <h1 class="display" [style.--i]="1">Blackjack</h1>
-    <p class="muted rules" [style.--i]="2">
-      Llega a 21 sin pasarte. El as vale 1 u 11, según convenga. La banca pide carta hasta 17.
-    </p>
+    <p class="eyebrow" [style.--i]="0">{{ t('blackjack.eyebrow') }}</p>
+    <h1 class="display" [style.--i]="1">{{ t('juegos.blackjack.nombre') }}</h1>
+    <p class="muted rules" [style.--i]="2">{{ t('blackjack.reglas') }}</p>
   </header>
 
   <div class="layout">
     <!-- Mesa y cartas -->
-    <section class="felt" aria-label="Mesa de blackjack">
-      <div class="felt-arc" aria-hidden="true"></div>
+    <section class="felt" [attr.aria-label]="t('blackjack.mesa')">
+      <div class="felt-arc" aria-hidden="true" [attr.data-leyenda]="t('blackjack.leyenda')"></div>
 
       <div class="hand dealer">
         <div class="hand-label">
-          <span class="eyebrow">Crupier</span>
+          <span class="eyebrow">{{ t('blackjack.crupier') }}</span>
           <span class="points mono" aria-live="polite">{{ dealerHand.length ? calcularPuntos(dealerHand) : '—' }}</span>
         </div>
-        <div class="cards" role="list" [attr.aria-label]="'Cartas del crupier: ' + dealerHand.join(', ')">
+        <div class="cards" role="list" [attr.aria-label]="t('blackjack.cartasCrupier', { cartas: describirMano(dealerHand) })">
           <div
             class="card"
             role="listitem"
@@ -44,7 +42,7 @@
       </div>
 
       <div class="hand player">
-        <div class="cards" role="list" [attr.aria-label]="'Tus cartas: ' + playerHand.join(', ')">
+        <div class="cards" role="list" [attr.aria-label]="t('blackjack.tusCartas', { cartas: describirMano(playerHand) })">
           <div
             class="card"
             role="listitem"
@@ -60,13 +58,13 @@
           <div class="card slot" *ngIf="!playerHand.length" aria-hidden="true"></div>
         </div>
         <div class="hand-label">
-          <span class="eyebrow">Tú</span>
+          <span class="eyebrow">{{ t('blackjack.tu') }}</span>
           <span class="points mono" aria-live="polite">{{ playerHand.length ? calcularPuntos(playerHand) : '—' }}</span>
         </div>
       </div>
 
       <p class="bet-tag mono" *ngIf="apuesta">
-        <span>En juego</span> {{ apuesta | currency:'EUR' }}
+        <span>{{ t('blackjack.enJuego') }}</span> {{ apuesta | fichas }}
       </p>
     </section>
 
@@ -74,8 +72,8 @@
     <aside class="bank">
       <!-- Selección de apuesta -->
       <section *ngIf="!apuesta" class="bank-block" aria-labelledby="bj-apuesta">
-        <h2 class="eyebrow" id="bj-apuesta">Elige tu apuesta</h2>
-        <p class="bank-hint muted">Saldo disponible <strong class="mono">{{ saldo | currency:'EUR' }}</strong></p>
+        <h2 class="eyebrow" id="bj-apuesta">{{ t('blackjack.eligeApuesta') }}</h2>
+        <p class="bank-hint muted">{{ t('comun.saldoDisponible') }} <strong class="mono">{{ saldo | fichas }}</strong></p>
 
         <div class="chips">
           <button
@@ -84,7 +82,7 @@
             class="chip"
             [ngClass]="'chip-' + cantidad"
             [disabled]="cantidad > saldo"
-            [attr.aria-label]="'Apostar ' + cantidad + ' euros'"
+            [attr.aria-label]="t('blackjack.apostarFichas', { fichas: (cantidad | fichas) })"
             (click)="apostar(cantidad)">
             {{ cantidad }}
           </button>
@@ -92,7 +90,7 @@
 
         <form class="custom" (submit)="$event.preventDefault(); apostar(+apuestaInput.value)">
           <div class="field">
-            <label for="bj-otra">Otra cantidad</label>
+            <label for="bj-otra">{{ t('blackjack.otra') }}</label>
             <div class="custom-row">
               <input
                 id="bj-otra"
@@ -104,74 +102,74 @@
                 placeholder="0"
                 aria-describedby="bj-error"
                 #apuestaInput />
-              <button type="submit" class="btn btn-primary">Apostar</button>
+              <button type="submit" class="btn btn-primary">{{ t('blackjack.apostar') }}</button>
             </div>
           </div>
         </form>
 
-        <p class="error" id="bj-error" role="alert" *ngIf="mensajeApuesta">{{ mensajeApuesta }}</p>
+        <p class="error" id="bj-error" role="alert" *ngIf="mensajeApuesta">{{ t(mensajeApuesta) }}</p>
       </section>
 
       <!-- Turno del jugador -->
       <section class="bank-block" *ngIf="!juegoTerminado && turnoJugador" aria-labelledby="bj-turno">
-        <h2 class="eyebrow" id="bj-turno">Tu turno</h2>
-        <p class="bank-hint muted">Tienes <strong class="mono">{{ calcularPuntos(playerHand) }}</strong>. La banca muestra <strong class="mono">{{ calcularPuntos(dealerHand) }}</strong>.</p>
+        <h2 class="eyebrow" id="bj-turno">{{ t('blackjack.turno') }}</h2>
+        <p class="bank-hint muted" [innerHTML]="t('blackjack.tienes', { jugador: calcularPuntos(playerHand), banca: calcularPuntos(dealerHand) })"></p>
         <div class="actions">
-          <button type="button" class="btn btn-primary" (click)="pedirCarta()">Pedir carta</button>
-          <button type="button" class="btn btn-ghost" (click)="plantarse()">Plantarse</button>
+          <button type="button" class="btn btn-primary" (click)="pedirCarta()">{{ t('blackjack.pedir') }}</button>
+          <button type="button" class="btn btn-ghost" (click)="plantarse()">{{ t('blackjack.plantarse') }}</button>
         </div>
       </section>
 
       <!-- Resultado final -->
       <section class="bank-block" *ngIf="juegoTerminado" aria-live="assertive">
         <div class="result" [ngClass]="resultadoClase">
-          <span class="eyebrow">Mano cerrada</span>
-          <p class="display">{{ resultado }}</p>
-          <p class="muted">Tú {{ calcularPuntos(playerHand) }} · Crupier {{ calcularPuntos(dealerHand) }}</p>
+          <span class="eyebrow">{{ t('blackjack.manoCerrada') }}</span>
+          <p class="display">{{ resultado ? t(resultado) : '' }}</p>
+          <p class="muted">{{ t('blackjack.marcador', { jugador: calcularPuntos(playerHand), banca: calcularPuntos(dealerHand) }) }}</p>
         </div>
-        <button type="button" class="btn btn-primary btn-block" (click)="resetearJuego()">Nueva mano</button>
+        <button type="button" class="btn btn-primary btn-block" (click)="resetearJuego()">{{ t('blackjack.nuevaMano') }}</button>
       </section>
 
       <dl class="paytable mono">
-        <div><dt>Blackjack</dt><dd>Paga 1 a 1</dd></div>
-        <div><dt>Empate</dt><dd>Se devuelve</dd></div>
-        <div><dt>Banca</dt><dd>Se planta en 17</dd></div>
+        <div><dt>{{ t('blackjack.tabla.blackjack') }}</dt><dd>{{ t('blackjack.tabla.pagaUno') }}</dd></div>
+        <div><dt>{{ t('blackjack.tabla.empate') }}</dt><dd>{{ t('blackjack.tabla.devuelve') }}</dd></div>
+        <div><dt>{{ t('blackjack.tabla.banca') }}</dt><dd>{{ t('blackjack.tabla.planta') }}</dd></div>
       </dl>
     </aside>
   </div>
 </main>
 
-<!-- modales -->
+<!-- Diálogos de cuenta -->
 <app-modal
   *ngIf="mostrarModalNombre"
-  title="Cambiar nombre"
-  message="Introduce tu nuevo nombre:"
-  acceptText="Guardar"
-  cancelText="Cancelar"
+  [title]="t('cuenta.nombreTitulo')"
+  [message]="t('cuenta.nombreMensaje')"
+  [acceptText]="t('comun.guardar')"
+  [cancelText]="t('comun.cancelar')"
   [isPrompt]="true"
-  [errorMessage]="errorNombre"
-  inputPlaceholder="Ej: JugadorX"
+  [errorMessage]="errorNombre ? t(errorNombre) : null"
+  [inputPlaceholder]="t('cuenta.nombrePlaceholder')"
   (accepted)="onNombreModal($event)">
 </app-modal>
 
 <app-modal
   *ngIf="mostrarModalPassword && !esCuentaGoogle"
-  title="Cambiar contraseña"
-  message="Introduce tu nueva contraseña:"
-  acceptText="Guardar"
-  cancelText="Cancelar"
+  [title]="t('cuenta.passwordTitulo')"
+  [message]="t('cuenta.passwordMensaje')"
+  [acceptText]="t('comun.guardar')"
+  [cancelText]="t('comun.cancelar')"
   [isPrompt]="true"
   [isPasswordField]="true"
   inputPlaceholder="********"
-  [errorMessage]="errorPassword"
+  [errorMessage]="errorPassword ? t(errorPassword) : null"
   (accepted)="onPasswordModal($event)">
 </app-modal>
 
 <app-modal
   *ngIf="esCuentaGoogle && mostrarModalPassword"
-  title="Cambio de contraseña"
-  message="No puedes cambiar la contraseña porque tu cuenta fue creada con Google."
-  acceptText="Aceptar"
+  [title]="t('cuenta.googleTitulo')"
+  [message]="t('cuenta.googleMensaje')"
+  [acceptText]="t('comun.aceptar')"
   (accepted)="mostrarModalPassword = false">
 </app-modal>
 
@@ -180,4 +178,5 @@
   [cantidadGanada]="cantidadGanada"
   [rascado]="rascado"
   (cerrar)="onCerrarScratch()"
+  (cancelar)="mostrarScratch = false"
 />

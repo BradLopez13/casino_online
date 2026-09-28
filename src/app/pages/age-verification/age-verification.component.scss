@@ -1,3 +1,5 @@
+@use 'medidas' as *;
+
 .curtain {
   position: fixed;
   inset: 0;
@@ -10,8 +12,8 @@
   background:
     radial-gradient(40rem 30rem at 80% 100%, rgba(201, 169, 97, 0.1), transparent 60%),
     rgba(10, 11, 10, 0.94);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(0.625rem);
+  -webkit-backdrop-filter: blur(0.625rem);
   animation: curtain-in 0.4s var(--ease-out);
 }
 
@@ -30,19 +32,19 @@
   animation: gate-in 0.6s var(--ease-out);
 }
 
-@media (min-width: 480px) {
+@include desde($bp-sm) {
   .gate {
     padding: 2.75rem 2.5rem 2.25rem;
   }
 }
 
 @keyframes gate-in {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(1.125rem); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .gate .display {
-  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  font-size: var(--text-4xl);
   margin: 0.25rem 0 0.5rem;
 }
 
@@ -57,7 +59,7 @@
 
 /* Barra que se agota mientras se cierra la sesión (2,5 s en el componente) */
 .countdown {
-  height: 2px;
+  height: 0.125rem;
   margin-top: 1.5rem;
   background: var(--line);
   overflow: hidden;

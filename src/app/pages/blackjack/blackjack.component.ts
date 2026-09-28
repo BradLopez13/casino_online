@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { ModalComponent } from '../modal/modal.component';
 import { authState, updatePassword, User } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
+import { FichasPipe } from '../../ui/fichas.pipe';
+import { Clave, useI18n } from '../../i18n/i18n.service';
 
 
 @Component({
@@ -14,9 +16,12 @@ import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component'
   standalone: true,
   templateUrl: './blackjack.component.html',
   styleUrls: ['./blackjack.component.scss'],
-  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent]
+  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent, FichasPipe]
 })
 export class BlackjackComponent {
+  protected readonly i18n = useI18n();
+  protected readonly t = this.i18n.t;
+
   private auth = inject(AuthService);
   private firestore = inject(Firestore);
   private router = inject(Router);
@@ -27,9 +32,9 @@ export class BlackjackComponent {
   mostrarModalSaldo = false;
   mostrarModalPassword = false;
 
-  errorNombre: string | null = null;
-  errorSaldo: string | null = null;
-  errorPassword: string | null = null;
+  errorNombre: Clave | null = null;
+  errorSaldo: Clave | null = null;
+  errorPassword: Clave | null = null;
   esCuentaGoogle = false;
 
   mostrarScratch = false;
@@ -46,10 +51,10 @@ export class BlackjackComponent {
   dealerHand: string[] = [];
 
   apuesta = 0;
-  mensajeApuesta = '';
+  mensajeApuesta: Clave | null = null;
 
   juegoTerminado = false;
-  resultado = '';
+  resultado: Clave | null = null;
   turnoJugador = false;
 
   fichas = [10, 20, 50, 100, 500];
@@ -64,7 +69,7 @@ export class BlackjackComponent {
         getDoc(ref).then(snapshot => {
           if (snapshot.exists()) {
             const data = snapshot.data();
-            this.nombre = data['nombre'] || `usuario.${user.uid.slice(0, 6)}`;
+            this.nombre = data['nombre'] || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
             this.saldo = data['saldo'] ?? 0;
           }
         });
@@ -104,11 +109,11 @@ export class BlackjackComponent {
       updateDoc(refDoc, { nombre: nuevoNombre }).then(() => {
         this.nombre = nuevoNombre;
       }).catch(() => {
-        this.errorNombre = 'Error al guardar el nombre.';
+        this.errorNombre = 'errores.nombreGuardar';
         this.mostrarModalNombre = true;
       });
     } else {
-      this.errorNombre = 'Nombre no válido.';
+      this.errorNombre = 'errores.nombreVacio';
       this.mostrarModalNombre = true;
     }
   }
@@ -127,11 +132,11 @@ export class BlackjackComponent {
 
     if (typeof res === 'string' && res.length >= 6 && this.user) {
       updatePassword(this.user, res).catch(() => {
-        this.errorPassword = 'Error al cambiar la contraseña.';
+        this.errorPassword = 'errores.passwordGuardar';
         this.mostrarModalPassword = true;
       });
     } else {
-      this.errorPassword = 'La contraseña debe tener al menos 6 caracteres.';
+      this.errorPassword = 'errores.passwordCorta';
       this.mostrarModalPassword = true;
     }
   }
@@ -147,7 +152,7 @@ export class BlackjackComponent {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
       updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
-        .catch(() => this.errorSaldo = 'Error al actualizar saldo');
+        .catch(() => this.errorSaldo = 'errores.saldo');
     }
   }
 
@@ -155,7 +160,7 @@ export class BlackjackComponent {
 
   resetearJuego() {
     this.juegoTerminado = false;
-    this.resultado = '';
+    this.resultado = null;
     this.apuesta = 0;
     this.playerHand = [];
     this.dealerHand = [];
@@ -178,18 +183,18 @@ export class BlackjackComponent {
 
   apostar(cantidad: number) {
     if (isNaN(cantidad) || cantidad <= 0) {
-      this.mensajeApuesta = 'Cantidad inválida';
+      this.mensajeApuesta = 'blackjack.errores.minimo';
       return;
     }
 
     if (this.saldo < cantidad) {
-      this.mensajeApuesta = 'No tienes suficiente saldo';
+      this.mensajeApuesta = 'blackjack.errores.saldo';
       return;
     }
 
     this.apuesta = cantidad;
     this.saldo -= cantidad;
-    this.mensajeApuesta = '';
+    this.mensajeApuesta = null;
     this.actualizarSaldo();
 
     this.crearBaraja();
@@ -203,7 +208,7 @@ export class BlackjackComponent {
 
     this.playerHand.push(this.deck.pop()!);
     if (this.calcularPuntos(this.playerHand) > 21) {
-      this.resultado = 'Te has pasado. Pierdes.';
+      this.resultado = 'blackjack.resultados.pasado';
       this.juegoTerminado = true;
     }
   }
@@ -231,15 +236,28 @@ export class BlackjackComponent {
   }
 
   describirCarta(carta: string): string {
-    const nombres: Record<string, string> = { A: 'As', J: 'Jota', Q: 'Reina', K: 'Rey' };
-    const palos: Record<string, string> = { '♠': 'picas', '♥': 'corazones', '♦': 'diamantes', '♣': 'tréboles' };
+    const nombres: Record<string, Clave> = {
+      A: 'blackjack.valores.A', J: 'blackjack.valores.J', Q: 'blackjack.valores.Q', K: 'blackjack.valores.K'
+    };
+    const palos: Record<string, Clave> = {
+      '♠': 'blackjack.palos.picas', '♥': 'blackjack.palos.corazones',
+      '♦': 'blackjack.palos.diamantes', '♣': 'blackjack.palos.treboles'
+    };
     const valor = this.valorDe(carta);
-    return `${nombres[valor] ?? valor} de ${palos[this.paloDe(carta)] ?? ''}`.trim();
+    const clavePalo = palos[this.paloDe(carta)];
+    return this.t('blackjack.carta', {
+      valor: nombres[valor] ? this.t(nombres[valor]) : valor,
+      palo: clavePalo ? this.t(clavePalo) : ''
+    });
+  }
+
+  describirMano(mano: string[]): string {
+    return mano.map(carta => this.describirCarta(carta)).join(', ');
   }
 
   get resultadoClase(): string {
-    if (this.resultado.includes('Ganaste')) return 'win';
-    if (this.resultado.includes('Empate')) return '';
+    if (this.resultado === 'blackjack.resultados.gana') return 'win';
+    if (this.resultado === 'blackjack.resultados.empate') return '';
     return 'lose';
   }
 
@@ -269,12 +287,12 @@ export class BlackjackComponent {
     const puntosDealer = this.calcularPuntos(this.dealerHand);
 
     if (puntosDealer > 21 || puntosJugador > puntosDealer) {
-      this.resultado = '¡Ganaste!';
+      this.resultado = 'blackjack.resultados.gana';
       this.saldo += this.apuesta * 2;
     } else if (puntosJugador < puntosDealer) {
-      this.resultado = 'Perdiste.';
+      this.resultado = 'blackjack.resultados.pierde';
     } else {
-      this.resultado = 'Empate.';
+      this.resultado = 'blackjack.resultados.empate';
       this.saldo += this.apuesta;
     }
 

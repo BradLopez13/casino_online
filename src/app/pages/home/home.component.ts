@@ -9,6 +9,9 @@ import { ModalComponent } from '../modal/modal.component';
 import { AgeVerificationComponent } from '../age-verification/age-verification.component';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
 import { IconComponent } from '../../ui/icon/icon.component';
+import { LogoComponent } from '../../ui/logo/logo.component';
+import { FichasPipe } from '../../ui/fichas.pipe';
+import { Clave, useI18n } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-home',
@@ -21,10 +24,15 @@ import { IconComponent } from '../../ui/icon/icon.component';
     AgeVerificationComponent,
     ModalComponent,
     ScratchModalComponent,
-    IconComponent
+    IconComponent,
+    LogoComponent,
+    FichasPipe
   ]
 })
 export class HomeComponent {
+  protected readonly i18n = useI18n();
+  protected readonly t = this.i18n.t;
+
   user: User | null = null;
   saldo = 0;
   nombre = '';
@@ -35,9 +43,9 @@ export class HomeComponent {
   mostrarModalSaldo = false;
   mostrarModalPassword = false;
 
-  errorNombre: string | null = null;
-  errorSaldo: string | null = null;
-  errorPassword: string | null = null;
+  errorNombre: Clave | null = null;
+  errorSaldo: Clave | null = null;
+  errorPassword: Clave | null = null;
   esCuentaGoogle = false;
 
   mostrarScratch = false;
@@ -45,14 +53,20 @@ export class HomeComponent {
   rascado = false;
 
 
-  juegos = [
-    { nombre: 'Tragaperras', descripcion: 'Tres rodillos, cinco líneas. Del ×2 de las cerezas al ×15 del siete.', nota: 'Paga hasta ×15', icono: 'reels', ruta: '/slot' },
-    { nombre: 'Ruleta', descripcion: 'Treinta y siete números. Pleno, color, par o impar, mitades altas y bajas.', nota: 'Pleno 36 a 1', icono: 'wheel', ruta: '/ruleta' },
-    { nombre: 'Blackjack', descripcion: 'Llega a 21 sin pasarte. La banca pide carta hasta plantarse en 17.', nota: 'Banca planta en 17', icono: 'cards', ruta: '/blackjack' }
+  readonly juegos: { nombre: Clave; descripcion: Clave; nota: Clave; icono: string; ruta: string }[] = [
+    { nombre: 'juegos.slot.nombre', descripcion: 'juegos.slot.descripcion', nota: 'juegos.slot.nota', icono: 'reels', ruta: '/slot' },
+    { nombre: 'juegos.ruleta.nombre', descripcion: 'juegos.ruleta.descripcion', nota: 'juegos.ruleta.nota', icono: 'wheel', ruta: '/ruleta' },
+    { nombre: 'juegos.blackjack.nombre', descripcion: 'juegos.blackjack.descripcion', nota: 'juegos.blackjack.nota', icono: 'cards', ruta: '/blackjack' }
   ];
 
   /** Hora local en la que se abrió la sesión, para la línea de cabecera. */
-  readonly horaApertura = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+  /** Año en curso para el pie, sin tener que tocarlo cada enero. */
+  readonly anio = new Date().getFullYear();
+
+  private readonly apertura = new Date();
+  get horaApertura(): string {
+    return new Intl.DateTimeFormat(this.i18n.locale(), { hour: '2-digit', minute: '2-digit' }).format(this.apertura);
+  }
 
   private auth = inject(AuthService);
   private firestore = inject(Firestore);
@@ -76,7 +90,7 @@ export class HomeComponent {
   }
 
   get nombreVisual(): string {
-    return this.nombre.trim() ? this.nombre : this.user ? `usuario.${this.user.uid.substring(0,6)}` : 'usuario';
+    return this.nombre.trim() ? this.nombre : this.user ? `${this.t('comun.usuario')}.${this.user.uid.substring(0,6)}` : this.t('comun.usuario');
   }
 
   // Event handlers from header
@@ -98,9 +112,9 @@ export class HomeComponent {
       const nuevo = res.trim();
       updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { nombre: nuevo })
         .then(()=> this.nombre = nuevo)
-        .catch(()=>{ this.errorNombre='Error al guardar nombre'; this.mostrarModalNombre=true; });
+        .catch(()=>{ this.errorNombre='errores.nombreGuardar'; this.mostrarModalNombre=true; });
     } else if (typeof res==='string') {
-      this.errorNombre='Nombre no válido'; this.mostrarModalNombre=true;
+      this.errorNombre='errores.nombreVacio'; this.mostrarModalNombre=true;
     }
   }
   generarPremio(): number {
@@ -116,9 +130,9 @@ export class HomeComponent {
     if (this.esCuentaGoogle) return;
     if (typeof res==='string' && res.length>=6 && this.user) {
       updatePassword(this.user, res)
-        .catch(()=>{ this.errorPassword='Error al cambiar contraseña'; this.mostrarModalPassword=true; });
+        .catch(()=>{ this.errorPassword='errores.passwordGuardar'; this.mostrarModalPassword=true; });
     } else if (typeof res==='string') {
-      this.errorPassword='Mínimo 6 caracteres'; this.mostrarModalPassword=true;
+      this.errorPassword='errores.passwordCorta'; this.mostrarModalPassword=true;
     }
   }
   onCerrarScratch() {
@@ -127,7 +141,7 @@ export class HomeComponent {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
       updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
-        .catch(() => this.errorSaldo = 'Error al actualizar saldo');
+        .catch(() => this.errorSaldo = 'errores.saldo');
     }
   }
 

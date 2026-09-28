@@ -1,20 +1,33 @@
-import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, NgZone, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, NgZone, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconComponent } from '../../ui/icon/icon.component';
+import { FichasPipe } from '../../ui/fichas.pipe';
+import { useI18n } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-scratch-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent, FichasPipe],
   templateUrl: './scratch-modal.component.html',
   styleUrls: ['./scratch-modal.component.scss']
 })
 export class ScratchModalComponent implements AfterViewInit, OnDestroy {
   @Input() rascado = true;
   @Input() cantidadGanada = 0;
+  /** Acepta el premio revelado. */
   @Output() cerrar = new EventEmitter<void>();
+  /** Sale sin rascar: el boleto no se consume ni cambia el saldo. */
+  @Output() cancelar = new EventEmitter<void>();
 
   @ViewChild('scratchCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('primario') primario?: ElementRef<HTMLButtonElement>;
+  @ViewChild('revelarRef') revelarRef?: ElementRef<HTMLButtonElement>;
+
+  /** Control que abrió el boleto; recibe el foco al cerrarlo. */
+  private readonly origen = document.activeElement as HTMLElement | null;
+
+  protected readonly i18n = useI18n();
+  protected readonly t = this.i18n.t;
 
   /** Verdadero cuando la lámina ha desaparecido, a mano o con el botón. */
   revelado = false;
@@ -42,10 +55,11 @@ export class ScratchModalComponent implements AfterViewInit, OnDestroy {
     canvas.addEventListener('touchmove', this.draw, { passive: false });
     canvas.addEventListener('touchend', this.stopDrawing);
 
-    requestAnimationFrame(() => this.primario?.nativeElement.focus());
+    requestAnimationFrame(() => this.revelarRef?.nativeElement.focus());
   }
 
   ngOnDestroy() {
+    this.devolverFoco();
     const canvas = this.canvasRef?.nativeElement;
     if (!canvas) return;
     canvas.removeEventListener('mousedown', this.startDrawing);
@@ -79,10 +93,11 @@ export class ScratchModalComponent implements AfterViewInit, OnDestroy {
     }
 
     ctx.fillStyle = 'rgba(20,18,12,0.55)';
-    ctx.font = '600 11px "Geist Mono", ui-monospace, monospace';
+    // Píxeles del lienzo (300×150 fijos), no de la maquetación: el lienzo se escala con CSS.
+    ctx.font = '600 11px "IBM Plex Mono", ui-monospace, monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('R A S C A   A Q U Í', width / 2, height / 2);
+    ctx.fillText(this.t('rasca.laminaTexto'), width / 2, height / 2);
   }
 
   startDrawing = (event: MouseEvent | TouchEvent) => {
@@ -139,6 +154,29 @@ export class ScratchModalComponent implements AfterViewInit, OnDestroy {
   }
 
   cerrarModal() {
+    if (!this.revelado) return;
     this.cerrar.emit();
+  }
+
+  /** Cerrar con la X, Escape o el fondo: antes de revelar cancela; después guarda el resultado. */
+  @HostListener('document:keydown.escape')
+  salir() {
+    if (this.revelado) this.cerrar.emit();
+    else this.cancelar.emit();
+  }
+
+  onBackdrop(event: MouseEvent) {
+    if (event.target === event.currentTarget) this.salir();
+  }
+
+  /** El elemento del menú que abrió el boleto ya no existe; se vuelve al botón de cuenta. */
+  private devolverFoco() {
+    const origen = this.origen;
+    requestAnimationFrame(() => {
+      const destino = origen?.isConnected && origen !== document.body
+        ? origen
+        : document.getElementById('menu-cuenta-toggle');
+      destino?.focus();
+    });
   }
 }

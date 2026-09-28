@@ -8,28 +8,33 @@ import { Router } from '@angular/router';
 import { authState, User, updatePassword } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
 import { IconComponent } from '../../ui/icon/icon.component';
+import { FichasPipe } from '../../ui/fichas.pipe';
+import { Clave, useI18n } from '../../i18n/i18n.service';
 
 
 @Component({
   selector: 'app-ruleta',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent, IconComponent],
+  imports: [CommonModule, HeaderComponent, ModalComponent, ScratchModalComponent, IconComponent, FichasPipe],
   templateUrl: './ruleta.component.html',
   styleUrls: ['./ruleta.component.scss']
 })
 export class RuletaComponent {
+  protected readonly i18n = useI18n();
+  protected readonly t = this.i18n.t;
+
   private auth = inject(AuthService);
   private firestore = inject(Firestore);
   private router = inject(Router);
 
-  nombre = 'Jugador';
+  nombre = '';
   saldo = 1000;
   user: User | null = null;
 
   apuestaActual = 0;
   apuestas: { tipo: string; cantidad: number }[] = [];
   resultado: number | null = null;
-  resultadoMensaje: { texto: string; ganancia: number } | null = null;
+  resultadoMensaje: { ganancia: number } | null = null;
   enJuego = false;
   fichaSeleccionada: number | null = null;
 
@@ -38,13 +43,13 @@ export class RuletaComponent {
   rojos = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
 
   /** Apuestas exteriores, en el orden en que se pintan bajo la mesa. */
-  readonly especiales = [
-    { tipo: '1-18', etiqueta: '1 – 18', clase: 'low' },
-    { tipo: 'par', etiqueta: 'Par', clase: 'even' },
-    { tipo: 'rojo', etiqueta: 'Rojo', clase: 'rojo' },
-    { tipo: 'negro', etiqueta: 'Negro', clase: 'negro' },
-    { tipo: 'impar', etiqueta: 'Impar', clase: 'odd' },
-    { tipo: '19-36', etiqueta: '19 – 36', clase: 'high' }
+  readonly especiales: { tipo: string; etiqueta: Clave; clase: string }[] = [
+    { tipo: '1-18', etiqueta: 'ruleta.exterior.bajo', clase: 'low' },
+    { tipo: 'par', etiqueta: 'ruleta.exterior.par', clase: 'even' },
+    { tipo: 'rojo', etiqueta: 'ruleta.exterior.rojo', clase: 'rojo' },
+    { tipo: 'negro', etiqueta: 'ruleta.exterior.negro', clase: 'negro' },
+    { tipo: 'impar', etiqueta: 'ruleta.exterior.impar', clase: 'odd' },
+    { tipo: '19-36', etiqueta: 'ruleta.exterior.alto', clase: 'high' }
   ];
 
   /** Orden real de los números en una rueda europea, en el sentido de las agujas del reloj. */
@@ -72,16 +77,22 @@ export class RuletaComponent {
 
   nombreColor(n: number | null): string {
     if (n === null) return '';
-    if (n === 0) return 'verde';
-    return this.rojos.includes(n) ? 'rojo' : 'negro';
+    if (n === 0) return this.t('ruleta.colores.verde');
+    return this.t(this.rojos.includes(n) ? 'ruleta.colores.rojo' : 'ruleta.colores.negro');
+  }
+
+  /** Nombre accesible de una casilla, con lo apostado si lo hay. */
+  etiquetaCasilla(base: string, tipo: string): string {
+    const llevas = this.getApuesta(tipo);
+    return llevas === null ? base : base + this.t('ruleta.llevas', { fichas: this.i18n.fichas(llevas) });
   }
 
   mostrarModalNombre = false;
   mostrarModalSaldo = false;
   mostrarModalPassword = false;
-  errorNombre: string | null = null;
-  errorSaldo: string | null = null;
-  errorPassword: string | null = null;
+  errorNombre: Clave | null = null;
+  errorSaldo: Clave | null = null;
+  errorPassword: Clave | null = null;
   esCuentaGoogle = false;
 
   mostrarScratch = false;
@@ -98,7 +109,7 @@ export class RuletaComponent {
         getDoc(ref).then(snapshot => {
           if (snapshot.exists()) {
             const data = snapshot.data();
-            this.nombre = data['nombre'] || `usuario.${user.uid.slice(0, 6)}`;
+            this.nombre = data['nombre'] || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
             this.saldo = data['saldo'] ?? 0;
           }
         });
@@ -154,10 +165,7 @@ export class RuletaComponent {
     setTimeout(() => {
       this.saldo += ganancia;
       this.actualizarSaldoEnFirestore();
-      this.resultadoMensaje = {
-        texto: ganancia > 0 ? `¡Ganaste ${ganancia}€!` : 'No ganaste esta vez.',
-        ganancia: ganancia
-      };
+      this.resultadoMensaje = { ganancia };
       this.apuestas = [];
       this.apuestaActual = 0;
       this.enJuego = false;
@@ -211,9 +219,9 @@ export class RuletaComponent {
       const nuevo = res.trim();
       updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { nombre: nuevo })
         .then(()=> this.nombre = nuevo)
-        .catch(()=>{ this.errorNombre='Error al guardar nombre'; this.mostrarModalNombre=true; });
+        .catch(()=>{ this.errorNombre='errores.nombreGuardar'; this.mostrarModalNombre=true; });
     } else if (typeof res==='string') {
-      this.errorNombre='Nombre no válido'; this.mostrarModalNombre=true;
+      this.errorNombre='errores.nombreVacio'; this.mostrarModalNombre=true;
     }
   }
   generarPremio(): number {
@@ -229,9 +237,9 @@ export class RuletaComponent {
     if (this.esCuentaGoogle) return;
     if (typeof res==='string' && res.length>=6 && this.user) {
       updatePassword(this.user, res)
-        .catch(()=>{ this.errorPassword='Error al cambiar contraseña'; this.mostrarModalPassword=true; });
+        .catch(()=>{ this.errorPassword='errores.passwordGuardar'; this.mostrarModalPassword=true; });
     } else if (typeof res==='string') {
-      this.errorPassword='Mínimo 6 caracteres'; this.mostrarModalPassword=true;
+      this.errorPassword='errores.passwordCorta'; this.mostrarModalPassword=true;
     }
   }
   onCerrarScratch() {
@@ -240,7 +248,7 @@ export class RuletaComponent {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
       updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
-        .catch(() => this.errorSaldo = 'Error al actualizar saldo');
+        .catch(() => this.errorSaldo = 'errores.saldo');
     }
   }
 }

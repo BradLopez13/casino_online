@@ -1,3 +1,5 @@
+@use 'medidas' as *;
+
 /* Boleto con bordes troquelados */
 .ticket {
   position: relative;
@@ -5,21 +7,21 @@
   max-width: 24rem;
   padding: 1.75rem 1.5rem 1.25rem;
   background: var(--bg-2);
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--line-strong);
   color: var(--ink);
   box-shadow: var(--shadow-lift);
   animation: ticket-in 0.5s var(--ease-out);
   /* Muescas laterales, como un tique perforado */
   -webkit-mask:
-    radial-gradient(circle at 0 62%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat,
-    radial-gradient(circle at 100% 62%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat;
+    radial-gradient(circle at 0 62%, transparent 0.5625rem, #000 0.5938rem) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 62%, transparent 0.5625rem, #000 0.5938rem) right / 51% 100% no-repeat;
   mask:
-    radial-gradient(circle at 0 62%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat,
-    radial-gradient(circle at 100% 62%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat;
+    radial-gradient(circle at 0 62%, transparent 0.5625rem, #000 0.5938rem) left / 51% 100% no-repeat,
+    radial-gradient(circle at 100% 62%, transparent 0.5625rem, #000 0.5938rem) right / 51% 100% no-repeat;
 }
 
 @keyframes ticket-in {
-  from { opacity: 0; transform: translateY(16px) rotate(-1deg); }
+  from { opacity: 0; transform: translateY(1rem) rotate(-1deg); }
   to { opacity: 1; transform: translateY(0) rotate(0); }
 }
 
@@ -30,7 +32,7 @@
 }
 
 .ticket-head .display {
-  font-size: clamp(1.9rem, 4vw, 2.4rem);
+  font-size: var(--text-2xl);
 }
 
 .ticket-head .muted {
@@ -39,12 +41,13 @@
 }
 
 .scratch-container {
+  @include contenedor(boleto);
   position: relative;
   width: 100%;
-  max-width: 300px;
+  max-width: 18.75rem;
   aspect-ratio: 2 / 1;
   margin: 0 auto;
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--line-strong);
   border-radius: var(--radius-sm);
   overflow: hidden;
   touch-action: none;
@@ -85,8 +88,9 @@ canvas {
   color: var(--ink-3);
 }
 
+/* La cifra escala con la lámina, que a su vez se estrecha en pantallas pequeñas */
 .premio-valor {
-  font-size: 2.6rem;
+  font-size: clamp(1.75rem, 14cqi, 2.6rem);
   font-weight: 600;
   line-height: 1;
   color: var(--accent-2);
@@ -104,7 +108,7 @@ canvas {
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px dashed var(--line-strong);
+  border-top: var(--hairline) dashed var(--line-strong);
 }
 
 .serial {
@@ -116,4 +120,29 @@ canvas {
 .ticket-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+.ticket-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 3;
+  width: var(--touch);
+  height: var(--touch);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink-2);
+  transition: color 0.2s var(--ease-out), background-color 0.2s var(--ease-out);
+}
+
+.ticket-close:hover {
+  color: var(--ink);
+  background: var(--accent-soft);
+}
+
+.ticket-help {
+  display: block;
+  margin-top: 0.75rem;
+  text-align: right;
 }

@@ -6,27 +6,22 @@
     aria-labelledby="edad-titulo"
     aria-describedby="edad-texto">
     <ng-container *ngIf="!mensajeRechazo; else bloqueado">
-      <p class="eyebrow">Antes de sentarte</p>
-      <h2 class="display" id="edad-titulo">¿Tienes <em>18 años</em> o más?</h2>
-      <p id="edad-texto">
-        Este salón es solo para mayores de edad. Confirma tu edad para abrir las mesas.
-        Todo el dinero es de juego, sin valor real.
-      </p>
+      <p class="eyebrow">{{ t('edad.eyebrow') }}</p>
+      <h2 class="display" id="edad-titulo" [innerHTML]="t('edad.titulo')"></h2>
+      <p id="edad-texto">{{ t('edad.texto') }}</p>
       <div class="dialog-actions split">
-        <button #primario type="button" class="btn btn-primary" (click)="aceptar()">Sí, soy mayor de edad</button>
-        <button type="button" class="btn btn-danger" (click)="rechazar()">No lo soy</button>
+        <button #primario type="button" class="btn btn-primary" (click)="aceptar()">{{ t('edad.aceptar') }}</button>
+        <button type="button" class="btn btn-danger" (click)="rechazar()">{{ t('edad.rechazar') }}</button>
       </div>
     </ng-container>
 
     <ng-template #bloqueado>
-      <p class="eyebrow">Acceso denegado</p>
-      <h2 class="display" id="edad-titulo">Lo sentimos, <em>hoy no</em>.</h2>
-      <p id="edad-texto" role="status">
-        No puedes acceder al casino si no eres mayor de edad. Cerrando la sesión…
-      </p>
+      <p class="eyebrow">{{ t('edad.denegadoEyebrow') }}</p>
+      <h2 class="display" id="edad-titulo" [innerHTML]="t('edad.denegadoTitulo')"></h2>
+      <p id="edad-texto" role="status">{{ t('edad.denegadoTexto') }}</p>
       <div class="countdown" aria-hidden="true"></div>
     </ng-template>
   </div>
 
-  <p class="gate-foot mono" aria-hidden="true">Meridiano · Salón de juego · +18</p>
+  <p class="gate-foot mono" aria-hidden="true">{{ t('edad.pie') }}</p>
 </div>

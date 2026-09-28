@@ -1,44 +1,15 @@
+@use 'medidas' as *;
+
 :host {
   display: block;
   min-height: 100dvh;
-}
-
-.page {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2.5rem 1rem 5rem;
-}
-
-.page:focus {
-  outline: none;
-}
-
-@media (min-width: 768px) {
-  .page {
-    padding: 3.5rem 2rem 6rem;
-  }
-}
-
-.rules {
-  max-width: 56ch;
-}
-
-.layout {
-  display: grid;
-  gap: 2.5rem;
-}
-
-@media (min-width: 1024px) {
-  .layout {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-    gap: 3.5rem;
-    align-items: start;
-  }
+  /* Reparto escenario / banco de la rejilla .layout (styles.scss) */
+  --reparto: minmax(0, 4fr) minmax(0, 8fr);
 }
 
 /* ---------- Rueda ---------- */
 .wheel-side {
+  @include contenedor(lado-rueda);
   display: grid;
   gap: 2rem;
   justify-items: center;
@@ -46,12 +17,13 @@
 
 .wheel {
   position: relative;
-  width: min(18rem, 70vw);
+  @include contenedor(rueda);
+  width: min(20rem, 80cqi);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--line-strong);
   padding: 6%;
   background: radial-gradient(circle at 50% 40%, var(--surface-2), var(--bg-2) 75%);
   box-shadow: var(--shadow-lift);
@@ -97,25 +69,26 @@
   place-content: center;
   justify-items: center;
   gap: 0.25rem;
-  border: 1px solid var(--line-strong);
+  border: var(--hairline) solid var(--line-strong);
   background: radial-gradient(circle at 40% 35%, var(--surface-2), var(--bg) 80%);
-  box-shadow: inset 0 0 0 6px var(--bg-2), inset 0 0 0 7px rgba(201, 169, 97, 0.4);
+  box-shadow: inset 0 0 0 0.375rem var(--bg-2), inset 0 0 0 0.4375rem rgba(201, 169, 97, 0.4);
   transition: box-shadow 0.4s var(--ease-out);
 }
 
-.wheel.rojo .wheel-hub { box-shadow: inset 0 0 0 6px var(--bg-2), inset 0 0 0 7px var(--red); }
-.wheel.negro .wheel-hub { box-shadow: inset 0 0 0 6px var(--bg-2), inset 0 0 0 7px var(--ink-2); }
-.wheel.verde .wheel-hub { box-shadow: inset 0 0 0 6px var(--bg-2), inset 0 0 0 7px var(--green); }
+.wheel.rojo .wheel-hub { box-shadow: inset 0 0 0 0.375rem var(--bg-2), inset 0 0 0 0.4375rem var(--red); }
+.wheel.negro .wheel-hub { box-shadow: inset 0 0 0 0.375rem var(--bg-2), inset 0 0 0 0.4375rem var(--ink-2); }
+.wheel.verde .wheel-hub { box-shadow: inset 0 0 0 0.375rem var(--bg-2), inset 0 0 0 0.4375rem var(--green); }
 
+/* Número y etiqueta proporcionales al diámetro de la rueda */
 .wheel-label {
-  font-size: 0.5625rem;
+  font-size: clamp(0.5625rem, 3.2cqi, 0.6875rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink-3);
 }
 
 .wheel-number {
-  font-size: clamp(2.5rem, 8vw, 3.75rem);
+  font-size: 16cqi;
   font-weight: 600;
   line-height: 1;
   color: var(--ink);
@@ -131,10 +104,10 @@
   width: 0;
   height: 0;
   transform: translateX(-50%);
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-top: 12px solid var(--accent-2);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+  border-left: 0.4375rem solid transparent;
+  border-right: 0.4375rem solid transparent;
+  border-top: 0.75rem solid var(--accent-2);
+  filter: drop-shadow(0 0.125rem 0.125rem rgba(0, 0, 0, 0.6));
 }
 
 .status {
@@ -149,7 +122,7 @@
   gap: 1rem;
   margin: 0;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--line-strong);
+  border-top: var(--hairline) solid var(--line-strong);
 }
 
 .ledger div { display: grid; gap: 0.3rem; }
@@ -173,20 +146,19 @@
 
 /* ---------- Mesa ---------- */
 .board {
+  @include contenedor(tablero);
+  --gap-celda: 0.25rem;
   display: grid;
-  gap: 1.25rem;
-  padding: 1.25rem;
+  gap: var(--space-s);
+  padding: var(--space-m);
   border-radius: var(--radius-md);
   background:
     radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
     var(--felt);
-  border: 1px solid rgba(242, 234, 216, 0.14);
-  box-shadow: inset 0 0 0 8px var(--felt-2), inset 0 0 0 9px rgba(201, 169, 97, 0.35), var(--shadow-lift);
+  border: var(--hairline) solid rgba(242, 234, 216, 0.14);
+  box-shadow: inset 0 0 0 0.5rem var(--felt-2), inset 0 0 0 0.5625rem rgba(201, 169, 97, 0.35), var(--shadow-lift);
 }
 
-@media (min-width: 640px) {
-  .board { padding: 2rem; }
-}
 
 .chips-row {
   display: grid;
@@ -208,10 +180,12 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 4px;
+  gap: var(--gap-celda);
 }
 
-@media (min-width: 768px) {
+/* La mesa clásica de 13 columnas solo cuando el tablero tiene sitio para ella,
+   sin importar si está en un móvil apaisado o en la columna ancha del portátil */
+@include contenedor-desde(tablero, 36rem) {
   .grid {
     grid-template-columns: repeat(13, minmax(0, 1fr));
     grid-template-rows: repeat(3, 1fr);
@@ -221,8 +195,8 @@
 .cell,
 .out {
   position: relative;
-  min-height: 2.75rem;
-  border: 1px solid rgba(242, 234, 216, 0.22);
+  min-height: var(--touch);
+  border: var(--hairline) solid rgba(242, 234, 216, 0.22);
   border-radius: var(--radius-xs);
   color: var(--ink);
   font-weight: 500;
@@ -244,7 +218,7 @@
   grid-column: 1 / -1;
 }
 
-@media (min-width: 768px) {
+@include contenedor-desde(tablero, 36rem) {
   .cell {
     grid-column: var(--c);
     grid-row: var(--r);
@@ -258,7 +232,7 @@
 
 .cell:hover:not(:disabled),
 .out:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(calc(var(--hairline) * -1));
   border-color: var(--accent-2);
 }
 
@@ -275,7 +249,7 @@
 .cell.bet,
 .out.bet {
   border-color: var(--accent-2);
-  box-shadow: inset 0 0 0 1px var(--accent-2);
+  box-shadow: inset 0 0 0 var(--hairline) var(--accent-2);
 }
 
 /* Ficha apostada en la casilla */
@@ -288,12 +262,12 @@
   padding: 0 0.3rem;
   display: grid;
   place-items: center;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--accent);
   color: var(--accent-ink);
   font-size: 0.65rem;
   font-weight: 600;
-  box-shadow: 0 0 0 2px var(--felt-2), 0 4px 8px -3px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 0 0.125rem var(--felt-2), 0 0.25rem 0.5rem -0.1875rem rgba(0, 0, 0, 0.8);
   animation: pop 0.35s var(--ease-out);
 }
 
@@ -305,13 +279,14 @@
 .outside {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
+  gap: var(--gap-celda);
 }
 
-@media (min-width: 768px) {
+@include contenedor-desde(tablero, 36rem) {
   .outside {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    margin-left: calc((100% - 12 * 4px) / 13 + 4px);
+    /* Alinea las apuestas exteriores con la columna del 1 (salta la del 0) */
+    margin-left: calc((100% - 12 * var(--gap-celda)) / 13 + var(--gap-celda));
   }
 }
 

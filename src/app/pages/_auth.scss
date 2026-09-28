@@ -1,3 +1,5 @@
+@use 'medidas' as *;
+
 /* Pantalla dividida compartida por login y registro */
 
 :host {
@@ -11,7 +13,7 @@
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 900px) {
+@include desde($bp-split) {
   .auth {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   }
@@ -25,13 +27,13 @@
   background:
     radial-gradient(50rem 30rem at -20% 110%, rgba(201, 169, 97, 0.12), transparent 60%),
     linear-gradient(160deg, var(--bg-2), var(--bg));
-  border-right: 1px solid var(--line);
+  border-right: var(--hairline) solid var(--line);
   grid-template-rows: auto 1fr auto auto;
   gap: 3rem;
   overflow: hidden;
 }
 
-@media (min-width: 900px) {
+@include desde($bp-split) {
   .auth-panel {
     display: grid;
   }
@@ -45,7 +47,7 @@
   width: 60vmin;
   height: 60vmin;
   border-radius: 50%;
-  border: 1px dashed var(--line-strong);
+  border: var(--hairline) dashed var(--line-strong);
   animation: spin 140s linear infinite;
   pointer-events: none;
 }
@@ -57,23 +59,37 @@
 .panel-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-.brand-mark {
-  width: 0.75rem;
-  height: 0.75rem;
-  border: 1px solid var(--accent);
-  transform: rotate(45deg);
-  background:
-    linear-gradient(var(--accent), var(--accent)) center / 5px 5px no-repeat;
+.panel-logo {
+  --logo-bg: var(--bg-2);
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.panel-brand-text {
+  display: grid;
+  gap: 0.35rem;
 }
 
 .brand-word {
   font-family: var(--font-display);
-  font-style: italic;
-  font-size: 1.6rem;
+  font-weight: 600;
+  font-size: 2rem;
   line-height: 1;
+}
+
+.brand-sub {
+  font-size: 0.625rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.panel-mantra {
+  font-size: 1.35rem;
+  color: var(--ink);
 }
 
 .panel-copy {
@@ -85,7 +101,7 @@
 }
 
 .panel-title {
-  font-size: clamp(2.5rem, 4.2vw, 4rem);
+  font-size: var(--text-4xl);
   max-width: 14ch;
 }
 
@@ -94,14 +110,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  border-top: 1px solid var(--line);
+  border-top: var(--hairline) solid var(--line);
 }
 
 .panel-list li {
   display: flex;
   gap: 1.25rem;
   padding: 0.85rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--hairline) solid var(--line);
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -123,15 +139,25 @@
 .auth-main {
   display: grid;
   place-items: center;
+  align-content: center;
   padding: 2rem 1rem;
 }
 
-@media (min-width: 900px) {
+@include desde($bp-split) {
   .auth-main {
     padding: 3rem 4rem;
     justify-items: start;
-    padding-left: clamp(3rem, 10vw, 9rem);
+    padding-left: var(--space-3xl);
   }
+}
+
+/* Selector de idioma sobre la tarjeta, alineado con ella */
+.auth-top {
+  width: 100%;
+  max-width: 26rem;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
 }
 
 .auth-card {
@@ -143,19 +169,19 @@
   animation: card-in 0.6s var(--ease-out);
 }
 
-@media (min-width: 480px) {
+@include desde($bp-sm) {
   .auth-card {
     padding: 2.75rem 2.5rem;
   }
 }
 
 @keyframes card-in {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(0.75rem); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .auth-card .display {
-  font-size: clamp(2.25rem, 5vw, 3rem);
+  font-size: var(--text-3xl);
 }
 
 .lead {
@@ -176,15 +202,33 @@
 
 .form-error {
   padding: 0.75rem 0.9rem;
-  border: 1px solid rgba(217, 115, 123, 0.35);
+  border: var(--hairline) solid rgba(217, 115, 123, 0.35);
   border-radius: var(--radius-sm);
   background: rgba(217, 115, 123, 0.08);
+}
+
+.forgot {
+  justify-self: start;
+  min-height: var(--touch);
+  font-size: 0.85rem;
+}
+
+/* Confianza visible también en móvil, donde el panel editorial no aparece */
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 .switch {
   margin-top: 1rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
+  border-top: var(--hairline) solid var(--line);
   color: var(--ink-3);
   font-size: 0.9rem;
   display: flex;

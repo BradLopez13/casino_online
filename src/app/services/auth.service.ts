@@ -8,7 +8,8 @@ import {
   GoogleAuthProvider,
   browserLocalPersistence,
   browserSessionPersistence,
-  setPersistence
+  setPersistence,
+  sendPasswordResetEmail
 } from '@angular/fire/auth';
 import { updatePassword } from '@angular/fire/auth';
 import {
@@ -69,6 +70,11 @@ export class AuthService {
   setPersistence(remember: boolean) {
     const mode = remember ? browserLocalPersistence : browserSessionPersistence;
     return setPersistence(this.auth, mode);
+  }
+
+  /** Envía el enlace de restablecimiento. Quien llama no debe revelar si el correo existe. */
+  resetPassword(email: string) {
+    return from(sendPasswordResetEmail(this.auth, email));
   }
 
   logout() {

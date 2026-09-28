@@ -1,16 +1,23 @@
-<div class="dialog-backdrop">
+<div class="dialog-backdrop" (click)="onBackdrop($event)">
   <div
     class="ticket"
     role="dialog"
     aria-modal="true"
     aria-labelledby="rasca-titulo"
     aria-describedby="rasca-texto">
+    <button
+      #cerrarRef
+      type="button"
+      class="ticket-close"
+      [attr.aria-label]="revelado ? t('rasca.cerrarGuardar') : t('rasca.cerrarSinRascar')"
+      (click)="salir()">
+      <app-icon name="close"></app-icon>
+    </button>
+
     <header class="ticket-head">
-      <p class="eyebrow">Boleto de recarga</p>
-      <h2 class="display" id="rasca-titulo">Rasca y <em>gana</em></h2>
-      <p id="rasca-texto" class="muted">
-        Frota la lámina con el dedo o el ratón. Si prefieres el teclado, pulsa «Revelar».
-      </p>
+      <p class="eyebrow">{{ t('rasca.eyebrow') }}</p>
+      <h2 class="display" id="rasca-titulo" [innerHTML]="t('rasca.titulo')"></h2>
+      <p id="rasca-texto" class="muted">{{ t('rasca.texto') }}</p>
     </header>
 
     <div class="scratch-container" [class.revelado]="revelado">
@@ -19,24 +26,31 @@
         width="300"
         height="150"
         role="img"
-        aria-label="Lámina para rascar que cubre el premio"></canvas>
+        [attr.aria-label]="t('rasca.lamina')"></canvas>
       <div class="premio">
-        <span class="premio-label mono">Premio</span>
-        <span class="premio-valor mono">{{ cantidadGanada }} €</span>
-        <span class="premio-nota">{{ cantidadGanada > 0 ? 'Se suma a tu saldo al aceptar' : 'Sin premio esta vez' }}</span>
+        <span class="premio-label mono">{{ t('rasca.premio') }}</span>
+        <span class="premio-valor mono">+{{ cantidadGanada | fichas:false }}</span>
+        <span class="premio-nota">{{ cantidadGanada > 0 ? t('rasca.nota') : t('rasca.sinPremio') }}</span>
       </div>
     </div>
 
     <p class="sr-only" role="status" aria-live="polite">
-      {{ revelado ? (cantidadGanada > 0 ? 'Has ganado ' + cantidadGanada + ' euros.' : 'Sin premio esta vez.') : '' }}
+      {{ revelado ? (cantidadGanada > 0 ? t('rasca.ganado', { fichas: (cantidadGanada | fichas) }) : t('rasca.sinPremio')) : '' }}
     </p>
 
     <footer class="ticket-foot">
-      <span class="serial mono" aria-hidden="true">Nº {{ serie }}</span>
+      <span class="serial mono" aria-hidden="true">{{ t('rasca.serie', { serie: serie }) }}</span>
       <div class="ticket-actions">
-        <button type="button" class="btn btn-ghost" (click)="revelar()" *ngIf="!revelado">Revelar</button>
-        <button #primario type="button" class="btn btn-primary" (click)="cerrarModal()">Aceptar</button>
+        <button #revelarRef type="button" class="btn btn-ghost" (click)="revelar()" *ngIf="!revelado">{{ t('rasca.revelar') }}</button>
+        <button
+          #primario
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!revelado"
+          [attr.aria-describedby]="revelado ? null : 'rasca-bloqueo'"
+          (click)="cerrarModal()">{{ t('comun.aceptar') }}</button>
       </div>
     </footer>
+    <p id="rasca-bloqueo" class="help ticket-help" *ngIf="!revelado">{{ t('rasca.bloqueo') }}</p>
   </div>
 </div>

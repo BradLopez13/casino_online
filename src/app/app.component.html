@@ -1,1 +1,26 @@
+@if (cargando) {
+  <div class="shell" role="status" aria-live="polite">
+    <span class="sr-only">{{ t('comun.cargando') }}</span>
+
+    <div class="shell-bar" aria-hidden="true">
+      <app-logo class="shell-logo"></app-logo>
+      <span class="bone bone-pill"></span>
+    </div>
+
+    <div class="shell-page" [class]="silueta" aria-hidden="true">
+      <span class="bone bone-eyebrow"></span>
+      <span class="bone bone-title"></span>
+      <span class="bone bone-line"></span>
+
+      <div class="shell-layout">
+        <div class="bone bone-stage"></div>
+        <div class="shell-bank">
+          <span class="bone bone-block"></span>
+          <span class="bone bone-block short"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
 <router-outlet></router-outlet>

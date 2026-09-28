@@ -5,7 +5,7 @@
     aria-modal="true"
     [attr.aria-labelledby]="ids.title"
     [attr.aria-describedby]="ids.message">
-    <p class="eyebrow">Cuenta</p>
+    <p class="eyebrow">{{ t('cuenta.eyebrow') }}</p>
     <h2 class="display" [id]="ids.title">{{ title }}</h2>
     <p [id]="ids.message">{{ message }}</p>
 
@@ -28,7 +28,7 @@
           type="button"
           class="toggle-visibility"
           [attr.aria-pressed]="inputType === 'text'"
-          [attr.aria-label]="inputType === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          [attr.aria-label]="inputType === 'password' ? t('cuenta.mostrarPassword') : t('cuenta.ocultarPassword')"
           (click)="togglePasswordVisibility()">
           <app-icon [name]="inputType === 'password' ? 'eye' : 'eye-off'"></app-icon>
         </button>
@@ -38,8 +38,8 @@
     <p class="error" [id]="ids.error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
 
     <div class="dialog-actions split">
-      <button #primario type="button" class="btn btn-primary" (click)="aceptar()">{{ acceptText }}</button>
-      <button type="button" class="btn btn-ghost" (click)="cancelar()">{{ cancelText }}</button>
+      <button #primario type="button" class="btn btn-primary" (click)="aceptar()">{{ acceptText || t('comun.aceptar') }}</button>
+      <button type="button" class="btn btn-ghost" (click)="cancelar()">{{ cancelText || t('comun.cancelar') }}</button>
     </div>
   </div>
 </div>

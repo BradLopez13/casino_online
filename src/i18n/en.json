@@ -1,0 +1,306 @@
+{
+  "comun": {
+    "tituloPagina": "Meridiano · Gaming salon",
+    "marca": "Meridiano",
+    "salonDeJuego": "Gaming salon",
+    "mantra": "Luck finds its north.",
+    "sinValorReal": "Chips with no real value",
+    "mayores": "18+",
+    "academico": "Academic project",
+    "saldoDisponible": "Available balance",
+    "saltar": "Skip to content",
+    "cargando": "Setting up the table…",
+    "aceptar": "Accept",
+    "cancelar": "Cancel",
+    "guardar": "Save",
+    "cerrar": "Close",
+    "entendido": "Got it",
+    "girar": "Spin",
+    "girando": "Spinning…",
+    "usuario": "user"
+  },
+  "fichas": {
+    "una": "{{n}} chip",
+    "varias": "{{n}} chips",
+    "unidad": "chips"
+  },
+  "idioma": {
+    "grupo": "Language",
+    "es": "Español",
+    "en": "English"
+  },
+  "juegos": {
+    "slot": {
+      "nombre": "Slots",
+      "descripcion": "Three reels, five lines. From ×2 for cherries to ×15 for sevens.",
+      "nota": "Pays up to ×15"
+    },
+    "ruleta": {
+      "nombre": "Roulette",
+      "descripcion": "Thirty-seven numbers. Straight up, colour, odd or even, high and low halves.",
+      "nota": "Straight up 36 to 1"
+    },
+    "blackjack": {
+      "nombre": "Blackjack",
+      "descripcion": "Reach 21 without going over. The dealer draws until standing on 17.",
+      "nota": "Dealer stands on 17"
+    }
+  },
+  "header": {
+    "volverSalon": "Meridiano, back to the salon",
+    "saldoEtiqueta": "Chips",
+    "saldoSinValor": "no real value",
+    "saldoAnuncio": "Balance: {{saldo}}",
+    "abrirMenu": "Open account menu",
+    "cerrarMenu": "Close account menu",
+    "abrirMenuDe": "Open account menu for {{nombre}}",
+    "cerrarMenuDe": "Close account menu for {{nombre}}",
+    "menuCuenta": "Account",
+    "navCuenta": "Account and salon",
+    "salon": "Salon",
+    "cambiarNombre": "Change name",
+    "cambiarPassword": "Change password",
+    "nombreCorto": "Name",
+    "passwordCorto": "Password",
+    "rasca": "Scratch and refill",
+    "comoFunciona": "How chips work",
+    "cerrarSesion": "Sign out",
+    "salir": "Sign out",
+    "info": {
+      "eyebrow": "Your balance",
+      "titulo": "How <em>chips</em> work",
+      "punto1": "Chips are not money: you can't buy them or exchange them for anything.",
+      "punto2": "You get a thousand when you create your account.",
+      "punto3": "If you run out, open the account menu and choose “Scratch and refill”. The ticket is free.",
+      "punto4": "Meridiano is an academic project for people aged 18 and over."
+    }
+  },
+  "cuenta": {
+    "eyebrow": "Account",
+    "nombreTitulo": "Change name",
+    "nombreMensaje": "Enter your new name:",
+    "nombrePlaceholder": "E.g. PlayerX",
+    "passwordTitulo": "Change password",
+    "passwordMensaje": "Enter your new password:",
+    "googleTitulo": "Password change",
+    "googleMensaje": "You can't change the password because your account was created with Google.",
+    "mostrarPassword": "Show password",
+    "ocultarPassword": "Hide password"
+  },
+  "errores": {
+    "nombreGuardar": "The name couldn't be saved. Please try again.",
+    "nombreVacio": "Enter a name.",
+    "passwordGuardar": "The password couldn't be changed. Please try again.",
+    "passwordCorta": "The password needs at least 6 characters.",
+    "saldo": "The balance couldn't be updated."
+  },
+  "edad": {
+    "eyebrow": "Before you sit down",
+    "titulo": "Are you <em>18</em> or older?",
+    "texto": "This salon is for adults only. Confirm your age to open the tables. Chips have no real value.",
+    "aceptar": "Yes, I'm 18 or older",
+    "rechazar": "No, I'm not",
+    "denegadoEyebrow": "Access denied",
+    "denegadoTitulo": "Sorry, <em>not today</em>.",
+    "denegadoTexto": "Only adults can enter. Signing you out…",
+    "pie": "Meridiano · Gaming salon · 18+"
+  },
+  "home": {
+    "abierta": "Table open · {{hora}}",
+    "titulo": "Pick your <em>table</em>.",
+    "lede": "You start with a thousand complimentary chips. They have no real value, and if you run out you can refill with a scratch card.",
+    "saldo": "Balance",
+    "jugador": "Player",
+    "mesas": "Tables",
+    "navMesas": "Available tables",
+    "copyright": "© 2025–{{anio}} Meridiano · Gaming salon. Academic project."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "emailObligatorio": "Email is required",
+    "emailFormato": "Invalid email format",
+    "passwordObligatoria": "Password is required",
+    "passwordMinimo": "At least 6 characters"
+  },
+  "login": {
+    "panelEyebrow": "Gaming salon · MMXXV",
+    "panelTitulo": "The house <em>lends</em> the chips. You bring the luck.",
+    "eyebrow": "Access",
+    "titulo": "Sign in",
+    "lead": "Your balance is where you left it.",
+    "olvido": "I forgot my password",
+    "recordar": "Keep me signed in",
+    "entrar": "Sign in",
+    "bloqueo": "Enter a valid email and a password of at least 6 characters to sign in.",
+    "google": "Continue with Google",
+    "sinCuenta": "Don't have an account yet?",
+    "registrate": "Sign up",
+    "recuperar": {
+      "titulo": "Reset password",
+      "email": "Your account email",
+      "ayuda": "We'll send you a link to choose a new password.",
+      "enviar": "Send link",
+      "enviando": "Sending…",
+      "volver": "Back to sign in",
+      "enviado": "If an account exists for that email, you'll get a link in a few minutes. Check your spam folder too.",
+      "errorEmail": "Enter a valid email"
+    },
+    "errores": {
+      "noRegistrado": "User not registered",
+      "incorrecta": "Wrong password",
+      "generico": "Couldn't sign in. Check your email and password."
+    }
+  },
+  "registro": {
+    "panelEyebrow": "New account · Complimentary chips",
+    "panelTitulo": "A thousand complimentary chips <em>to start</em>.",
+    "paso1": "Sign up",
+    "paso2": "Confirm your age",
+    "paso3": "Pick a table",
+    "eyebrow": "Sign up",
+    "titulo": "Create account",
+    "lead": "All you need is an email and a password.",
+    "passwordAyuda": "At least 6 characters.",
+    "registrarse": "Create account",
+    "google": "Sign up with Google",
+    "bloqueo": "Fill in email and password to create the account.",
+    "conCuenta": "Already have an account?",
+    "iniciaSesion": "Sign in",
+    "errores": {
+      "enUso": "This email is already registered",
+      "emailInvalido": "Invalid email",
+      "generico": "Couldn't create the account. Please try again."
+    }
+  },
+  "slot": {
+    "eyebrow": "Table 01 · Three reels",
+    "reglas": "Five paylines: three horizontal and two diagonal. Three matching symbols on a line multiply your bet.",
+    "rodillos": "Reels",
+    "girandoAnuncio": "Reels spinning",
+    "lista": "Ready to spin",
+    "listaAnuncio": "Machine ready to spin",
+    "modelo": "Mod. M-3 · 5 lines",
+    "apuestaTitulo": "Bet per spin",
+    "importe": "Chips per spin",
+    "tirada": "Spin",
+    "pagos": "Paytable",
+    "gana": "You won {{fichas}}!",
+    "sinPremio": "No prize this spin.",
+    "errorApuesta": "The bet must be at least 1 chip and no more than your balance.",
+    "simbolos": {
+      "cereza": "Cherry",
+      "limon": "Lemon",
+      "uva": "Grapes",
+      "campana": "Bell",
+      "diamante": "Diamond",
+      "siete": "Seven",
+      "vacio": "Empty"
+    }
+  },
+  "ruleta": {
+    "eyebrow": "Table 02 · European wheel",
+    "reglas": "Pick a chip, place it on the table and spin. Straight up pays 36 to 1; colour, odd/even and halves pay 2 to 1.",
+    "rueda": "Wheel",
+    "girando": "Spinning",
+    "salio": "Landed",
+    "enMesa": "On table",
+    "apuestas": "Bets",
+    "ficha": "Chip",
+    "fichaDe": "{{n}} chip",
+    "resultado": "Result",
+    "ganas": "You win {{fichas}}",
+    "casaRecoge": "The house collects",
+    "haSalido": "The ball landed on <strong class=\"mono\">{{n}}</strong>, {{color}}.",
+    "hint": "Select a chip to place bets.",
+    "mesa": "Betting table",
+    "numeros": "Numbers",
+    "exteriores": "Outside bets",
+    "apostarAl": "Bet on {{n}}, {{color}}",
+    "apostarA": "Bet on {{etiqueta}}",
+    "llevas": ", you have {{fichas}} on it",
+    "retirar": "Clear chips",
+    "colores": {
+      "rojo": "red",
+      "negro": "black",
+      "verde": "green"
+    },
+    "exterior": {
+      "bajo": "1 – 18",
+      "par": "Even",
+      "rojo": "Red",
+      "negro": "Black",
+      "impar": "Odd",
+      "alto": "19 – 36"
+    }
+  },
+  "blackjack": {
+    "eyebrow": "Table 03 · Cards",
+    "reglas": "Reach 21 without going over. An ace counts as 1 or 11, whichever helps. The dealer draws until 17.",
+    "mesa": "Blackjack table",
+    "leyenda": "Dealer stands on 17 · Blackjack pays 1 to 1",
+    "crupier": "Dealer",
+    "tu": "You",
+    "cartasCrupier": "Dealer's cards: {{cartas}}",
+    "tusCartas": "Your cards: {{cartas}}",
+    "enJuego": "In play",
+    "eligeApuesta": "Place your bet",
+    "apostar": "Bet",
+    "apostarFichas": "Bet {{fichas}}",
+    "otra": "Another amount of chips",
+    "turno": "Your turn",
+    "tienes": "You have <strong class=\"mono\">{{jugador}}</strong>. The dealer shows <strong class=\"mono\">{{banca}}</strong>.",
+    "pedir": "Hit",
+    "plantarse": "Stand",
+    "manoCerrada": "Hand over",
+    "marcador": "You {{jugador}} · Dealer {{banca}}",
+    "nuevaMano": "New hand",
+    "tabla": {
+      "blackjack": "Blackjack",
+      "pagaUno": "Pays 1 to 1",
+      "empate": "Push",
+      "devuelve": "Bet returned",
+      "banca": "Dealer",
+      "planta": "Stands on 17"
+    },
+    "resultados": {
+      "pasado": "Bust. You lose.",
+      "gana": "You won!",
+      "pierde": "You lost.",
+      "empate": "Push."
+    },
+    "errores": {
+      "minimo": "Bet at least 1 chip.",
+      "saldo": "You don't have enough chips for that bet."
+    },
+    "carta": "{{valor}} of {{palo}}",
+    "valores": {
+      "A": "Ace",
+      "J": "Jack",
+      "Q": "Queen",
+      "K": "King"
+    },
+    "palos": {
+      "picas": "spades",
+      "corazones": "hearts",
+      "diamantes": "diamonds",
+      "treboles": "clubs"
+    }
+  },
+  "rasca": {
+    "eyebrow": "Refill ticket",
+    "titulo": "Scratch and <em>refill</em>",
+    "texto": "Rub the foil with your finger or the mouse. If you prefer the keyboard, press “Reveal”. You can close before scratching without using up the ticket.",
+    "cerrarGuardar": "Close and keep the result",
+    "cerrarSinRascar": "Close without scratching; the ticket isn't used",
+    "lamina": "Scratch foil covering the prize",
+    "laminaTexto": "S C R A T C H   H E R E",
+    "premio": "Prize",
+    "nota": "chips added to your balance",
+    "sinPremio": "No prize this time",
+    "ganado": "You won {{fichas}}.",
+    "revelar": "Reveal",
+    "bloqueo": "Scratch or reveal the prize to accept it.",
+    "serie": "No. {{serie}}"
+  }
+}

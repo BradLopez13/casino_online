@@ -1,0 +1,306 @@
+{
+  "comun": {
+    "tituloPagina": "Meridiano · Salón de juego",
+    "marca": "Meridiano",
+    "salonDeJuego": "Salón de juego",
+    "mantra": "La suerte encuentra su norte.",
+    "sinValorReal": "Fichas sin valor real",
+    "mayores": "+18",
+    "academico": "Proyecto académico",
+    "saldoDisponible": "Saldo disponible",
+    "saltar": "Saltar al contenido",
+    "cargando": "Preparando la mesa…",
+    "aceptar": "Aceptar",
+    "cancelar": "Cancelar",
+    "guardar": "Guardar",
+    "cerrar": "Cerrar",
+    "entendido": "Entendido",
+    "girar": "Girar",
+    "girando": "Girando…",
+    "usuario": "usuario"
+  },
+  "fichas": {
+    "una": "{{n}} ficha",
+    "varias": "{{n}} fichas",
+    "unidad": "fichas"
+  },
+  "idioma": {
+    "grupo": "Idioma",
+    "es": "Español",
+    "en": "English"
+  },
+  "juegos": {
+    "slot": {
+      "nombre": "Tragaperras",
+      "descripcion": "Tres rodillos, cinco líneas. Del ×2 de las cerezas al ×15 del siete.",
+      "nota": "Paga hasta ×15"
+    },
+    "ruleta": {
+      "nombre": "Ruleta",
+      "descripcion": "Treinta y siete números. Pleno, color, par o impar, mitades altas y bajas.",
+      "nota": "Pleno 36 a 1"
+    },
+    "blackjack": {
+      "nombre": "Blackjack",
+      "descripcion": "Llega a 21 sin pasarte. La banca pide carta hasta plantarse en 17.",
+      "nota": "Banca planta en 17"
+    }
+  },
+  "header": {
+    "volverSalon": "Meridiano, volver al salón",
+    "saldoEtiqueta": "Fichas",
+    "saldoSinValor": "sin valor real",
+    "saldoAnuncio": "Saldo: {{saldo}}",
+    "abrirMenu": "Abrir menú de cuenta",
+    "cerrarMenu": "Cerrar menú de cuenta",
+    "abrirMenuDe": "Abrir menú de cuenta de {{nombre}}",
+    "cerrarMenuDe": "Cerrar menú de cuenta de {{nombre}}",
+    "menuCuenta": "Cuenta",
+    "navCuenta": "Cuenta y salón",
+    "salon": "Salón",
+    "cambiarNombre": "Cambiar nombre",
+    "cambiarPassword": "Cambiar contraseña",
+    "nombreCorto": "Nombre",
+    "passwordCorto": "Contraseña",
+    "rasca": "Rasca y recarga",
+    "comoFunciona": "Cómo funcionan las fichas",
+    "cerrarSesion": "Cerrar sesión",
+    "salir": "Salir",
+    "info": {
+      "eyebrow": "Tu saldo",
+      "titulo": "Cómo funcionan <em>las fichas</em>",
+      "punto1": "Las fichas no son dinero: no se compran ni se canjean por nada.",
+      "punto2": "Recibes mil al crear la cuenta.",
+      "punto3": "Si te quedas sin fichas, abre el menú de cuenta y elige «Rasca y recarga». El boleto es gratuito.",
+      "punto4": "Meridiano es un proyecto académico para mayores de 18 años."
+    }
+  },
+  "cuenta": {
+    "eyebrow": "Cuenta",
+    "nombreTitulo": "Cambiar nombre",
+    "nombreMensaje": "Introduce tu nuevo nombre:",
+    "nombrePlaceholder": "Ej: JugadorX",
+    "passwordTitulo": "Cambiar contraseña",
+    "passwordMensaje": "Introduce tu nueva contraseña:",
+    "googleTitulo": "Cambio de contraseña",
+    "googleMensaje": "No puedes cambiar la contraseña porque tu cuenta fue creada con Google.",
+    "mostrarPassword": "Mostrar contraseña",
+    "ocultarPassword": "Ocultar contraseña"
+  },
+  "errores": {
+    "nombreGuardar": "No se pudo guardar el nombre. Inténtalo de nuevo.",
+    "nombreVacio": "Escribe un nombre.",
+    "passwordGuardar": "No se pudo cambiar la contraseña. Inténtalo de nuevo.",
+    "passwordCorta": "La contraseña necesita al menos 6 caracteres.",
+    "saldo": "No se pudo actualizar el saldo."
+  },
+  "edad": {
+    "eyebrow": "Antes de sentarte",
+    "titulo": "¿Tienes <em>18 años</em> o más?",
+    "texto": "Este salón es solo para mayores de edad. Confirma tu edad para abrir las mesas. Las fichas no tienen valor real.",
+    "aceptar": "Sí, soy mayor de edad",
+    "rechazar": "No lo soy",
+    "denegadoEyebrow": "Acceso denegado",
+    "denegadoTitulo": "Lo sentimos, <em>hoy no</em>.",
+    "denegadoTexto": "Solo pueden entrar mayores de edad. Cerrando la sesión…",
+    "pie": "Meridiano · Salón de juego · +18"
+  },
+  "home": {
+    "abierta": "Mesa abierta · {{hora}}",
+    "titulo": "Elige tu <em>mesa</em>.",
+    "lede": "Empiezas con mil fichas de cortesía. No tienen valor real, y si se te acaban puedes recargar con un rasca.",
+    "saldo": "Saldo",
+    "jugador": "Jugador",
+    "mesas": "Mesas",
+    "navMesas": "Mesas disponibles",
+    "copyright": "© 2025–{{anio}} Meridiano · Salón de juego. Proyecto académico."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Contraseña",
+    "emailObligatorio": "Email obligatorio",
+    "emailFormato": "Formato de email inválido",
+    "passwordObligatoria": "Contraseña obligatoria",
+    "passwordMinimo": "Mínimo 6 caracteres"
+  },
+  "login": {
+    "panelEyebrow": "Salón de juego · MMXXV",
+    "panelTitulo": "La casa <em>presta</em> las fichas. Tú pones la suerte.",
+    "eyebrow": "Acceso",
+    "titulo": "Iniciar sesión",
+    "lead": "Tu saldo sigue donde lo dejaste.",
+    "olvido": "He olvidado mi contraseña",
+    "recordar": "Mantener sesión iniciada",
+    "entrar": "Entrar",
+    "bloqueo": "Escribe un email válido y una contraseña de al menos 6 caracteres para entrar.",
+    "google": "Continuar con Google",
+    "sinCuenta": "¿Aún no tienes cuenta?",
+    "registrate": "Regístrate",
+    "recuperar": {
+      "titulo": "Recuperar contraseña",
+      "email": "Email de tu cuenta",
+      "ayuda": "Te enviaremos un enlace para elegir una contraseña nueva.",
+      "enviar": "Enviar enlace",
+      "enviando": "Enviando…",
+      "volver": "Volver al acceso",
+      "enviado": "Si existe una cuenta con ese email, recibirás un enlace en unos minutos. Revisa también la carpeta de spam.",
+      "errorEmail": "Escribe un email válido"
+    },
+    "errores": {
+      "noRegistrado": "Usuario no registrado",
+      "incorrecta": "Contraseña incorrecta",
+      "generico": "No se pudo iniciar sesión. Revisa el email y la contraseña."
+    }
+  },
+  "registro": {
+    "panelEyebrow": "Nueva cuenta · Fichas de cortesía",
+    "panelTitulo": "Mil fichas de cortesía <em>para empezar</em>.",
+    "paso1": "Regístrate",
+    "paso2": "Confirma tu edad",
+    "paso3": "Elige mesa",
+    "eyebrow": "Alta",
+    "titulo": "Crear cuenta",
+    "lead": "Solo necesitas un email y una contraseña.",
+    "passwordAyuda": "Al menos 6 caracteres.",
+    "registrarse": "Registrarse",
+    "google": "Registrarse con Google",
+    "bloqueo": "Completa email y contraseña para crear la cuenta.",
+    "conCuenta": "¿Ya tienes cuenta?",
+    "iniciaSesion": "Inicia sesión",
+    "errores": {
+      "enUso": "Este email ya está registrado",
+      "emailInvalido": "Email inválido",
+      "generico": "No se pudo crear la cuenta. Inténtalo de nuevo."
+    }
+  },
+  "slot": {
+    "eyebrow": "Mesa 01 · Tres rodillos",
+    "reglas": "Cinco líneas de pago: tres horizontales y dos diagonales. Tres símbolos iguales en una línea multiplican tu apuesta.",
+    "rodillos": "Rodillos",
+    "girandoAnuncio": "Rodillos girando",
+    "lista": "Lista para girar",
+    "listaAnuncio": "Máquina lista para girar",
+    "modelo": "Mod. M-3 · 5 líneas",
+    "apuestaTitulo": "Apuesta por tirada",
+    "importe": "Fichas por tirada",
+    "tirada": "Tirada",
+    "pagos": "Tabla de pagos",
+    "gana": "¡Ganaste {{fichas}}!",
+    "sinPremio": "Sin premio en esta tirada.",
+    "errorApuesta": "La apuesta debe ser de al menos 1 ficha y no superar tu saldo.",
+    "simbolos": {
+      "cereza": "Cereza",
+      "limon": "Limón",
+      "uva": "Uva",
+      "campana": "Campana",
+      "diamante": "Diamante",
+      "siete": "Siete",
+      "vacio": "Vacío"
+    }
+  },
+  "ruleta": {
+    "eyebrow": "Mesa 02 · Rueda europea",
+    "reglas": "Elige una ficha, colócala en la mesa y gira. El pleno paga 36 a 1; color, paridad y mitades pagan 2 a 1.",
+    "rueda": "Rueda",
+    "girando": "Girando",
+    "salio": "Salió",
+    "enMesa": "En mesa",
+    "apuestas": "Apuestas",
+    "ficha": "Ficha",
+    "fichaDe": "Ficha de {{n}}",
+    "resultado": "Resultado",
+    "ganas": "Ganas {{fichas}}",
+    "casaRecoge": "La casa recoge",
+    "haSalido": "Ha salido el <strong class=\"mono\">{{n}}</strong>, {{color}}.",
+    "hint": "Selecciona una ficha para poder apostar.",
+    "mesa": "Mesa de apuestas",
+    "numeros": "Números",
+    "exteriores": "Apuestas exteriores",
+    "apostarAl": "Apostar al {{n}}, {{color}}",
+    "apostarA": "Apostar a {{etiqueta}}",
+    "llevas": ", llevas {{fichas}}",
+    "retirar": "Retirar fichas",
+    "colores": {
+      "rojo": "rojo",
+      "negro": "negro",
+      "verde": "verde"
+    },
+    "exterior": {
+      "bajo": "1 – 18",
+      "par": "Par",
+      "rojo": "Rojo",
+      "negro": "Negro",
+      "impar": "Impar",
+      "alto": "19 – 36"
+    }
+  },
+  "blackjack": {
+    "eyebrow": "Mesa 03 · Cartas",
+    "reglas": "Llega a 21 sin pasarte. El as vale 1 u 11, según convenga. La banca pide carta hasta 17.",
+    "mesa": "Mesa de blackjack",
+    "leyenda": "La banca se planta en 17 · Blackjack paga 1 a 1",
+    "crupier": "Crupier",
+    "tu": "Tú",
+    "cartasCrupier": "Cartas del crupier: {{cartas}}",
+    "tusCartas": "Tus cartas: {{cartas}}",
+    "enJuego": "En juego",
+    "eligeApuesta": "Elige tu apuesta",
+    "apostar": "Apostar",
+    "apostarFichas": "Apostar {{fichas}}",
+    "otra": "Otra cantidad de fichas",
+    "turno": "Tu turno",
+    "tienes": "Tienes <strong class=\"mono\">{{jugador}}</strong>. La banca muestra <strong class=\"mono\">{{banca}}</strong>.",
+    "pedir": "Pedir carta",
+    "plantarse": "Plantarse",
+    "manoCerrada": "Mano cerrada",
+    "marcador": "Tú {{jugador}} · Crupier {{banca}}",
+    "nuevaMano": "Nueva mano",
+    "tabla": {
+      "blackjack": "Blackjack",
+      "pagaUno": "Paga 1 a 1",
+      "empate": "Empate",
+      "devuelve": "Se devuelve",
+      "banca": "Banca",
+      "planta": "Se planta en 17"
+    },
+    "resultados": {
+      "pasado": "Te has pasado. Pierdes.",
+      "gana": "¡Ganaste!",
+      "pierde": "Perdiste.",
+      "empate": "Empate."
+    },
+    "errores": {
+      "minimo": "Apuesta al menos 1 ficha.",
+      "saldo": "No tienes fichas suficientes para esa apuesta."
+    },
+    "carta": "{{valor}} de {{palo}}",
+    "valores": {
+      "A": "As",
+      "J": "Jota",
+      "Q": "Reina",
+      "K": "Rey"
+    },
+    "palos": {
+      "picas": "picas",
+      "corazones": "corazones",
+      "diamantes": "diamantes",
+      "treboles": "tréboles"
+    }
+  },
+  "rasca": {
+    "eyebrow": "Boleto de recarga",
+    "titulo": "Rasca y <em>recarga</em>",
+    "texto": "Frota la lámina con el dedo o el ratón. Si prefieres el teclado, pulsa «Revelar». Puedes cerrar antes de rascar sin gastar el boleto.",
+    "cerrarGuardar": "Cerrar y guardar el resultado",
+    "cerrarSinRascar": "Cerrar sin rascar; el boleto no se gasta",
+    "lamina": "Lámina para rascar que cubre el premio",
+    "laminaTexto": "R A S C A   A Q U Í",
+    "premio": "Premio",
+    "nota": "fichas que se suman a tu saldo",
+    "sinPremio": "Sin premio esta vez",
+    "ganado": "Has ganado {{fichas}}.",
+    "revelar": "Revelar",
+    "bloqueo": "Rasca o revela el premio para aceptarlo.",
+    "serie": "Nº {{serie}}"
+  }
+}

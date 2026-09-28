@@ -1,0 +1,123 @@
+@use 'medidas' as *;
+
+/* Esqueleto entre rutas: fondo y barra de siempre, con la geometría de la mesa que llega */
+.shell {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  background: var(--bg);
+  animation: shell-in 0.2s var(--ease-out);
+}
+
+@keyframes shell-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.shell-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 87.5rem;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  border-bottom: var(--hairline) solid var(--line);
+}
+
+.shell-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  animation: shell-turn 2.4s var(--ease-out) infinite;
+}
+
+@keyframes shell-turn {
+  0%, 20% { transform: rotate(0); }
+  60%, 100% { transform: rotate(90deg); }
+}
+
+.shell-page {
+  max-width: 87.5rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+@include desde($bp-lg) {
+  .shell-bar,
+  .shell-page {
+    padding-inline: 2rem;
+  }
+}
+
+.bone {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%) 0 0 / 200% 100%;
+  animation: bone 1.4s linear infinite;
+}
+
+@keyframes bone {
+  to { background-position: -200% 0; }
+}
+
+.bone-pill { width: 7rem; height: 2.25rem; border-radius: var(--radius-full); }
+.bone-eyebrow { width: 9rem; height: 0.7rem; }
+.bone-title { width: min(18rem, 70%); height: 3rem; }
+.bone-line { width: min(30rem, 90%); height: 0.9rem; margin-bottom: 1.5rem; }
+
+.shell-layout {
+  display: grid;
+  gap: 2rem;
+}
+
+@include desde($bp-xl) {
+  .shell-layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: 3rem;
+  }
+}
+
+.bone-stage { height: 22rem; border-radius: var(--radius-md); }
+
+/* Cada mesa conserva su silueta: rueda, tapete arqueado, mueble de rodillos */
+.rueda .bone-stage {
+  width: min(22rem, 100%);
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  justify-self: center;
+}
+
+.tapete .bone-stage {
+  border-radius: min(12rem, 22%) min(12rem, 22%) var(--radius-md) var(--radius-md);
+}
+
+.maquina .bone-stage {
+  width: min(34rem, 100%);
+  height: auto;
+  aspect-ratio: 1.15;
+  justify-self: center;
+}
+
+.salon .bone-stage { height: 16rem; }
+
+.acceso .shell-layout,
+.acceso .bone-line { display: none; }
+
+.shell-bank {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.bone-block { height: 9rem; }
+.bone-block.short { height: 5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bone,
+  .shell-logo {
+    animation: none;
+  }
+}

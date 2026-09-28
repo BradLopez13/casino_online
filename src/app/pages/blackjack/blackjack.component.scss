@@ -1,68 +1,34 @@
+@use 'medidas' as *;
+
 :host {
   display: block;
   min-height: 100dvh;
-}
-
-.page {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2.5rem 1rem 5rem;
-}
-
-.page:focus {
-  outline: none;
-}
-
-@media (min-width: 768px) {
-  .page {
-    padding: 3.5rem 2rem 6rem;
-  }
-}
-
-.rules {
-  max-width: 52ch;
-}
-
-.layout {
-  display: grid;
-  gap: 2rem;
-}
-
-@media (min-width: 1024px) {
-  .layout {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-    gap: 3rem;
-    align-items: start;
-  }
+  /* Reparto escenario / banco de la rejilla .layout (styles.scss) */
+  --reparto: minmax(0, 7fr) minmax(0, 4fr);
 }
 
 /* ---------- Tapete ---------- */
 .felt {
+  @include contenedor(tapete);
   position: relative;
   display: grid;
-  gap: 2rem;
-  --arc: clamp(3rem, 18vw, 12rem);
+  gap: var(--space-l);
   min-height: 24rem;
-  padding: 2.5rem 1.25rem 2rem;
-  border-radius: var(--arc) var(--arc) var(--radius-md) var(--radius-md);
+  padding: var(--space-xl) var(--space-m) var(--space-l);
+  /* Arco superior proporcional al propio tapete: el porcentaje se mide sobre su caja */
+  border-radius: min(12rem, 22%) min(12rem, 22%) var(--radius-md) var(--radius-md);
   background:
     radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 55%),
     radial-gradient(80% 60% at 50% 100%, rgba(0, 0, 0, 0.35), transparent 70%),
     var(--felt);
-  border: 1px solid rgba(242, 234, 216, 0.14);
+  border: var(--hairline) solid rgba(242, 234, 216, 0.14);
   box-shadow:
-    inset 0 0 0 10px var(--felt-2),
-    inset 0 0 0 11px rgba(201, 169, 97, 0.35),
+    inset 0 0 0 0.625rem var(--felt-2),
+    inset 0 0 0 0.6875rem rgba(201, 169, 97, 0.35),
     var(--shadow-lift);
   overflow: hidden;
 }
 
-@media (min-width: 640px) {
-  .felt {
-    padding: 3.5rem 2.5rem 2.5rem;
-  }
-}
 
 /* La etiqueta del crupier va centrada para no chocar con el arco superior */
 .dealer .hand-label {
@@ -77,14 +43,15 @@
   right: 8%;
   top: 48%;
   height: 40%;
-  border: 1px solid rgba(201, 169, 97, 0.35);
+  border: var(--hairline) solid rgba(201, 169, 97, 0.35);
   border-bottom: 0;
   border-radius: 50% 50% 0 0 / 100% 100% 0 0;
   pointer-events: none;
 }
 
 .felt-arc::after {
-  content: 'La banca se planta en 17 · Blackjack paga 1 a 1';
+  /* La leyenda llega traducida desde la plantilla */
+  content: attr(data-leyenda);
   position: absolute;
   left: 50%;
   top: 0.9rem;
@@ -97,7 +64,16 @@
   color: rgba(201, 169, 97, 0.7);
 }
 
+/* En móvil la leyenda se recortaba sobre las cartas; ya figura en la tabla del banco */
+@include contenedor-hasta(tapete, 28rem) {
+  .felt-arc::after {
+    content: none;
+  }
+}
+
 .hand {
+  /* Ancho de carta: una fracción del tapete, con tope legible por arriba y por abajo */
+  --carta: clamp(3.25rem, 15cqi, 4.75rem);
   position: relative;
   z-index: 1;
   display: grid;
@@ -124,7 +100,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-  min-height: 6.25rem;
+  min-height: calc(var(--carta) * 25 / 17);
 }
 
 .dealer .cards {
@@ -139,15 +115,15 @@
 .card {
   --ink-card: #1b1b1b;
   position: relative;
-  width: 4.25rem;
-  height: 6.25rem;
+  width: var(--carta);
+  aspect-ratio: 17 / 25;
   padding: 0.4rem;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   background: linear-gradient(160deg, #fbf8f1, #ebe6da);
   color: var(--ink-card);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 10px 20px -10px rgba(0, 0, 0, 0.8);
+    0 var(--hairline) 0 rgba(255, 255, 255, 0.6) inset,
+    0 0.625rem 1.25rem -0.625rem rgba(0, 0, 0, 0.8);
   display: grid;
   place-items: center;
   animation: deal 0.55s var(--ease-out) both;
@@ -156,7 +132,7 @@
 }
 
 @keyframes deal {
-  from { opacity: 0; transform: translateY(-24px) rotate(-6deg) scale(0.9); }
+  from { opacity: 0; transform: translateY(-1.5rem) rotate(-6deg) scale(0.9); }
   to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
 }
 
@@ -188,14 +164,14 @@
 }
 
 .pip {
-  font-size: 2rem;
+  font-size: calc(var(--carta) * 0.45);
   line-height: 1;
 }
 
 /* Hueco vacío antes de repartir */
 .card.slot {
   background: transparent;
-  border: 1px dashed rgba(242, 234, 216, 0.3);
+  border: var(--hairline) dashed rgba(242, 234, 216, 0.3);
   box-shadow: none;
   animation: none;
 }
@@ -208,8 +184,8 @@
   gap: 0.6rem;
   align-items: baseline;
   padding: 0.4rem 0.75rem;
-  border: 1px solid rgba(201, 169, 97, 0.45);
-  border-radius: 999px;
+  border: var(--hairline) solid rgba(201, 169, 97, 0.45);
+  border-radius: var(--radius-full);
   background: rgba(14, 16, 15, 0.5);
   font-size: 0.85rem;
   color: var(--accent-2);
@@ -232,7 +208,7 @@
   display: grid;
   gap: 1rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--line-strong);
+  border-top: var(--hairline) solid var(--line-strong);
 }
 
 .bank-hint {
@@ -264,7 +240,7 @@
 }
 
 .result .display {
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-size: var(--text-2xl);
 }
 
 .paytable {
@@ -272,7 +248,7 @@
   gap: 0.5rem;
   margin: 0;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--line);
+  border-top: var(--hairline) solid var(--line);
   font-size: 0.75rem;
 }
 

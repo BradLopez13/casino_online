@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Output, ViewChild, 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { useT } from '../../i18n/i18n.service';
 
 @Component({
   selector: 'app-age-verification',
@@ -12,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class AgeVerificationComponent implements AfterViewInit {
   @Output() accepted = new EventEmitter<boolean>();
+  protected readonly t = useT();
   mensajeRechazo = false;
 
   @ViewChild('primario') primario?: ElementRef<HTMLButtonElement>;
