@@ -48,3 +48,6 @@ ui-debug.log
 
 .vercel
 .env*
+
+# Configuración local de herramientas
+.claude/

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { AuthService } from '../../services/auth.service';
-import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { PerfilService } from '../../services/perfil.service';
 import { Router } from '@angular/router';
 import { ModalComponent } from '../modal/modal.component';
 import { authState, updatePassword, User } from '@angular/fire/auth';
@@ -23,7 +23,7 @@ export class BlackjackComponent {
   protected readonly t = this.i18n.t;
 
   private auth = inject(AuthService);
-  private firestore = inject(Firestore);
+  private perfiles = inject(PerfilService);
   private router = inject(Router);
 
   user: User | null = null;
@@ -65,13 +65,10 @@ export class BlackjackComponent {
         this.user = user;
         this.esCuentaGoogle = user.providerData.some(p => p.providerId === 'google.com');
 
-        const ref = doc(this.firestore, `usuarios/${user.uid}`);
-        getDoc(ref).then(snapshot => {
-          if (snapshot.exists()) {
-            const data = snapshot.data();
-            this.nombre = data['nombre'] || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
-            this.saldo = data['saldo'] ?? 0;
-          }
+        this.perfiles.leer(user.uid).then(perfil => {
+          if (!perfil) return;
+          this.nombre = perfil.nombre || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
+          this.saldo = perfil.saldo;
         });
       }
     });
@@ -105,8 +102,7 @@ export class BlackjackComponent {
 
     if (typeof res === 'string' && res.trim() && this.user) {
       const nuevoNombre = res.trim();
-      const refDoc = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(refDoc, { nombre: nuevoNombre }).then(() => {
+      this.perfiles.actualizar(this.user.uid, { nombre: nuevoNombre }).then(() => {
         this.nombre = nuevoNombre;
       }).catch(() => {
         this.errorNombre = 'errores.nombreGuardar';
@@ -150,7 +146,7 @@ export class BlackjackComponent {
     this.mostrarScratch = false;
     if (this.cantidadGanada > 0 && this.user) {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+      this.perfiles.actualizar(this.user.uid, { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
         .catch(() => this.errorSaldo = 'errores.saldo');
     }
@@ -301,9 +297,8 @@ export class BlackjackComponent {
   }
 
   actualizarSaldo() {
-    if (this.user) {
-      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(ref, { saldo: this.saldo });
-    }
+    if (!this.user) return;
+    this.perfiles.actualizar(this.user.uid, { saldo: this.saldo })
+      .catch(() => (this.errorSaldo = 'errores.saldo'));
   }
 }

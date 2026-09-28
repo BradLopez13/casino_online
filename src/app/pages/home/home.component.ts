@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { PerfilService } from '../../services/perfil.service';
 import { authState, User, updatePassword } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
@@ -69,7 +69,7 @@ export class HomeComponent {
   }
 
   private auth = inject(AuthService);
-  private firestore = inject(Firestore);
+  private perfiles = inject(PerfilService);
   private router = inject(Router);
 
   constructor() {
@@ -77,13 +77,11 @@ export class HomeComponent {
       if (user) {
         this.user = user;
         this.esCuentaGoogle = user.providerData.some(p => p.providerId === 'google.com');
-        const refDoc = doc(this.firestore, `usuarios/${user.uid}`);
-        const snap = await getDoc(refDoc);
-        if (snap.exists()) {
-          const data = snap.data();
-          this.nombre = data['nombre'] || '';
-          this.saldo = data['saldo'] ?? 0;
-          this.mayorDeEdad = data['mayorDeEdad'] === true;
+        const perfil = await this.perfiles.leer(user.uid);
+        if (perfil) {
+          this.nombre = perfil.nombre ?? '';
+          this.saldo = perfil.saldo;
+          this.mayorDeEdad = perfil.mayorDeEdad;
         }
       }
     });
@@ -110,7 +108,7 @@ export class HomeComponent {
     this.errorNombre = null;
     if (typeof res === 'string' && res.trim() && this.user) {
       const nuevo = res.trim();
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { nombre: nuevo })
+      this.perfiles.actualizar(this.user.uid, { nombre: nuevo })
         .then(()=> this.nombre = nuevo)
         .catch(()=>{ this.errorNombre='errores.nombreGuardar'; this.mostrarModalNombre=true; });
     } else if (typeof res==='string') {
@@ -139,7 +137,7 @@ export class HomeComponent {
     this.mostrarScratch = false;
     if (this.cantidadGanada > 0 && this.user) {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+      this.perfiles.actualizar(this.user.uid, { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
         .catch(() => this.errorSaldo = 'errores.saldo');
     }

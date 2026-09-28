@@ -71,6 +71,22 @@ npm start
 
 La app queda en `http://localhost:4200`, conectada al proyecto de Firebase configurado en `src/environments/environment.ts`.
 
+### Desarrollo local con emuladores
+
+Para trabajar sin tocar el proyecto real de Firebase, la app puede apuntar a los emuladores de Auth y Firestore (necesitan Java 11 o superior). En tres terminales:
+
+```bash
+npm run emuladores
+npm run sembrar
+npm run start:local
+```
+
+`sembrar` crea un jugador de demostración con la edad ya verificada; sus credenciales están en [`scripts/sembrar-emuladores.mjs`](scripts/sembrar-emuladores.mjs). El proyecto de los emuladores es `demo-casino`, que no existe en la nube.
+
+### Rendimiento
+
+Cada pantalla se carga al visitarla, y el SDK de Firestore no se descarga hasta que hay sesión: todo el acceso a datos pasa por [`PerfilService`](src/app/services/perfil.service.ts), que lo importa bajo demanda. El bundle inicial queda en unos 440 kB (unos 125 kB comprimido).
+
 Con Docker, la misma app compilada para producción y servida con nginx:
 
 ```bash

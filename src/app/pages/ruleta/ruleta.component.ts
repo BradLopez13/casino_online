@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../header/header.component';
 import { ModalComponent } from '../modal/modal.component';
 import { AuthService } from '../../services/auth.service';
-import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { PerfilService } from '../../services/perfil.service';
 import { Router } from '@angular/router';
 import { authState, User, updatePassword } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
@@ -24,7 +24,7 @@ export class RuletaComponent {
   protected readonly t = this.i18n.t;
 
   private auth = inject(AuthService);
-  private firestore = inject(Firestore);
+  private perfiles = inject(PerfilService);
   private router = inject(Router);
 
   nombre = '';
@@ -36,7 +36,8 @@ export class RuletaComponent {
   resultado: number | null = null;
   resultadoMensaje: { ganancia: number } | null = null;
   enJuego = false;
-  fichaSeleccionada: number | null = null;
+  /** La ficha más baja viene elegida: el tablero se puede usar desde el primer momento. */
+  fichaSeleccionada: number | null = 1;
 
   numeros = Array.from({ length: 37 }, (_, i) => i);
   fichas = [1, 5, 10, 25, 50, 100];
@@ -58,7 +59,8 @@ export class RuletaComponent {
   /** Gradiente cónico con los 37 sectores de la rueda, calculado una sola vez. */
   readonly gradienteRueda = (() => {
     const paso = 360 / 37;
-    const colores: Record<string, string> = { rojo: '#a8323e', negro: '#1b1d1c', verde: '#2f6b4f' };
+    // El negro se aclara un poco: sobre el fondo carbón, #1b1d1c no se distinguía
+    const colores: Record<string, string> = { rojo: '#a8323e', negro: '#34383a', verde: '#2f6b4f' };
     const paradas = this.ordenRueda.map((n, i) => {
       const color = colores[n === 0 ? 'verde' : this.rojos.includes(n) ? 'rojo' : 'negro'];
       return `${color} ${(i * paso).toFixed(3)}deg ${((i + 1) * paso).toFixed(3)}deg`;
@@ -105,13 +107,10 @@ export class RuletaComponent {
       if (user) {
         this.user = user;
         this.esCuentaGoogle = user.providerData.some(p => p.providerId === 'google.com');
-        const ref = doc(this.firestore, `usuarios/${user.uid}`);
-        getDoc(ref).then(snapshot => {
-          if (snapshot.exists()) {
-            const data = snapshot.data();
-            this.nombre = data['nombre'] || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
-            this.saldo = data['saldo'] ?? 0;
-          }
+        this.perfiles.leer(user.uid).then(perfil => {
+          if (!perfil) return;
+          this.nombre = perfil.nombre || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
+          this.saldo = perfil.saldo;
         });
       }
     });
@@ -173,12 +172,9 @@ export class RuletaComponent {
   }
 
   actualizarSaldoEnFirestore() {
-    if (this.user) {
-      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(ref, { saldo: this.saldo }).catch(err => {
-        console.error('Error al actualizar saldo en Firestore:', err);
-      });
-    }
+    if (!this.user) return;
+    this.perfiles.actualizar(this.user.uid, { saldo: this.saldo })
+      .catch(() => (this.errorSaldo = 'errores.saldo'));
   }
 
   getColor(num: number): string {
@@ -217,7 +213,7 @@ export class RuletaComponent {
     this.errorNombre = null;
     if (typeof res === 'string' && res.trim() && this.user) {
       const nuevo = res.trim();
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { nombre: nuevo })
+      this.perfiles.actualizar(this.user.uid, { nombre: nuevo })
         .then(()=> this.nombre = nuevo)
         .catch(()=>{ this.errorNombre='errores.nombreGuardar'; this.mostrarModalNombre=true; });
     } else if (typeof res==='string') {
@@ -246,7 +242,7 @@ export class RuletaComponent {
     this.mostrarScratch = false;
     if (this.cantidadGanada > 0 && this.user) {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+      this.perfiles.actualizar(this.user.uid, { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
         .catch(() => this.errorSaldo = 'errores.saldo');
     }

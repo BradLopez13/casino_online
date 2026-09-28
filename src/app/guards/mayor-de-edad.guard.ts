@@ -1,14 +1,14 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { PerfilService } from '../services/perfil.service';
 
 // Los juegos solo se abren tras confirmar la mayoría de edad; si no, se vuelve
 // a /home, que es donde se muestra la verificación.
 export const mayorDeEdadGuard: CanActivateFn = () => {
   const auth = inject(Auth);
-  const firestore = inject(Firestore);
+  const perfiles = inject(PerfilService);
   const router = inject(Router);
 
   return new Observable<boolean>(subscriber => {
@@ -16,8 +16,7 @@ export const mayorDeEdadGuard: CanActivateFn = () => {
       let verificado = false;
       if (user) {
         try {
-          const perfil = await getDoc(doc(firestore, `usuarios/${user.uid}`));
-          verificado = perfil.data()?.['mayorDeEdad'] === true;
+          verificado = (await perfiles.leer(user.uid))?.mayorDeEdad === true;
         } catch {
           // Sin perfil legible, se trata como no verificado.
         }

@@ -12,19 +12,13 @@ import {
   sendPasswordResetEmail
 } from '@angular/fire/auth';
 import { updatePassword } from '@angular/fire/auth';
-import {
-  Firestore,
-  getDoc,
-  doc,
-  setDoc,
-  serverTimestamp,
-} from '@angular/fire/firestore';
+import { PerfilService } from './perfil.service';
 
-import { from, switchMap, of, throwError } from 'rxjs';
+import { from, switchMap, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private auth: Auth, private firestore: Firestore) {}
+  constructor(private auth: Auth, private perfiles: PerfilService) {}
 
   login(email: string, password: string) {
     return from(signInWithEmailAndPassword(this.auth, email, password));
@@ -32,38 +26,13 @@ export class AuthService {
 
   register(email: string, password: string) {
     return from(createUserWithEmailAndPassword(this.auth, email, password)).pipe(
-      switchMap(cred => {
-        const userDoc = doc(this.firestore, `usuarios/${cred.user.uid}`);
-        return from(setDoc(userDoc, {
-          email: cred.user.email,
-          saldo: 1000,
-          mayorDeEdad: false,
-          createdAt: serverTimestamp()
-        }));
-      })
+      switchMap(cred => from(this.perfiles.crear(cred.user.uid, cred.user.email)))
     );
   }
 
   loginWithGoogle() {
     return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
-      switchMap(cred => {
-        const userRef = doc(this.firestore, `usuarios/${cred.user.uid}`);
-        return from(getDoc(userRef)).pipe(
-          switchMap(snapshot => {
-            if (!snapshot.exists()) {
-              console.log('Creando documento en Firestore para:', cred.user.uid);
-              return from(setDoc(userRef, {
-                email: cred.user.email,
-                saldo: 1000,
-                mayorDeEdad: false,
-                createdAt: serverTimestamp()
-              }));
-            } else {
-              return of(null); // Ya existe
-            }
-          })
-        );
-      })
+      switchMap(cred => from(this.perfiles.crearSiNoExiste(cred.user.uid, cred.user.email)))
     );
   }
 
@@ -90,8 +59,7 @@ export class AuthService {
   }
 
   setMayorDeEdad(uid: string) {
-    const userRef = doc(this.firestore, `usuarios/${uid}`);
-    return from(setDoc(userRef, { mayorDeEdad: true }, { merge: true }));
+    return from(this.perfiles.actualizar(uid, { mayorDeEdad: true }));
   }
   changePassword(newPassword: string) {
     const user = this.auth.currentUser;

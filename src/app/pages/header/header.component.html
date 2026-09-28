@@ -19,11 +19,12 @@
         <app-icon name="ticket"></app-icon><span>{{ t('header.rasca') }}</span>
       </button>
       <span class="nav-rule" aria-hidden="true"></span>
-      <button type="button" class="nav-item" (click)="onChangeName()" [attr.aria-label]="t('header.cambiarNombre')">
-        <app-icon name="pencil"></app-icon><span aria-hidden="true">{{ t('header.nombreCorto') }}</span>
+      <!-- Ajustes de cuenta: solo icono, con nombre accesible y descripción emergente -->
+      <button type="button" class="nav-item solo-icono" (click)="onChangeName()" [attr.aria-label]="t('header.cambiarNombre')" [title]="t('header.cambiarNombre')">
+        <app-icon name="pencil"></app-icon>
       </button>
-      <button type="button" class="nav-item" (click)="onChangePassword()" [attr.aria-label]="t('header.cambiarPassword')">
-        <app-icon name="key"></app-icon><span aria-hidden="true">{{ t('header.passwordCorto') }}</span>
+      <button type="button" class="nav-item solo-icono" (click)="onChangePassword()" [attr.aria-label]="t('header.cambiarPassword')" [title]="t('header.cambiarPassword')">
+        <app-icon name="key"></app-icon>
       </button>
       <button type="button" class="nav-item danger" (click)="onLogout()">
         <app-icon name="sign-out"></app-icon><span>{{ t('header.salir') }}</span>

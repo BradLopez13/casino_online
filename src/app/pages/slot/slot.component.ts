@@ -4,7 +4,7 @@ import { HeaderComponent } from '../header/header.component';
 import { ModalComponent } from '../modal/modal.component';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { PerfilService } from '../../services/perfil.service';
 import { Router } from '@angular/router';
 import { authState, updatePassword, User } from '@angular/fire/auth';
 import { ScratchModalComponent } from '../scratch-modal/scratch-modal.component';
@@ -25,7 +25,7 @@ export class SlotComponent {
   protected readonly t = this.i18n.t;
 
   private auth = inject(AuthService);
-  private firestore = inject(Firestore);
+  private perfiles = inject(PerfilService);
   private router = inject(Router);
 
   nombre = '';
@@ -54,18 +54,14 @@ export class SlotComponent {
   rascado = false;
 
   constructor() {
-    const user = this.auth.getAuthInstance().currentUser;
     authState(this.auth.getAuthInstance()).subscribe(user => {
       if (user) {
         this.user = user;
         this.esCuentaGoogle = user.providerData.some(p => p.providerId === 'google.com');
-        const ref = doc(this.firestore, `usuarios/${user.uid}`);
-        getDoc(ref).then(snapshot => {
-          if (snapshot.exists()) {
-            const data = snapshot.data();
-            this.nombre = data['nombre'] || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
-            this.saldo = data['saldo'] ?? 0;
-          }
+        this.perfiles.leer(user.uid).then(perfil => {
+          if (!perfil) return;
+          this.nombre = perfil.nombre || `${this.t('comun.usuario')}.${user.uid.slice(0, 6)}`;
+          this.saldo = perfil.saldo;
         });
       }
     });
@@ -166,10 +162,9 @@ export class SlotComponent {
   }
 
   actualizarSaldo() {
-    if (this.user) {
-      const ref = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(ref, { saldo: this.saldo });
-    }
+    if (!this.user) return;
+    this.perfiles.actualizar(this.user.uid, { saldo: this.saldo })
+      .catch(() => (this.errorSaldo = 'errores.saldo'));
   }
 
   onChangeName() { this.errorNombre = null; this.mostrarModalNombre = true; }
@@ -194,8 +189,7 @@ export class SlotComponent {
 
     if (typeof res === 'string' && res.trim() && this.user) {
       const nuevoNombre = res.trim();
-      const refDoc = doc(this.firestore, `usuarios/${this.user.uid}`);
-      updateDoc(refDoc, { nombre: nuevoNombre }).then(() => {
+      this.perfiles.actualizar(this.user.uid, { nombre: nuevoNombre }).then(() => {
         this.nombre = nuevoNombre;
       }).catch(() => {
         this.errorNombre = 'errores.nombreGuardar';
@@ -237,7 +231,7 @@ export class SlotComponent {
     this.mostrarScratch = false;
     if (this.cantidadGanada > 0 && this.user) {
       const nuevoSaldo = this.saldo + this.cantidadGanada;
-      updateDoc(doc(this.firestore, `usuarios/${this.user.uid}`), { saldo: nuevoSaldo })
+      this.perfiles.actualizar(this.user.uid, { saldo: nuevoSaldo })
         .then(() => this.saldo = nuevoSaldo)
         .catch(() => this.errorSaldo = 'errores.saldo');
     }

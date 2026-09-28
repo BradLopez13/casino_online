@@ -176,10 +176,11 @@
   animation: none;
 }
 
+/* En el flujo del tapete y centrada: en posición absoluta tapaba los puntos del jugador */
 .bet-tag {
-  position: absolute;
-  right: 1.25rem;
-  bottom: 1rem;
+  position: relative;
+  z-index: 1;
+  justify-self: center;
   display: inline-flex;
   gap: 0.6rem;
   align-items: baseline;
