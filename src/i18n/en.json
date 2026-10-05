@@ -1,7 +1,7 @@
 {
   "comun": {
-    "tituloPagina": "Meridiano · Gaming salon",
-    "marca": "Meridiano",
+    "tituloPagina": "Meridian · Gaming salon",
+    "marca": "Meridian",
     "salonDeJuego": "Gaming salon",
     "mantra": "Luck finds its north.",
     "sinValorReal": "Chips with no real value",
@@ -48,7 +48,7 @@
     }
   },
   "header": {
-    "volverSalon": "Meridiano, back to the salon",
+    "volverSalon": "Meridian, back to the salon",
     "saldoEtiqueta": "Chips",
     "saldoSinValor": "no real value",
     "saldoAnuncio": "Balance: {{saldo}}",
@@ -73,7 +73,7 @@
       "punto1": "Chips are not money: you can't buy them or exchange them for anything.",
       "punto2": "You get a thousand when you create your account.",
       "punto3": "If you run out, open the account menu and choose “Scratch and refill”. The ticket is free.",
-      "punto4": "Meridiano is an academic project for people aged 18 and over."
+      "punto4": "Meridian is an academic project for people aged 18 and over."
     },
     "navMesas": "Tables",
     "tuCuenta": "Your account",
@@ -107,7 +107,7 @@
     "denegadoEyebrow": "Access denied",
     "denegadoTitulo": "Sorry, <em>not today</em>.",
     "denegadoTexto": "Only adults can enter. Signing you out…",
-    "pie": "Meridiano · Gaming salon · 18+"
+    "pie": "Meridian · Gaming salon · 18+"
   },
   "home": {
     "abierta": "Table open · {{hora}}",
@@ -117,7 +117,7 @@
     "jugador": "Player",
     "mesas": "Tables",
     "navMesas": "Available tables",
-    "copyright": "© 2025–{{anio}} Meridiano · Gaming salon. Academic project."
+    "copyright": "© 2025–{{anio}} Meridian · Gaming salon. Academic project."
   },
   "auth": {
     "email": "Email",
